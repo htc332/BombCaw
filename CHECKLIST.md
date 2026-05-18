@@ -41,3 +41,33 @@
 | 固定分辨率 | 使用 Canvas 适配策略 |
 
 ---
+
+# 动画系统迁移
+
+## 动画管理器 (AnimationManager.ts)
+- [x] 使用 AnimationClip 资源引用
+- [x] 使用 Animation 组件播放控制
+- [x] 支持回调函数 (FINISHED 事件)
+- [x] 支持播放速度控制
+- [x] 支持暂停/恢复/停止
+
+## 资源迁移
+- [x] 复制 lv1-lv4 炸弹精灵图
+- [x] 复制 enemy_n 精灵图
+- [x] 复制 enemy_elite 系列精灵图
+- [x] 复制 static_bombs 精灵图
+- [x] 创建迁移脚本 (migrate-sprites.sh)
+
+## Cocos 动画特性
+- [x] AnimationClip 资源
+- [x] Animation 组件
+- [x] AnimationState 状态控制
+- [x] 事件系统 (FINISHED)
+- [ ] Tween 动画 (待实现)
+
+## 待完善
+- [ ] 动画剪辑资源创建 (需要在 Cocos Editor 中制作)
+- [ ] Tween 动画接入
+- [ ] 粒子系统 (爆炸特效)
+
+---
