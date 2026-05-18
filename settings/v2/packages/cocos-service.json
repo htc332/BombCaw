@@ -1,0 +1,34 @@
+{
+  "__version__": "3.0.9",
+  "game": {
+    "app_id": "691115573",
+    "c_id": "0",
+    "name": "牛牛滅鼠"
+  },
+  "appConfigMaps": [
+    {
+      "app_id": "UNKNOW",
+      "config_id": "8efd40"
+    },
+    {
+      "app_id": "691115573",
+      "config_id": "0eab9e"
+    }
+  ],
+  "configs": [
+    {
+      "app_id": "UNKNOW",
+      "config_id": "8efd40",
+      "config_name": "Default",
+      "config_remarks": "",
+      "services": []
+    },
+    {
+      "app_id": "691115573",
+      "config_id": "0eab9e",
+      "config_name": "Default",
+      "config_remarks": "",
+      "services": []
+    }
+  ]
+}
