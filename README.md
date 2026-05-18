@@ -14,17 +14,16 @@ git remote add origin https://github.com/hutianchi20111-cmyk/CowBomb.git
 ```bash
 git add -A
 git commit -m "backup: 修改前_功能描述"
-git push origin main
 ```
 
-**2. 修改代码**
-- 在 Cocos Creator 中编辑
-- 或修改 extensions/cocos-mcp-server/ 插件
-
-**3. 提交更新**
+**2. 提交更新**
 ```bash
 git add -A
 git commit -m "feat/fix/doc: 具体描述"
+```
+
+**3. 推送到远程（需手动输入凭据）**
+```bash
 git push origin main
 ```
 
@@ -42,6 +41,7 @@ git push origin main
 - **每次修改前备份**
 - **不要删除 `library/` 目录**（会导致项目损坏）
 - **提交信息规范**：`feat:`/`fix:`/`doc:` 前缀
+- **插件作为子模块**：extensions/cocos-mcp-server 是独立仓库
 
 ---
 
