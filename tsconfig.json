@@ -1,9 +1,25 @@
 {
-  /* Base configuration. Do not edit this field. */
-  "extends": "./temp/tsconfig.cocos.json",
-
-  /* Add your custom configuration here. */
   "compilerOptions": {
-    "strict": false
-  }
+    "target": "ES2020",
+    "lib": ["ES2020"],
+    "module": "commonjs",
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "assets/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "library",
+    "temp",
+    "build"
+  ]
 }

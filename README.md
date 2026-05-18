@@ -1,62 +1,71 @@
-# Cocos Creator Project - Bomb Wall
+# Cocos Creator Project - Bomb Wall (Cocos Version)
 
-## Git 配置
+## 项目信息
 
-### 初始设置（已完成）
-```bash
-git init
-git remote add origin https://github.com/hutianchi20111-cmyk/CowBomb.git
+- **引擎**: Cocos Creator 3.8.8
+- **类型**: 2D 游戏
+- **目标平台**: 微信小游戏
+- **原项目**: bomb-wall-canvas (Canvas 原生版)
+
+## 目录结构
+
+```
+assets/
+├── scripts/          # TypeScript 脚本
+│   ├── core/        # 游戏逻辑
+│   ├── managers/    # 管理器
+│   └── components/  # 组件
+├── scenes/          # 场景文件
+│   ├── Main.scene   # 主场景
+│   └── Game.scene   # 游戏场景
+├── prefabs/         # 预制体
+│   ├── Bomb.prefab
+│   ├── Wall.prefab
+│   └── StaticBomb.prefab
+├── resources/       # 动态资源
+│   ├── sprites/    # 精灵图
+│   ├── audio/       # 音效
+│   └── levels/      # 关卡配置
+└── textures/        # 纹理
+
+wiki/                # 迁移的文档
+├── GAMEPLAY_DESIGN.md
+├── LEVEL_DESIGN.md
+├── ARCHITECTURE.md
+└── ...
 ```
 
-### 日常备份流程
+## Git 工作流
 
-**1. 备份（修改前必须）**
+### 备份（每次修改前）
 ```bash
 git add -A
 git commit -m "backup: 修改前_功能描述"
 ```
 
-**2. 提交更新**
+### 提交更新
 ```bash
 git add -A
 git commit -m "feat/fix/doc: 具体描述"
 ```
 
-**3. 推送到远程（需手动输入凭据）**
-```bash
-git push origin main
-```
+## 开发阶段
 
-### Git 忽略配置
+| 阶段 | 状态 | 说明 |
+|-----|------|------|
+| 一：项目初始化 | 🔄 进行中 | 创建目录结构，迁移文档 |
+| 二：核心系统迁移 | ⏳ 待开始 | 场景、节点、逻辑、动画 |
+| 三：资源迁移 | ⏳ 待开始 | 精灵图、UI、音效 |
+| 四：特效重构 | ⏳ 待开始 | 爆炸、升级、飘字 |
+| 五：微信适配 | ⏳ 待开始 | 构建、调试、优化 |
+| 六：文档整合 | ⏳ 待开始 | 技能、自动化 |
 
-已配置 `.gitignore`：
-- `library/` - 自动生成的缓存（可重建）
-- `temp/` - 临时文件
-- `local/` - 本地设置
-- `profiles/` - 配置文件
-- `build/` - 构建输出
+## Cocos MCP Server
 
-### 重要原则
-
-- **每次修改前备份**
-- **不要删除 `library/` 目录**（会导致项目损坏）
-- **提交信息规范**：`feat:`/`fix:`/`doc:` 前缀
-- **插件作为子模块**：extensions/cocos-mcp-server 是独立仓库
+- **位置**: `extensions/cocos-mcp-server/`
+- **状态**: ✅ 已部署
+- **使用**: 扩展 → Cocos MCP Server → 启动服务器
 
 ---
 
-## Cocos MCP Server 插件
-
-### 部署状态
-- ✅ 已克隆到 `extensions/cocos-mcp-server/`
-- ✅ 已构建（`npm install` + `npm run build`）
-- ✅ 技能已安装到 OpenClaw
-
-### 使用方法
-1. Cocos Creator → 扩展 → 扩展管理器 → 启用 cocos-mcp-server
-2. 扩展 → Cocos MCP Server → 启动服务器
-3. 默认地址：`http://127.0.0.1:3000/mcp`
-
----
-
-_项目路径: /Users/htc332/.openclaw/workspace-pioneer/cocos-projects/bomb-wall/_
+_迁移计划: MIGRATION_PLAN.md_
