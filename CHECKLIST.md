@@ -51,6 +51,13 @@
 - [x] 支持播放速度控制
 - [x] 支持暂停/恢复/停止
 
+## 精灵图动画适配
+- [x] 创建 SpriteAnimationHelper 组件
+- [x] 创建 SpriteSheetLoader 组件
+- [x] 支持程序化 SpriteFrame 切换
+- [x] 兼容现有 index.json 格式
+- [x] 编写迁移指南文档
+
 ## 资源迁移
 - [x] 复制 lv1-lv4 炸弹精灵图
 - [x] 复制 enemy_n 精灵图
@@ -63,11 +70,13 @@
 - [x] Animation 组件
 - [x] AnimationState 状态控制
 - [x] 事件系统 (FINISHED)
-- [ ] Tween 动画 (待实现)
+- [x] SpriteFrame 程序化切换
+- [ ] 编辑器中创建 AnimationClip（需在 Cocos Editor 操作）
 
 ## 待完善
-- [ ] 动画剪辑资源创建 (需要在 Cocos Editor 中制作)
+- [ ] 在 Cocos Editor 中创建 AnimationClip 资源
+- [ ] 配置 SpriteFrame 的 Trim 和 Anchor
+- [ ] 设置纹理 Filter 为 LINEAR
 - [ ] Tween 动画接入
-- [ ] 粒子系统 (爆炸特效)
 
 ---
