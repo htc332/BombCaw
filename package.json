@@ -6,5 +6,8 @@
   },
   "dependencies": {
     "cocos-mcp-server": "file:./extensions/cocos-mcp-server"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
   }
 }
