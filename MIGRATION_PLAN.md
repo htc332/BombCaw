@@ -27,35 +27,32 @@
 
 ---
 
-## 阶段二：核心系统迁移 (Day 3-7)
+## 阶段二：核心系统迁移 (Day 3-7) - 进行中
 
 ### 2.1 场景搭建
-- [ ] 创建主场景 (MainScene)
-- [ ] 创建游戏场景 (GameScene)
+- [x] 创建主场景 (Main.scene)
+- [ ] 创建游戏场景 (Game.scene)
 - [ ] 创建 UI 场景层
 - [ ] 配置摄像机 (Camera)
 
 ### 2.2 节点系统重构
 | 原系统 | Cocos 实现 | 状态 |
 |--------|-----------|------|
-| 网格系统 (Grid.js) | `Node` + `GridLayout` | ⏳ |
-| 炸弹节点 | `Prefab` + `Sprite` | ⏳ |
-| 墙壁节点 | `Prefab` + `Sprite` | ⏳ |
-| 静态炸弹 | `Prefab` + `Sprite` | ⏳ |
+| 网格系统 (Grid.js) | `GridManager.ts` | ✅ |
+| 炸弹节点 | `Bomb.ts` | ✅ |
+| 墙壁节点 | `Wall.ts` | ✅ |
+| 静态炸弹 | `Bomb.ts` (isStatic) | ✅ |
 
 ### 2.3 游戏逻辑迁移
-- [ ] 迁移 `GameLogic.js` 到 TypeScript 组件
-- [ ] 迁移事件系统 (回调 → Cocos 事件)
+- [x] 迁移 `GameLogic.js` 到 TypeScript 组件
+- [x] 迁移事件系统 (回调 → Cocos EventTarget)
 - [ ] 迁移关卡数据 (`LevelData.js`)
 - [ ] 迁移计分系统
 
-### 2.4 动画系统迁移
-| 原动画 | Cocos 方案 | 状态 |
-|--------|-----------|------|
-| 炸弹倒计时动画 | `Animation` 组件 | ⏳ |
-| 爆炸特效 | `ParticleSystem2D` | ⏳ |
-| 墙壁受伤动画 | `Animation` 组件 | ⏳ |
-| 死亡动画 | `Animation` 组件 | ⏳ |
+### 2.4 管理器系统
+- [x] 创建 `GameManager.ts` 场景管理器
+- [ ] 创建 `UIManager.ts` UI 管理器
+- [ ] 创建 `AudioManager.ts` 音效管理器
 
 ---
 

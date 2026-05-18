@@ -1,0 +1,91 @@
+{
+  "__type__": "cc.SceneAsset",
+  "_name": "Main",
+  "_objFlags": 0,
+  "_native": "",
+  "scene": {
+    "__type__": "cc.Scene",
+    "_name": "Main",
+    "_objFlags": 0,
+    "_parent": null,
+    "_children": [
+      {
+        "__type__": "cc.Node",
+        "_name": "Canvas",
+        "_objFlags": 0,
+        "_parent": {
+          "__id__": 1
+        },
+        "_children": [
+          {
+            "__type__": "cc.Node",
+            "_name": "Grid",
+            "_objFlags": 0,
+            "_parent": {
+              "__id__": 2
+            },
+            "_components": [
+              {
+                "__type__": "cc.UITransform",
+                "node": {
+                  "__id__": 3
+                }
+              },
+              {
+                "__type__": "GridManager",
+                "node": {
+                  "__id__": 3
+                }
+              }
+            ]
+          },
+          {
+            "__type__": "cc.Node",
+            "_name": "GameManager",
+            "_objFlags": 0,
+            "_parent": {
+              "__id__": 2
+            },
+            "_components": [
+              {
+                "__type__": "cc.UITransform",
+                "node": {
+                  "__id__": 4
+                }
+              },
+              {
+                "__type__": "GameManager",
+                "node": {
+                  "__id__": 4
+                },
+                "gridNode": {
+                  "__id__": 3
+                }
+              },
+              {
+                "__type__": "GameLogic",
+                "node": {
+                  "__id__": 4
+                }
+              }
+            ]
+          }
+        ],
+        "_components": [
+          {
+            "__type__": "cc.UITransform",
+            "node": {
+              "__id__": 2
+            }
+          },
+          {
+            "__type__": "cc.Canvas",
+            "node": {
+              "__id__": 2
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
