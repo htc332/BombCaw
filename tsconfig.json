@@ -11,10 +11,12 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "cc": ["./node_modules/@cocos/creator-types/dist/index.d.ts"]
+      "cc": ["./node_modules/@cocos/creator-types/engine.d.ts"],
+      "cc/*": ["./node_modules/@cocos/creator-types/engine/*.d.ts"]
     }
   },
   "include": [

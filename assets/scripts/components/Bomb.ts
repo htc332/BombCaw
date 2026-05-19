@@ -57,7 +57,9 @@ export class Bomb extends Component {
         this.animHelper = this.getComponent(SpriteAnimationHelper);
         if (!this.animHelper) {
             this.animHelper = this.addComponent(SpriteAnimationHelper);
+        if (this.animHelper) {
             this.animHelper.sprite = this.sprite;
+        }
         }
     }
     
