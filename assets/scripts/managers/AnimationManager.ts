@@ -1,184 +1,248 @@
-import { _decorator, Component, Node, Sprite, SpriteFrame, Animation, AnimationClip, CCInteger } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, Texture2D, assetManager, Size, Rect, Vec3 } from 'cc';
+import { SpriteAnimationHelper } from './SpriteAnimationHelper';
 
 const { ccclass, property } = _decorator;
 
 /**
- * AnimationManager Component
- * 动画管理器 - 按 Cocos 引擎设计
- * 职责：管理所有游戏对象的动画状态
+ * AnimationManager
+ * 动画管理器 - 统一管理所有精灵图动画
+ * 
+ * 职责：
+ * 1. 批量加载所有精灵图资源
+ * 2. 根据游戏状态播放对应动画
+ * 3. 管理炸弹倒计时动画
+ * 4. 管理墙壁死亡动画
  */
 @ccclass('AnimationManager')
 export class AnimationManager extends Component {
     
-    // ========== 动画剪辑引用 ==========
+    // 精灵图配置列表
+    private spriteSheetConfigs = [
+        { name: 'lv1', path: 'sprites/lv1' },
+        { name: 'lv2', path: 'sprites/lv2' },
+        { name: 'lv3', path: 'sprites/lv3' },
+        { name: 'lv4', path: 'sprites/lv4' },
+        { name: 'enemy_n', path: 'sprites/enemy_n' },
+        { name: 'enemy_n_death', path: 'sprites/enemy_n_death' },
+        { name: 'enemy_elite', path: 'sprites/enemy_elite' },
+        { name: 'enemy_elite_break', path: 'sprites/enemy_elite_break' },
+        { name: 'enemy_elite_break_idle', path: 'sprites/enemy_elite_break_idle' },
+        { name: 'enemy_elite_death', path: 'sprites/enemy_elite_death' },
+    ];
     
-    @property(AnimationClip)
-    bombIdleClip: AnimationClip | null = null;      // 炸弹待机
+    // 动画辅助器引用
+    private animHelpers: Map<string, SpriteAnimationHelper> = new Map();
     
-    @property(AnimationClip)
-    bombTickClip: AnimationClip | null = null;      // 炸弹倒计时
-    
-    @property(AnimationClip)
-    bombExplodeClip: AnimationClip | null = null;  // 炸弹爆炸
-    
-    @property(AnimationClip)
-    wallIdleClip: AnimationClip | null = null;       // 墙壁待机
-    
-    @property(AnimationClip)
-    wallHurtClip: AnimationClip | null = null;       // 墙壁受伤
-    
-    @property(AnimationClip)
-    wallDieClip: AnimationClip | null = null;        // 墙壁死亡
-    
-    @property(AnimationClip)
-    upgradeClip: AnimationClip | null = null;         // 升级特效
-    
-    // ========== 动画状态缓存 ==========
-    
-    private animationCache: Map<string, Animation> = new Map();
+    // 加载状态
+    private loadedCount: number = 0;
+    private totalCount: number = 0;
+    private onAllLoaded: Function | null = null;
     
     onLoad() {
-        console.log('[AnimationManager] Loaded');
+        console.log('[AnimationManager] Initializing...');
+    }
+    
+    start() {
+        // 延迟加载，等待场景准备完成
+        this.scheduleOnce(() => {
+            this.loadAllSpriteSheets();
+        }, 0.1);
     }
     
     /**
-     * 注册动画组件
+     * 加载所有精灵图
      */
-    registerAnimation(nodeName: string, animation: Animation) {
-        this.animationCache.set(nodeName, animation);
+    loadAllSpriteSheets(callback?: Function) {
+        this.onAllLoaded = callback || null;
+        this.loadedCount = 0;
+        this.totalCount = this.spriteSheetConfigs.length;
+        
+        console.log(`[AnimationManager] Loading ${this.totalCount} sprite sheets...`);
+        
+        this.spriteSheetConfigs.forEach(config => {
+            this.loadSpriteSheet(config.name, config.path);
+        });
     }
     
     /**
-     * 获取动画组件
+     * 加载单个精灵图
      */
-    getAnimation(nodeName: string): Animation | null {
-        return this.animationCache.get(nodeName) || null;
-    }
-    
-    // ========== 炸弹动画 ==========
-    
-    /**
-     * 播放炸弹待机动画
-     */
-    playBombIdle(node: Node) {
-        const anim = node.getComponent(Animation);
-        if (anim && this.bombIdleClip) {
-            anim.defaultClip = this.bombIdleClip;
-            anim.play('bomb_idle');
-        }
-    }
-    
-    /**
-     * 播放炸弹倒计时动画
-     */
-    playBombTick(node: Node, countdown: number) {
-        const anim = node.getComponent(Animation);
-        if (anim && this.bombTickClip) {
-            // 根据倒计时播放不同帧
-            anim.play('bomb_tick');
-            
-            // 设置播放速度，使动画与倒计时同步
-            const state = anim.getState('bomb_tick');
-            if (state) {
-                state.speed = 1.0 / countdown;
+    private loadSpriteSheet(name: string, path: string) {
+        // 创建临时节点用于加载
+        const loaderNode = new Node(`Loader_${name}`);
+        this.node.addChild(loaderNode);
+        
+        const loader = loaderNode.addComponent(SpriteSheetLoader);
+        const sprite = loaderNode.addComponent(Sprite);
+        const animHelper = loaderNode.addComponent(SpriteAnimationHelper);
+        
+        loader.spriteSheetPath = `${path}/sprite.png`;
+        loader.indexJsonPath = `${path}/index.json`;
+        loader.targetSprite = sprite;
+        
+        loader.loadSpriteSheet(loader.spriteSheetPath, loader.indexJsonPath, (frames: SpriteFrame[]) => {
+            if (frames && frames.length > 0) {
+                // 注册到动画辅助器
+                animHelper.registerClip(name, frames);
+                this.animHelpers.set(name, animHelper);
+                
+                console.log(`[AnimationManager] Loaded: ${name}, frames: ${frames.length}`);
             }
+            
+            this.loadedCount++;
+            if (this.loadedCount >= this.totalCount) {
+                console.log('[AnimationManager] All sprite sheets loaded!');
+                this.onAllLoaded?.();
+            }
+        });
+    }
+    
+    /**
+     * 播放炸弹待机动画（倒计时驱动）
+     */
+    playBombIdle(bombNode: Node, level: number, countdownDuration: number) {
+        const clipName = `lv${level}`;
+        const animHelper = this.getAnimHelper(bombNode, clipName);
+        
+        if (animHelper) {
+            animHelper.play(clipName, {
+                mode: 'countdown',
+                countdownDuration: countdownDuration,
+                loop: false
+            });
         }
     }
     
     /**
-     * 播放炸弹爆炸动画
+     * 更新炸弹倒计时进度
      */
-    playBombExplode(node: Node, callback?: Function) {
-        const anim = node.getComponent(Animation);
-        if (anim && this.bombExplodeClip) {
-            anim.play('bomb_explode');
-            
-            // 动画完成后回调
-            if (callback) {
-                anim.once(Animation.EventType.FINISHED, () => {
-                    callback();
-                });
-            }
+    updateBombCountdown(bombNode: Node, progress: number) {
+        const animHelper = bombNode.getComponent(SpriteAnimationHelper);
+        if (animHelper) {
+            animHelper.setCountdownProgress(progress);
         }
     }
-    
-    // ========== 墙壁动画 ==========
     
     /**
      * 播放墙壁待机动画
      */
-    playWallIdle(node: Node) {
-        const anim = node.getComponent(Animation);
-        if (anim && this.wallIdleClip) {
-            anim.play('wall_idle');
+    playWallIdle(wallNode: Node, type: string) {
+        const clipName = type === 'elite' ? 'enemy_elite' : 'enemy_n';
+        const animHelper = this.getAnimHelper(wallNode, clipName);
+        
+        if (animHelper) {
+            animHelper.play(clipName, {
+                mode: 'loop',
+                loop: true
+            });
         }
     }
     
     /**
-     * 播放墙壁受伤动画
+     * 播放死亡动画
      */
-    playWallHurt(node: Node) {
-        const anim = node.getComponent(Animation);
-        if (anim && this.wallHurtClip) {
-            anim.play('wall_hurt');
+    playDeathAnimation(wallNode: Node, type: string, onComplete?: Function) {
+        const clipName = type === 'elite' ? 'enemy_elite_death' : 'enemy_n_death';
+        const animHelper = this.getAnimHelper(wallNode, clipName);
+        
+        if (animHelper) {
+            animHelper.play(clipName, {
+                mode: 'once',
+                loop: false,
+                onComplete: () => {
+                    console.log(`[AnimationManager] Death animation complete: ${type}`);
+                    onComplete?.();
+                }
+            });
         }
     }
     
     /**
-     * 播放墙壁死亡动画
+     * 播放破损过渡动画
      */
-    playWallDie(node: Node, callback?: Function) {
-        const anim = node.getComponent(Animation);
-        if (anim && this.wallDieClip) {
-            anim.play('wall_die');
+    playBreakTransition(wallNode: Node, onComplete?: Function) {
+        const animHelper = this.getAnimHelper(wallNode, 'enemy_elite_break');
+        
+        if (animHelper) {
+            animHelper.play('enemy_elite_break', {
+                mode: 'once',
+                loop: false,
+                onComplete: () => {
+                    // 过渡到破损待机
+                    this.playBreakIdle(wallNode);
+                    onComplete?.();
+                }
+            });
+        }
+    }
+    
+    /**
+     * 播放破损待机动画
+     */
+    playBreakIdle(wallNode: Node) {
+        const animHelper = this.getAnimHelper(wallNode, 'enemy_elite_break_idle');
+        
+        if (animHelper) {
+            animHelper.play('enemy_elite_break_idle', {
+                mode: 'loop',
+                loop: true
+            });
+        }
+    }
+    
+    /**
+     * 停止动画
+     */
+    stopAnimation(targetNode: Node) {
+        const animHelper = targetNode.getComponent(SpriteAnimationHelper);
+        if (animHelper) {
+            animHelper.stop();
+        }
+    }
+    
+    /**
+     * 获取或创建动画辅助器
+     */
+    private getAnimHelper(targetNode: Node, clipName: string): SpriteAnimationHelper | null {
+        let animHelper = targetNode.getComponent(SpriteAnimationHelper);
+        
+        if (!animHelper) {
+            // 确保有 Sprite 组件
+            let sprite = targetNode.getComponent(Sprite);
+            if (!sprite) {
+                sprite = targetNode.addComponent(Sprite);
+            }
             
-            if (callback) {
-                anim.once(Animation.EventType.FINISHED, () => {
-                    callback();
-                });
+            animHelper = targetNode.addComponent(SpriteAnimationHelper);
+            animHelper.sprite = sprite;
+            
+            // 从全局缓存复制帧数据
+            const globalHelper = this.animHelpers.get(clipName);
+            if (globalHelper) {
+                const info = globalHelper.getCurrentClipInfo();
+                // 这里需要一种方式复制已注册的 clip
+                // 实际实现中可能需要重新加载或共享数据
             }
         }
-    }
-    
-    // ========== 特效动画 ==========
-    
-    /**
-     * 播放升级特效
-     */
-    playUpgradeEffect(node: Node) {
-        const anim = node.getComponent(Animation);
-        if (anim && this.upgradeClip) {
-            anim.play('upgrade');
-        }
+        
+        return animHelper;
     }
     
     /**
-     * 停止所有动画
+     * 获取加载进度
      */
-    stopAllAnimations(node: Node) {
-        const anim = node.getComponent(Animation);
-        if (anim) {
-            anim.stop();
-        }
+    getLoadProgress(): number {
+        if (this.totalCount === 0) return 1;
+        return this.loadedCount / this.totalCount;
     }
     
     /**
-     * 暂停动画
+     * 是否全部加载完成
      */
-    pauseAnimation(node: Node) {
-        const anim = node.getComponent(Animation);
-        if (anim) {
-            anim.pause();
-        }
-    }
-    
-    /**
-     * 恢复动画
-     */
-    resumeAnimation(node: Node) {
-        const anim = node.getComponent(Animation);
-        if (anim) {
-            anim.resume();
-        }
+    isAllLoaded(): boolean {
+        return this.loadedCount >= this.totalCount;
     }
 }
+
+// 需要导入 SpriteSheetLoader
+import { SpriteSheetLoader } from './SpriteSheetLoader';
