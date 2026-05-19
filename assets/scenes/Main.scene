@@ -30,12 +30,6 @@
                 "node": {
                   "__id__": 3
                 }
-              },
-              {
-                "__type__": "GridManager",
-                "node": {
-                  "__id__": 3
-                }
               }
             ]
           },
@@ -49,21 +43,6 @@
             "_components": [
               {
                 "__type__": "cc.UITransform",
-                "node": {
-                  "__id__": 4
-                }
-              },
-              {
-                "__type__": "GameManager",
-                "node": {
-                  "__id__": 4
-                },
-                "gridNode": {
-                  "__id__": 3
-                }
-              },
-              {
-                "__type__": "GameLogic",
                 "node": {
                   "__id__": 4
                 }
