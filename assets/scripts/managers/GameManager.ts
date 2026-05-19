@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, director, Director, Vec3, Vec2, instantiate, Prefab, CCInteger } from 'cc';
+import { _decorator, Component, Node, director, Director, Vec3, Vec2, instantiate, Prefab, CCInteger, UITransform } from 'cc';
 import { GameLogic } from '../core/GameLogic';
 import { GridManager } from '../core/GridManager';
 import { Bomb } from '../components/Bomb';
@@ -123,6 +123,8 @@ export class GameManager extends Component {
             if (this.gridManager) {
                 const pos = this.gridManager.gridToWorld(wallData.x, wallData.y);
                 wallNode.setPosition(pos);
+            } else {
+                wallNode.setPosition(new Vec3(wallData.x * 70, wallData.y * 70, 0));
             }
             
             this.wallContainer.addChild(wallNode);
@@ -146,6 +148,8 @@ export class GameManager extends Component {
             if (this.gridManager) {
                 const pos = this.gridManager.gridToWorld(bombData.x, bombData.y);
                 bombNode.setPosition(pos);
+            } else {
+                bombNode.setPosition(new Vec3(bombData.x * 70, bombData.y * 70, 0));
             }
             
             this.bombContainer.addChild(bombNode);
@@ -169,6 +173,8 @@ export class GameManager extends Component {
             if (this.gridManager) {
                 const pos = this.gridManager.gridToWorld(gx, gy);
                 bombNode.setPosition(pos);
+            } else {
+                bombNode.setPosition(new Vec3(gx * 70, gy * 70, 0));
             }
             
             this.bombContainer.addChild(bombNode);
