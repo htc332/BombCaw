@@ -1,297 +1,279 @@
-import { _decorator, Component, Node, Label, Sprite, Button, ProgressBar, Vec3, Color, UIOpacity } from 'cc';
+import { _decorator, Component, Node, Label, ProgressBar, Button, Vec3, UIOpacity, Color } from 'cc';
 
 const { ccclass, property } = _decorator;
 
 /**
- * UIManager Component
- * UI 管理器 - 按 Cocos 引擎设计
- * 职责：所有 UI 面板的显示/隐藏/更新
+ * UIManager
+ * 测试场景 UI 管理器
+ * 
+ * 职责：
+ * 1. 显示分数、剩余炸弹数
+ * 2. 显示关卡信息
+ * 3. 显示胜利/失败面板
+ * 4. 处理按钮点击
  */
 @ccclass('UIManager')
 export class UIManager extends Component {
     
-    // ========== 主面板引用 ==========
-    
-    @property(Node)
-    mainMenuPanel: Node | null = null;      // 主菜单
-    
-    @property(Node)
-    gamePanel: Node | null = null;          // 游戏主界面
-    
-    @property(Node)
-    pausePanel: Node | null = null;         // 暂停面板
-    
-    @property(Node)
-    resultPanel: Node | null = null;        // 结算面板
-    
-    @property(Node)
-    settingsPanel: Node | null = null;      // 设置面板
-    
-    // ========== 游戏内 HUD ==========
+    // UI 节点引用
+    @property(Label)
+    scoreLabel: Label | null = null;
     
     @property(Label)
-    scoreLabel: Label | null = null;        // 分数显示
+    bombsLeftLabel: Label | null = null;
     
     @property(Label)
-    levelLabel: Label | null = null;        // 关卡显示
-    
-    @property(Label)
-    bombsLeftLabel: Label | null = null;     // 剩余炸弹
-    
-    @property(ProgressBar)
-    progressBar: ProgressBar | null = null;  // 进度条
-    
-    @property(Label)
-    comboLabel: Label | null = null;        // 连击显示
-    
-    // ========== 浮动文字容器 ==========
+    levelInfoLabel: Label | null = null;
     
     @property(Node)
-    floatTextContainer: Node | null = null;   // 浮动文字父节点
+    victoryPanel: Node | null = null;
     
-    // ========== 按钮引用 ==========
-    
-    @property(Button)
-    btnPause: Button | null = null;
+    @property(Node)
+    gameOverPanel: Node | null = null;
     
     @property(Button)
-    btnResume: Button | null = null;
+    resetButton: Button | null = null;
     
     @property(Button)
-    btnRestart: Button | null = null;
-    
-    @property(Button)
-    btnBackMenu: Button | null = null;
-    
-    // 当前显示的面板
-    private currentPanel: Node | null = null;
+    nextLevelButton: Button | null = null;
     
     onLoad() {
-        this.hideAllPanels();
-        this.setupButtonListeners();
+        console.log('[UIManager] Loading...');
+        
+        // 查找或创建 UI 节点
+        this.findOrCreateUIElements();
     }
     
-    /**
-     * 设置按钮监听
-     */
-    setupButtonListeners() {
-        if (this.btnPause) {
-            this.btnPause.node.on('click', this.onPauseClick, this);
+    start() {
+        // 绑定按钮事件
+        if (this.resetButton) {
+            this.resetButton.node.on(Button.EventType.CLICK, this.onResetClick, this);
         }
-        if (this.btnResume) {
-            this.btnResume.node.on('click', this.onResumeClick, this);
-        }
-        if (this.btnRestart) {
-            this.btnRestart.node.on('click', this.onRestartClick, this);
-        }
-        if (this.btnBackMenu) {
-            this.btnBackMenu.node.on('click', this.onBackMenuClick, this);
+        
+        if (this.nextLevelButton) {
+            this.nextLevelButton.node.on(Button.EventType.CLICK, this.onNextLevelClick, this);
         }
     }
     
-    // ========== 面板切换 ==========
-    
     /**
-     * 显示主菜单
+     * 查找或创建 UI 元素
      */
-    showMainMenu() {
-        this.switchPanel(this.mainMenuPanel);
+    private findOrCreateUIElements() {
+        // 查找现有节点
+        this.scoreLabel = this.findLabel('ScoreLabel');
+        this.bombsLeftLabel = this.findLabel('BombsLeftLabel');
+        this.levelInfoLabel = this.findLabel('LevelInfoLabel');
+        
+        // 如果没有找到，创建默认 UI
+        if (!this.scoreLabel) {
+            this.createDefaultUI();
+        }
     }
     
     /**
-     * 显示游戏界面
+     * 查找 Label 节点
      */
-    showGame() {
-        this.switchPanel(this.gamePanel);
-        this.showHUD(true);
+    private findLabel(name: string): Label | null {
+        const node = this.node.getChildByName(name);
+        if (node) {
+            return node.getComponent(Label);
+        }
+        return null;
     }
     
     /**
-     * 显示暂停面板
+     * 创建默认 UI
      */
-    showPause() {
-        if (this.pausePanel) {
-            this.pausePanel.active = true;
+    private createDefaultUI() {
+        console.log('[UIManager] Creating default UI...');
+        
+        // 创建分数标签
+        const scoreNode = new Node('ScoreLabel');
+        this.node.addChild(scoreNode);
+        this.scoreLabel = scoreNode.addComponent(Label);
+        this.scoreLabel.string = 'Score: 0';
+        this.scoreLabel.fontSize = 24;
+        this.scoreLabel.color = Color.WHITE;
+        scoreNode.setPosition(0, 250);
+        
+        // 创建剩余炸弹标签
+        const bombsNode = new Node('BombsLeftLabel');
+        this.node.addChild(bombsNode);
+        this.bombsLeftLabel = bombsNode.addComponent(Label);
+        this.bombsLeftLabel.string = 'Bombs: 3';
+        this.bombsLeftLabel.fontSize = 20;
+        this.bombsLeftLabel.color = Color.YELLOW;
+        bombsNode.setPosition(0, 220);
+        
+        // 创建关卡信息标签
+        const levelNode = new Node('LevelInfoLabel');
+        this.node.addChild(levelNode);
+        this.levelInfoLabel = levelNode.addComponent(Label);
+        this.levelInfoLabel.string = 'Test Level - Walls: 5';
+        this.levelInfoLabel.fontSize = 18;
+        this.levelInfoLabel.color = Color.CYAN;
+        levelNode.setPosition(0, 200);
+    }
+    
+    /**
+     * 更新分数显示
+     */
+    updateScore(score: number) {
+        if (this.scoreLabel) {
+            this.scoreLabel.string = `Score: ${score}`;
+        }
+    }
+    
+    /**
+     * 更新剩余炸弹数
+     */
+    updateBombsLeft(bombsLeft: number) {
+        if (this.bombsLeftLabel) {
+            this.bombsLeftLabel.string = `Bombs: ${bombsLeft}`;
+        }
+    }
+    
+    /**
+     * 更新关卡信息
+     */
+    updateLevelInfo(level: number, wallCount: number) {
+        if (this.levelInfoLabel) {
+            this.levelInfoLabel.string = `Level ${level} - Walls: ${wallCount}`;
+        }
+    }
+    
+    /**
+     * 显示胜利面板
+     */
+    showVictoryPanel(score: number, stars: number) {
+        console.log('[UIManager] Victory! Score:', score, 'Stars:', stars);
+        
+        // 创建胜利面板
+        if (!this.victoryPanel) {
+            this.createVictoryPanel();
+        }
+        
+        if (this.victoryPanel) {
+            this.victoryPanel.active = true;
             
-            // 淡入动画
-            const opacity = this.pausePanel.getComponent(UIOpacity) || this.pausePanel.addComponent(UIOpacity);
-            opacity.opacity = 0;
+            // 更新分数显示
+            const scoreLabel = this.victoryPanel.getChildByName('VictoryScore')?.getComponent(Label);
+            if (scoreLabel) {
+                scoreLabel.string = `Score: ${score}`;
+            }
             
-            // TODO: 使用 tween 动画
-            // tween(opacity).to(0.3, { opacity: 255 }).start();
+            // 更新星级显示
+            const starsLabel = this.victoryPanel.getChildByName('StarsLabel')?.getComponent(Label);
+            if (starsLabel) {
+                starsLabel.string = '★'.repeat(stars);
+            }
         }
     }
     
     /**
-     * 隐藏暂停面板
+     * 创建胜利面板
      */
-    hidePause() {
-        if (this.pausePanel) {
-            this.pausePanel.active = false;
-        }
-    }
-    
-    /**
-     * 显示结算面板
-     */
-    showResult(isWin: boolean, score: number, stars: number = 0) {
-        this.switchPanel(this.resultPanel);
+    private createVictoryPanel() {
+        const panel = new Node('VictoryPanel');
+        this.node.addChild(panel);
         
-        // 更新结果信息
-        const titleLabel = this.resultPanel?.getChildByName('Title')?.getComponent(Label);
-        if (titleLabel) {
-            titleLabel.string = isWin ? '胜利!' : '失败!';
-        }
+        // 背景
+        const bg = new Node('Background');
+        panel.addChild(bg);
+        const bgSprite = bg.addComponent(Sprite);
+        // TODO: 设置背景颜色或图片
         
-        const scoreLabel = this.resultPanel?.getChildByName('Score')?.getComponent(Label);
-        if (scoreLabel) {
-            scoreLabel.string = `得分: ${score}`;
-        }
-    }
-    
-    /**
-     * 切换面板
-     */
-    private switchPanel(targetPanel: Node | null) {
-        if (!targetPanel) return;
+        // 标题
+        const titleNode = new Node('Title');
+        panel.addChild(titleNode);
+        const titleLabel = titleNode.addComponent(Label);
+        titleLabel.string = 'Victory!';
+        titleLabel.fontSize = 48;
+        titleLabel.color = Color.YELLOW;
+        titleNode.setPosition(0, 100);
         
-        // 隐藏当前面板
-        if (this.currentPanel && this.currentPanel !== targetPanel) {
-            this.currentPanel.active = false;
-        }
+        // 分数
+        const scoreNode = new Node('VictoryScore');
+        panel.addChild(scoreNode);
+        const scoreLabel = scoreNode.addComponent(Label);
+        scoreLabel.string = 'Score: 0';
+        scoreLabel.fontSize = 32;
+        scoreLabel.color = Color.WHITE;
+        scoreNode.setPosition(0, 50);
         
-        // 显示目标面板
-        targetPanel.active = true;
-        this.currentPanel = targetPanel;
+        // 星级
+        const starsNode = new Node('StarsLabel');
+        panel.addChild(starsNode);
+        const starsLabel = starsNode.addComponent(Label);
+        starsLabel.string = '★★★';
+        starsLabel.fontSize = 40;
+        starsLabel.color = Color.YELLOW;
+        starsNode.setPosition(0, 0);
+        
+        // 下一关按钮
+        const nextBtnNode = new Node('NextLevelButton');
+        panel.addChild(nextBtnNode);
+        const nextBtn = nextBtnNode.addComponent(Button);
+        const nextBtnLabel = nextBtnNode.addComponent(Label);
+        nextBtnLabel.string = 'Next Level';
+        nextBtnLabel.fontSize = 24;
+        nextBtnNode.setPosition(0, -80);
+        
+        // 重置按钮
+        const resetBtnNode = new Node('ResetButton');
+        panel.addChild(resetBtnNode);
+        const resetBtn = resetBtnNode.addComponent(Button);
+        const resetBtnLabel = resetBtnNode.addComponent(Label);
+        resetBtnLabel.string = 'Retry';
+        resetBtnLabel.fontSize = 24;
+        resetBtnNode.setPosition(0, -130);
+        
+        panel.active = false;
+        this.victoryPanel = panel;
+        
+        // 绑定按钮事件
+        nextBtnNode.on(Button.EventType.CLICK, this.onNextLevelClick, this);
+        resetBtnNode.on(Button.EventType.CLICK, this.onResetClick, this);
     }
     
     /**
      * 隐藏所有面板
      */
     hideAllPanels() {
-        [this.mainMenuPanel, this.gamePanel, this.pausePanel, 
-         this.resultPanel, this.settingsPanel].forEach(panel => {
-            if (panel) panel.active = false;
-        });
-    }
-    
-    // ========== HUD 更新 ==========
-    
-    /**
-     * 显示/隐藏 HUD
-     */
-    showHUD(show: boolean) {
-        // HUD 元素都在 gamePanel 下
-        if (this.gamePanel) {
-            const hud = this.gamePanel.getChildByName('HUD');
-            if (hud) hud.active = show;
+        if (this.victoryPanel) {
+            this.victoryPanel.active = false;
+        }
+        if (this.gameOverPanel) {
+            this.gameOverPanel.active = false;
         }
     }
     
     /**
-     * 更新分数
+     * 重置按钮点击
      */
-    updateScore(score: number) {
-        if (this.scoreLabel) {
-            this.scoreLabel.string = score.toString();
-        }
-    }
-    
-    /**
-     * 更新关卡
-     */
-    updateLevel(level: number) {
-        if (this.levelLabel) {
-            this.levelLabel.string = `关卡 ${level}`;
-        }
-    }
-    
-    /**
-     * 更新剩余炸弹
-     */
-    updateBombsLeft(count: number) {
-        if (this.bombsLeftLabel) {
-            this.bombsLeftLabel.string = `炸弹: ${count}`;
-        }
-    }
-    
-    /**
-     * 更新进度
-     */
-    updateProgress(progress: number) {
-        if (this.progressBar) {
-            this.progressBar.progress = progress;
-        }
-    }
-    
-    /**
-     * 显示连击
-     */
-    showCombo(count: number) {
-        if (this.comboLabel) {
-            this.comboLabel.string = `${count} 连击!`;
-            this.comboLabel.node.active = true;
-            
-            // 2秒后隐藏
-            // TODO: 使用 scheduleOnce
-            // this.scheduleOnce(() => {
-            //     this.comboLabel.node.active = false;
-            // }, 2);
-        }
-    }
-    
-    // ========== 浮动文字 ==========
-    
-    /**
-     * 创建浮动文字
-     */
-    createFloatText(text: string, worldPos: Vec3, color: Color = Color.YELLOW) {
-        if (!this.floatTextContainer) return;
+    private onResetClick() {
+        console.log('[UIManager] Reset clicked');
         
-        // TODO: 从对象池获取或创建
-        const floatNode = new Node('FloatText');
-        const label = floatNode.addComponent(Label);
-        label.string = text;
-        label.color = color;
-        label.fontSize = 24;
+        // 隐藏面板
+        this.hideAllPanels();
         
-        // 转换世界坐标到本地坐标
-        const localPos = this.floatTextContainer.uiTransform?.convertToNodeSpaceAR(worldPos) || new Vec3();
-        floatNode.setPosition(localPos);
+        // 通知重置
+        this.node.emit('ui_reset_level');
+    }
+    
+    /**
+     * 下一关按钮点击
+     */
+    private onNextLevelClick() {
+        console.log('[UIManager] Next level clicked');
         
-        this.floatTextContainer.addChild(floatNode);
+        // 隐藏面板
+        this.hideAllPanels();
         
-        // 向上浮动动画
-        // TODO: 使用 tween
-        // tween(floatNode)
-        //     .by(1.5, { position: new Vec3(0, 50, 0) })
-        //     .to(0.5, { opacity: 0 })
-        //     .call(() => floatNode.destroy())
-        //     .start();
-    }
-    
-    // ========== 按钮回调 ==========
-    
-    onPauseClick() {
-        console.log('[UIManager] Pause clicked');
-        this.showPause();
-        // TODO: 通知 GameManager 暂停游戏
-    }
-    
-    onResumeClick() {
-        console.log('[UIManager] Resume clicked');
-        this.hidePause();
-        // TODO: 通知 GameManager 恢复游戏
-    }
-    
-    onRestartClick() {
-        console.log('[UIManager] Restart clicked');
-        // TODO: 通知 GameManager 重新开始
-    }
-    
-    onBackMenuClick() {
-        console.log('[UIManager] Back to menu clicked');
-        this.showMainMenu();
-        // TODO: 通知 GameManager 返回菜单
+        // 通知下一关
+        this.node.emit('ui_next_level');
     }
 }
+
+// 需要导入 Sprite
+import { Sprite } from 'cc';
