@@ -1,19 +1,18 @@
-import { _decorator, Component, Node, Prefab, instantiate, Vec3, UITransform, Size, Canvas, director, EventTarget } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, Vec3, UITransform, Size, Canvas, director, EventTarget, Vec2 } from 'cc';
 import { GameLogic } from '../core/GameLogic';
+import { GridManager } from '../core/GridManager';
 import { AnimationManager } from '../managers/AnimationManager';
 import { UIManager } from '../managers/UIManager';
+import { AudioManager } from '../managers/AudioManager';
+import { ParticleManager } from '../managers/ParticleManager';
 
 const { ccclass, property } = _decorator;
 
 /**
  * TestSceneManager
- * 测试场景管理器 - 串联所有功能进行测试
+ * 测试场景管理器 - 确保测试关卡能运行
  * 
- * 职责：
- * 1. 创建测试关卡（简化版）
- * 2. 初始化所有管理器
- * 3. 绑定 UI 事件
- * 4. 处理用户输入
+ * 目标：保证测试关卡能运行！
  */
 @ccclass('TestSceneManager')
 export class TestSceneManager extends Component {
@@ -24,6 +23,9 @@ export class TestSceneManager extends Component {
     
     @property(Prefab)
     wallPrefab: Prefab | null = null;
+    
+    @property(Prefab)
+    staticBombPrefab: Prefab | null = null;
     
     // 节点引用
     @property(Node)
@@ -37,10 +39,13 @@ export class TestSceneManager extends Component {
     
     // 管理器
     private gameLogic: GameLogic | null = null;
+    private gridManager: GridManager | null = null;
     private animManager: AnimationManager | null = null;
     private uiManager: UIManager | null = null;
+    private audioManager: AudioManager | null = null;
+    private particleManager: ParticleManager | null = null;
     
-    // 测试关卡配置
+    // 测试关卡配置 - 基于原项目设计
     private testLevelConfig = {
         gridSize: 5,
         bombs: 3,
@@ -52,14 +57,14 @@ export class TestSceneManager extends Component {
             { x: 3, y: 3, type: 'normal' }
         ],
         staticBombs: [
-            { x: 0, y: 2, level: 1 }
+            { x: 0, y: 2, evolution: 1 }
         ]
     };
     
     onLoad() {
         console.log('[TestSceneManager] Loading...');
         
-        // 获取或创建管理器
+        // 初始化所有管理器
         this.initManagers();
         
         // 初始化测试关卡
@@ -74,10 +79,13 @@ export class TestSceneManager extends Component {
         
         // 显示测试信息
         this.showTestInfo();
+        
+        // 更新UI
+        this.updateUI();
     }
     
     /**
-     * 初始化管理器
+     * 初始化所有管理器
      */
     private initManagers() {
         // GameLogic
@@ -93,6 +101,12 @@ export class TestSceneManager extends Component {
             this.gameLogic.gameLayer = this.gameLayer;
         }
         
+        // GridManager
+        this.gridManager = this.getComponent(GridManager);
+        if (!this.gridManager) {
+            this.gridManager = this.addComponent(GridManager);
+        }
+        
         // AnimationManager
         this.animManager = this.getComponent(AnimationManager);
         if (!this.animManager) {
@@ -103,6 +117,18 @@ export class TestSceneManager extends Component {
         this.uiManager = this.getComponent(UIManager);
         if (!this.uiManager) {
             this.uiManager = this.addComponent(UIManager);
+        }
+        
+        // AudioManager
+        this.audioManager = this.getComponent(AudioManager);
+        if (!this.audioManager) {
+            this.audioManager = this.addComponent(AudioManager);
+        }
+        
+        // ParticleManager
+        this.particleManager = this.getComponent(ParticleManager);
+        if (!this.particleManager) {
+            this.particleManager = this.addComponent(ParticleManager);
         }
     }
     
@@ -117,6 +143,12 @@ export class TestSceneManager extends Component {
         // 初始化关卡
         this.gameLogic.initLevel(this.testLevelConfig);
         
+        // 设置网格管理器
+        if (this.gridManager) {
+            this.gridManager.gridSize = this.testLevelConfig.gridSize;
+            this.gridManager.calculateLayout();
+        }
+        
         // 设置游戏层尺寸
         if (this.gameLayer) {
             const uiTransform = this.gameLayer.getComponent(UITransform);
@@ -124,6 +156,8 @@ export class TestSceneManager extends Component {
                 uiTransform.setContentSize(375, 600);
             }
         }
+        
+        console.log('[TestSceneManager] Test level initialized');
     }
     
     /**
@@ -133,6 +167,10 @@ export class TestSceneManager extends Component {
         if (!this.gameLogic) return;
         
         // 监听游戏事件
+        this.gameLogic.onEvent('level_started', (data: any) => {
+            console.log('[TestScene] Level started:', data);
+        });
+        
         this.gameLogic.onEvent('bomb_placed', (data: any) => {
             console.log('[TestScene] Bomb placed:', data);
             this.updateUI();
@@ -143,47 +181,54 @@ export class TestSceneManager extends Component {
             this.updateUI();
         });
         
+        this.gameLogic.onEvent('wall_destroyed', (data: any) => {
+            console.log('[TestScene] Wall destroyed:', data);
+            this.updateUI();
+        });
+        
         this.gameLogic.onEvent('level_complete', (data: any) => {
             console.log('[TestScene] Level complete:', data);
             this.showVictory(data);
+        });
+        
+        this.gameLogic.onEvent('game_over', (data: any) => {
+            console.log('[TestScene] Game over:', data);
         });
         
         // 触摸事件
         if (this.gameLayer) {
             this.gameLayer.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         }
+        
+        // UI 事件
+        this.uiManager?.node.on('ui_reset_level', this.resetTestLevel, this);
+        this.uiManager?.node.on('ui_next_level', this.resetTestLevel, this);
     }
     
     /**
      * 触摸结束事件
      */
     private onTouchEnd(event: any) {
-        if (!this.gameLogic || !this.gameLayer) return;
+        if (!this.gameLogic || !this.gameLayer || !this.gridManager) return;
         
         // 获取触摸位置
         const touch = event.touch;
         const pos = touch.getLocation();
         
         // 转换为本地坐标
-        const localPos = this.gameLayer.uiTransform?.convertToNodeSpaceAR(new Vec3(pos.x, pos.y, 0));
+        const localPos = this.gameLayer.getComponent(UITransform)?.convertToNodeSpaceAR(new Vec3(pos.x, pos.y, 0));
         if (!localPos) return;
         
-        // 计算网格坐标
-        const gridSize = 5;
-        const cellSize = 70;
-        const startX = -gridSize * cellSize / 2;
-        const startY = -gridSize * cellSize / 2;
+        // 使用 GridManager 计算网格坐标
+        const gridPos = this.gridManager.worldToGrid(localPos.x, localPos.y);
         
-        const gx = Math.floor((localPos.x - startX) / cellSize);
-        const gy = Math.floor((localPos.y - startY) / cellSize);
+        // 检查是否在网格内
+        if (!this.gridManager.isInGrid(gridPos.x, gridPos.y)) return;
         
-        // 检查是否在网格范围内
-        if (gx < 0 || gx >= gridSize || gy < 0 || gy >= gridSize) return;
-        
-        console.log('[TestScene] Touch at grid:', gx, gy);
+        console.log('[TestScene] Touch at grid:', gridPos.x, gridPos.y);
         
         // 放置炸弹
-        const success = this.gameLogic.placeBomb(gx, gy);
+        const success = this.gameLogic.placeBomb(gridPos.x, gridPos.y);
         if (success) {
             console.log('[TestScene] Bomb placed successfully');
         } else {
@@ -206,7 +251,7 @@ export class TestSceneManager extends Component {
         this.uiManager?.updateBombsLeft(state.bombsLeft);
         
         // 更新关卡信息
-        this.uiManager?.updateLevelInfo(state.level, state.wallCount);
+        this.uiManager?.updateLevelInfo(1, state.wallCount);
     }
     
     /**
@@ -236,6 +281,8 @@ export class TestSceneManager extends Component {
      * 重置测试关卡
      */
     resetTestLevel() {
+        console.log('[TestScene] Resetting test level...');
+        
         // 清除现有节点
         if (this.gameLayer) {
             this.gameLayer.removeAllChildren();
@@ -244,5 +291,8 @@ export class TestSceneManager extends Component {
         // 重新初始化
         this.initTestLevel();
         this.updateUI();
+        
+        // 隐藏胜利面板
+        this.uiManager?.hideAllPanels();
     }
 }
