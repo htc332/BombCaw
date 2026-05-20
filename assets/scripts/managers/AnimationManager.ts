@@ -1,6 +1,6 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame, Texture2D, assetManager, Size, Rect, Vec3 } from 'cc';
 import { SpriteAnimationHelper } from '../components/SpriteAnimationHelper';
-import { SpriteSheetLoader } from './SpriteSheetLoader';
+import { SpriteSheetLoader } from '../components/SpriteSheetLoader';
 
 const { ccclass, property } = _decorator;
 
