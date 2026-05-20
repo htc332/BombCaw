@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate, Vec3, UITransform, Size, Canvas, director, EventTarget, JsonAsset, resources } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, Vec3, UITransform, Size, Canvas, director, EventTarget, JsonAsset, resources, Vec2 } from 'cc';
 import { GameLogic } from '../core/GameLogic';
 import { GridManager } from '../core/GridManager';
 import { AnimationManager } from '../managers/AnimationManager';
@@ -369,6 +369,3 @@ export class GameScene extends Component {
         this.audioManager?.resumeBgm();
     }
 }
-
-// 需要导入 UITransform
-import { UITransform } from 'cc';
