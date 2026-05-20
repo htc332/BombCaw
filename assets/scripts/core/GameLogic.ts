@@ -52,6 +52,20 @@ export class GameLogic extends Component {
     }
     
     /**
+     * 注册事件监听
+     */
+    onEvent(eventName: string, callback: Function, target?: any) {
+        this.eventTarget.on(eventName, callback, target);
+    }
+    
+    /**
+     * 触发事件
+     */
+    emitEvent(eventName: string, data?: any) {
+        this.eventTarget.emit(eventName, data);
+    }
+    
+    /**
      * 初始化关卡
      */
     initLevel(levelConfig: any) {
@@ -384,6 +398,24 @@ export class GameLogic extends Component {
             }, 2); // 等待2秒，让死亡动画播放
             
             return true;
+        }
+        
+        // 检查失败条件：炸弹用完且没有待爆炸弹
+        if (this.bombsLeft <= 0 && this.bombs.size === 0) {
+            // 检查是否还有未激活的静态炸弹
+            let hasInactiveStaticBombs = false;
+            this.staticBombs.forEach((bomb) => {
+                if (!bomb.isActive) hasInactiveStaticBombs = true;
+            });
+            
+            if (!hasInactiveStaticBombs) {
+                this.gameActive = false;
+                this.emitEvent('game_over', {
+                    level: this.level,
+                    score: this.score
+                });
+                return false;
+            }
         }
         
         return false;
