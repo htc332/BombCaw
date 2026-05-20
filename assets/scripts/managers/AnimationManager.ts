@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame, Texture2D, assetManager, Size, Rect, Vec3 } from 'cc';
-import { SpriteAnimationHelper } from './SpriteAnimationHelper';
+import { SpriteAnimationHelper } from '../components/SpriteAnimationHelper';
+import { SpriteSheetLoader } from './SpriteSheetLoader';
 
 const { ccclass, property } = _decorator;
 
@@ -243,6 +244,3 @@ export class AnimationManager extends Component {
         return this.loadedCount >= this.totalCount;
     }
 }
-
-// 需要导入 SpriteSheetLoader
-import { SpriteSheetLoader } from './SpriteSheetLoader';
