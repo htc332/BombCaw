@@ -324,6 +324,3 @@ export class SpriteAnimationHelper extends Component {
         return Array.from(this.spriteFrames.keys());
     }
 }
-
-// 验证类注册
-console.log('[SpriteAnimationHelper] Module loaded, class registered:', !!SpriteAnimationHelper);
