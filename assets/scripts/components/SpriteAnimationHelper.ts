@@ -1,3 +1,4 @@
+
 import { _decorator, Component, Node, Sprite, SpriteFrame, Animation, AnimationClip, math, Vec3 } from 'cc';
 
 const { ccclass, property } = _decorator;
