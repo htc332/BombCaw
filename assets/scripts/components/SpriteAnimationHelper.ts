@@ -14,7 +14,7 @@ const { ccclass, property } = _decorator;
  * 不修改原有资源规格，运行时动态控制帧切换
  */
 @ccclass('SpriteAnimationHelper')
-export class SpriteAnimationHelper extends Component {
+export default class SpriteAnimationHelper extends Component {
     
     @property(Sprite)
     sprite: Sprite | null = null;
