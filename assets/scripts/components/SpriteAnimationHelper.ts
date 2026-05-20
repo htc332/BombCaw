@@ -1,18 +1,5 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame, Animation, AnimationClip, math, Vec3 } from 'cc';
 
-const { ccclass, property } = _decorator;
-
-/**
- * SpriteAnimationHelper
- * Cocos 精灵图动画辅助工具 - 兼容现有 index.json 格式
- * 
- * 支持三种播放模式：
- * 1. 循环播放 - 待机动画 (enemy_n, enemy_elite)
- * 2. 倒计时驱动 - 炸弹动画 (lv1-lv4，与游戏逻辑同步)
- * 3. 一次播放 - 死亡动画 (enemy_n_death, enemy_elite_death)
- * 
- * 不修改原有资源规格，运行时动态控制帧切换
- */
 @ccclass('SpriteAnimationHelper')
 export class SpriteAnimationHelper extends Component {
     
