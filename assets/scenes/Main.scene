@@ -15,7 +15,11 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": null,
-    "_children": [],
+    "_children": [
+      {
+        "__id__": 2
+      }
+    ],
     "_active": true,
     "_components": [],
     "_prefab": null,
@@ -48,24 +52,101 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 2
+      "__id__": 4
     },
     "_id": "1b7f940f-0554-4780-9926-20aba995ad92"
   },
   {
+    "__type__": "cc.Node",
+    "_name": "GameRoot",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "_parent": {
+      "__id__": 1
+    },
+    "_children": [],
+    "_active": true,
+    "_components": [
+      {
+        "__id__": 3
+      }
+    ],
+    "_prefab": null,
+    "_lpos": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_lrot": {
+      "__type__": "cc.Quat",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "w": 1
+    },
+    "_lscale": {
+      "__type__": "cc.Vec3",
+      "x": 1,
+      "y": 1,
+      "z": 1
+    },
+    "_mobility": 0,
+    "_layer": 1073741824,
+    "_euler": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_id": "fb2gpuEolC6qdV8hA2Awio"
+  },
+  {
+    "__type__": "7d0b81WAKxOopWYPElSzFiX",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 2
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "bombPrefab": null,
+    "wallPrefab": null,
+    "staticBombPrefab": null,
+    "gameLayer": null,
+    "uiLayer": null,
+    "canvas": null,
+    "_id": "04lWBzISZCorSfPdKMgpoJ"
+  },
+  {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 3
-    },
-    "skybox": {
-      "__id__": 4
-    },
-    "fog": {
       "__id__": 5
     },
-    "octree": {
+    "shadows": {
       "__id__": 6
-    }
+    },
+    "_skybox": {
+      "__id__": 7
+    },
+    "fog": {
+      "__id__": 8
+    },
+    "octree": {
+      "__id__": 9
+    },
+    "skin": {
+      "__id__": 10
+    },
+    "lightProbeInfo": {
+      "__id__": 11
+    },
+    "postSettings": {
+      "__id__": 12
+    },
+    "bakedWithStationaryMainLight": false,
+    "bakedWithHighpLightmap": false
   },
   {
     "__type__": "cc.AmbientInfo",
@@ -74,14 +155,14 @@
       "x": 0.2,
       "y": 0.5,
       "z": 0.8,
-      "w": 0.520833
+      "w": 0.520833125
     },
     "_skyColor": {
       "__type__": "cc.Vec4",
       "x": 0.2,
       "y": 0.5,
       "z": 0.8,
-      "w": 0.520833
+      "w": 0.520833125
     },
     "_skyIllumHDR": 20000,
     "_skyIllum": 20000,
@@ -98,6 +179,47 @@
       "y": 0.2,
       "z": 0.2,
       "w": 1
+    },
+    "_skyColorLDR": {
+      "__type__": "cc.Vec4",
+      "x": 0.2,
+      "y": 0.5,
+      "z": 0.8,
+      "w": 1
+    },
+    "_skyIllumLDR": 20000,
+    "_groundAlbedoLDR": {
+      "__type__": "cc.Vec4",
+      "x": 0.2,
+      "y": 0.2,
+      "z": 0.2,
+      "w": 1
+    }
+  },
+  {
+    "__type__": "cc.ShadowsInfo",
+    "_enabled": false,
+    "_type": 0,
+    "_normal": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 1,
+      "z": 0
+    },
+    "_distance": 0,
+    "_planeBias": 1,
+    "_shadowColor": {
+      "__type__": "cc.Color",
+      "r": 0,
+      "g": 0,
+      "b": 0,
+      "a": 76
+    },
+    "_maxReceived": 4,
+    "_size": {
+      "__type__": "cc.Vec2",
+      "x": 1024,
+      "y": 1024
     }
   },
   {
@@ -105,14 +227,14 @@
     "_envLightingType": 0,
     "_envmapHDR": null,
     "_envmap": null,
-    "_envmapLodCount": 0,
+    "_envmapLDR": null,
     "_diffuseMapHDR": null,
-    "_diffuseMap": null,
+    "_diffuseMapLDR": null,
     "_enabled": false,
     "_useHDR": true,
     "_editableMaterial": null,
     "_reflectionHDR": null,
-    "_reflectionMap": null,
+    "_reflectionLDR": null,
     "_rotationAngle": 0
   },
   {
@@ -150,5 +272,27 @@
       "z": 1024
     },
     "_depth": 8
+  },
+  {
+    "__type__": "cc.SkinInfo",
+    "_enabled": true,
+    "_blurRadius": 0.01,
+    "_sssIntensity": 3
+  },
+  {
+    "__type__": "cc.LightProbeInfo",
+    "_giScale": 1,
+    "_giSamples": 1024,
+    "_bounces": 2,
+    "_reduceRinging": 0,
+    "_showProbe": true,
+    "_showWireframe": true,
+    "_showConvex": false,
+    "_data": null,
+    "_lightProbeSphereVolume": 1
+  },
+  {
+    "__type__": "cc.PostSettingsInfo",
+    "_toneMappingType": 0
   }
 ]
