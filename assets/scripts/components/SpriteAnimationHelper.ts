@@ -1,4 +1,3 @@
-
 import { _decorator, Component, Node, Sprite, SpriteFrame, Animation, AnimationClip, math, Vec3 } from 'cc';
 
 const { ccclass, property } = _decorator;
@@ -14,6 +13,7 @@ const { ccclass, property } = _decorator;
  * 
  * 不修改原有资源规格，运行时动态控制帧切换
  */
+// UNIQUE_MARKER_1779246473821
 @ccclass('SpriteAnimationHelper')
 export class SpriteAnimationHelper extends Component {
     
