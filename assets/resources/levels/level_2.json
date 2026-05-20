@@ -1,0 +1,15 @@
+{
+  "id": 2,
+  "name": "Double Trouble",
+  "gridSize": 5,
+  "bombs": 4,
+  "walls": [
+    {"x": 1, "y": 1, "type": "normal"},
+    {"x": 3, "y": 1, "type": "normal"},
+    {"x": 2, "y": 3, "type": "elite", "hp": 2}
+  ],
+  "staticBombs": [
+    {"x": 0, "y": 2, "evolution": 1}
+  ],
+  "starThresholds": [150, 300, 450]
+}

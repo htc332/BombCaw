@@ -1,0 +1,13 @@
+{
+  "id": 1,
+  "name": "First Steps",
+  "gridSize": 5,
+  "bombs": 3,
+  "walls": [
+    {"x": 1, "y": 1, "type": "normal"},
+    {"x": 3, "y": 2, "type": "normal"},
+    {"x": 1, "y": 3, "type": "normal"}
+  ],
+  "staticBombs": [],
+  "starThresholds": [100, 200, 300]
+}
