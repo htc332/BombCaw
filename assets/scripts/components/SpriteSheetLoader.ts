@@ -1,5 +1,4 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame, Texture2D, assetManager, Size, Rect, Vec3 } from 'cc';
-import { SpriteAnimationHelper } from './SpriteAnimationHelper';
 
 const { ccclass, property } = _decorator;
 
