@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Vec2, Vec3, EventTarget, Sprite, instantiate, Prefab } from 'cc';
 import { AnimationManager } from '../managers/AnimationManager';
+import { ScoreManager } from '../managers/ScoreManager';
 
 const { ccclass, property } = _decorator;
 
@@ -36,6 +37,9 @@ export class GameLogic extends Component {
     // 动画管理器
     private animManager: AnimationManager | null = null;
     
+    // 得分管理器
+    private scoreManager: ScoreManager | null = null;
+    
     // 节点预制体
     @property(Prefab)
     bombPrefab: Prefab | null = null;
@@ -49,6 +53,10 @@ export class GameLogic extends Component {
     onLoad() {
         console.log('[GameLogic] Component loaded');
         this.animManager = this.node.getComponent(AnimationManager);
+        this.scoreManager = this.node.getComponent(ScoreManager);
+        if (!this.scoreManager) {
+            this.scoreManager = this.node.addComponent(ScoreManager);
+        }
     }
     
     /**
@@ -78,6 +86,11 @@ export class GameLogic extends Component {
         this.walls.clear();
         this.bombs.clear();
         this.staticBombs.clear();
+        
+        // 初始化得分系统
+        if (this.scoreManager) {
+            this.scoreManager.initLevel();
+        }
         
         // 初始化墙壁
         if (levelConfig.walls) {
@@ -324,7 +337,11 @@ export class GameLogic extends Component {
                 this.walls.delete(key);
                 
                 // 添加分数
-                this.addScore(wall.type === 'elite' ? 10 : 5, `${wall.type}_destroyed`);
+                const scoreType = wall.type === 'elite' ? 'elite' : 'wall';
+                const worldPos = this.gridToWorld(x, y);
+                this.scoreManager?.addScore(scoreType, { 
+                    position: worldPos 
+                });
             });
         } else {
             // 精英鼠破损过渡
@@ -389,10 +406,15 @@ export class GameLogic extends Component {
             this.scheduleOnce(() => {
                 if (this.pendingVictory) {
                     this.gameActive = false;
+                    
+                    // 结算分数
+                    const result = this.scoreManager?.levelComplete(this.bombsLeft);
+                    
                     this.emitEvent('level_complete', {
                         level: this.level,
-                        score: this.score,
-                        stars: this.calculateStars()
+                        score: this.scoreManager?.getScore() || 0,
+                        stars: result?.stars || 1,
+                        isNewRecord: result?.isNewRecord || false
                     });
                 }
             }, 2); // 等待2秒，让死亡动画播放
@@ -412,7 +434,7 @@ export class GameLogic extends Component {
                 this.gameActive = false;
                 this.emitEvent('game_over', {
                     level: this.level,
-                    score: this.score
+                    score: this.scoreManager?.getScore() || 0
                 });
                 return false;
             }
@@ -431,11 +453,10 @@ export class GameLogic extends Component {
     }
     
     /**
-     * 添加分数
+     * 添加分数（已废弃，使用 ScoreManager）
      */
     addScore(basePoints: number, reason: string) {
-        this.score += basePoints;
-        console.log('[Score]', reason, '+', basePoints, '=', this.score);
+        console.log('[ScoreManager] Use ScoreManager.addScore() instead');
     }
     
     /**
@@ -444,7 +465,7 @@ export class GameLogic extends Component {
     getState() {
         return {
             level: this.level,
-            score: this.score,
+            score: this.scoreManager?.getScore() || 0,
             bombsLeft: this.bombsLeft,
             gameActive: this.gameActive,
             gridSize: this.gridSize,
