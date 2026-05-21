@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, ProgressBar, Button, Vec3, UIOpacity, Color } from 'cc';
+import { _decorator, Component, Node, Label, ProgressBar, Button, Vec3, UIOpacity, Color, Sprite } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -275,5 +275,3 @@ export class UIManager extends Component {
     }
 }
 
-// 需要导入 Sprite
-import { Sprite } from 'cc';

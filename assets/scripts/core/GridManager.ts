@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, UITransform, Size } from 'cc';
+import { _decorator, Component, Node, Vec2, Vec3, UITransform, Size } from 'cc';
 
 const { ccclass, property } = _decorator;
 

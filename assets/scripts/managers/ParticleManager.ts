@@ -58,7 +58,6 @@ export class ParticleManager extends Component {
         node.active = true;
         if (particleSystem) {
             particleSystem.resetSystem();
-            particleSystem.playOnAwake = true;
         }
         
         // 自动回收

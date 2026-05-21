@@ -112,7 +112,9 @@ export class GameManager extends Component {
         if (!this.wallContainer || !this.wallPrefab) return;
         
         walls.forEach(wallData => {
-            const wallNode = instantiate(this.wallPrefab);
+            const wallNode = instantiate(this.wallPrefab!) as unknown as Node;
+            if (!wallNode) return;
+            
             const wall = wallNode.getComponent(Wall);
             
             if (wall) {
@@ -127,7 +129,9 @@ export class GameManager extends Component {
                 wallNode.setPosition(new Vec3(wallData.x * 70, wallData.y * 70, 0));
             }
             
-            this.wallContainer.addChild(wallNode);
+            if (this.wallContainer) {
+                this.wallContainer.addChild(wallNode);
+            }
         });
     }
     
@@ -138,7 +142,9 @@ export class GameManager extends Component {
         if (!this.bombContainer || !this.staticBombPrefab) return;
         
         bombs.forEach(bombData => {
-            const bombNode = instantiate(this.staticBombPrefab);
+            const bombNode = instantiate(this.staticBombPrefab!) as unknown as Node;
+            if (!bombNode) return;
+            
             const bomb = bombNode.getComponent(Bomb);
             
             if (bomb) {
@@ -152,7 +158,9 @@ export class GameManager extends Component {
                 bombNode.setPosition(new Vec3(bombData.x * 70, bombData.y * 70, 0));
             }
             
-            this.bombContainer.addChild(bombNode);
+            if (this.bombContainer) {
+                this.bombContainer.addChild(bombNode);
+            }
         });
     }
     
@@ -163,7 +171,9 @@ export class GameManager extends Component {
         if (!this.gameLogic || !this.bombContainer || !this.bombPrefab) return;
         
         if (this.gameLogic.placeBomb(gx, gy)) {
-            const bombNode = instantiate(this.bombPrefab);
+            const bombNode = instantiate(this.bombPrefab!) as unknown as Node;
+            if (!bombNode) return;
+            
             const bomb = bombNode.getComponent(Bomb);
             
             if (bomb) {
