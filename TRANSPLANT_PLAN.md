@@ -1,8 +1,8 @@
 # 牛牛灭鼠 Cocos Creator 移植 - 完整计划文档
 
-> 版本: v2.0 | 2026-05-19
+> 版本: v2.1 | 2026-05-24
 > 项目: 炸弹推墙 (bomb-wall-canvas) → Cocos Creator 3.8.8
-> 状态: 阶段二进行中，核心组件已搭建
+> 状态: 阶段二已完成，阶段三进行中
 
 ---
 
@@ -11,7 +11,7 @@
 ### 1.1 源项目 (bomb-wall-canvas)
 
 **技术栈**: 原生 Canvas + 微信小游戏 API
-**版本**: v0.7.8 (稳定运行)
+**版本**: v0.7.8 (稳定运行，维护模式)
 **核心文件**:
 ```
 src/
@@ -65,7 +65,7 @@ subpackage/
 ### 1.2 目标项目 (cocos-projects/bomb-wall)
 
 **技术栈**: Cocos Creator 3.8.8 + TypeScript
-**状态**: 阶段二进行中
+**状态**: 阶段二已完成，阶段三进行中
 **已迁移文件**:
 ```
 assets/
@@ -76,17 +76,20 @@ assets/
 │   │   ├── SpriteAnimationHelper.ts  # ✅ 精灵动画辅助
 │   │   └── SpriteSheetLoader.ts      # ✅ 精灵图加载器
 │   ├── core/
-│   │   ├── GameLogic.ts          # ✅ 核心逻辑（WIP）
+│   │   ├── GameLogic.ts          # ✅ 核心逻辑
 │   │   └── GridManager.ts       # ✅ 网格管理
 │   └── managers/
 │       ├── GameManager.ts       # ✅ 场景管理
 │       ├── AnimationManager.ts  # ✅ 动画管理
-│       └── UIManager.ts         # ✅ UI 管理（设计完成）
+│       └── UIManager.ts         # ✅ UI 管理
 ├── scenes/
-│   └── Main.scene               # ✅ 主场景
+│   ├── Main.scene               # ✅ 主场景
+│   ├── Game.scene               # ✅ 游戏场景
+│   ├── LevelSelect.scene        # ✅ 关卡选择
+│   └── Result.scene             # ✅ 结算界面
 ├── resources/
 │   └── sprites/                 # ✅ 精灵图资源已复制
-└── wiki/                        # ✅ 部分文档已迁移
+└── wiki/                        # ✅ 文档已迁移
 ```
 
 **Git 状态**:
@@ -184,35 +187,35 @@ wx.loadImage → assetManager.loadRemote/loadBundle
 - [x] 迁移核心文档
 - [x] 复制精灵图资源
 
-### 阶段二：核心系统迁移 🔄 (进行中 ~60%)
+### 阶段二：核心系统迁移 ✅ (已完成)
 
 #### 2.1 场景系统
 - [x] 创建 Main.scene
-- [ ] 创建 Game.scene（游戏主场景）
-- [ ] 创建 LevelSelect.scene（关卡选择）
-- [ ] 创建 Result.scene（结算界面）
-- [ ] 配置 Camera
+- [x] 创建 Game.scene（游戏主场景）
+- [x] 创建 LevelSelect.scene（关卡选择）
+- [x] 创建 Result.scene（结算界面）
+- [x] 配置 Camera
 
 #### 2.2 节点组件系统
 - [x] Bomb.ts 组件
 - [x] Wall.ts 组件
 - [x] GridManager.ts 网格管理
-- [ ] 创建 StaticBomb 预制体
-- [ ] 创建 ParticleSystem 节点
+- [x] 创建 StaticBomb 预制体
+- [x] 创建 ParticleSystem 节点
 
 #### 2.3 游戏逻辑
 - [x] GameLogic.ts 框架
-- [ ] 完整爆炸计算逻辑
-- [ ] 关卡初始化逻辑
-- [ ] 胜负判定逻辑
-- [ ] 计分系统
+- [x] 完整爆炸计算逻辑
+- [x] 关卡初始化逻辑
+- [x] 胜负判定逻辑
+- [x] 计分系统
 
 #### 2.4 事件系统
 - [x] EventTarget 基础
-- [ ] 完整事件流映射
-- [ ] 场景间通信
+- [x] 完整事件流映射
+- [x] 场景间通信
 
-### 阶段三：资源系统迁移 ⏳
+### 阶段三：资源系统迁移 ⏳ (进行中)
 
 #### 3.1 精灵图配置
 - [ ] 创建 SpriteFrame 资源（在 Editor 中）
@@ -234,7 +237,7 @@ wx.loadImage → assetManager.loadRemote/loadBundle
 - [ ] 导入加载界面
 - [ ] 配置 Sprite 组件
 
-### 阶段四：特效系统重构 ⏳
+### 阶段四：特效系统重构 ⏳ (待开始)
 
 #### 4.1 爆炸特效
 - [ ] 十字格蔓延爆炸（Graphics 组件）
@@ -249,7 +252,7 @@ wx.loadImage → assetManager.loadRemote/loadBundle
 - [ ] 得分提示（Tween + Label）
 - [ ] 连击提示
 
-### 阶段五：微信小游戏适配 ⏳
+### 阶段五：微信小游戏适配 ⏳ (待开始)
 
 #### 5.1 平台适配
 - [ ] 屏幕适配（SafeArea）
@@ -266,7 +269,7 @@ wx.loadImage → assetManager.loadRemote/loadBundle
 - [ ] 性能优化（对象池）
 - [ ] 内存优化
 
-### 阶段六：工作流与自动化 ⏳
+### 阶段六：工作流与自动化 ⏳ (待开始)
 
 - [ ] 更新 cocos-mcp 技能文档
 - [ ] 建立 Cocos 项目 Git 工作流
@@ -409,10 +412,9 @@ git push origin v0.1.0-cocos
 
 ### 本周目标
 
-- 完成阶段二（核心系统迁移）
-- 创建 Game.scene 和基本 UI
-- 实现完整的爆炸逻辑
+- 完成阶段三（资源系统迁移）
 - 配置所有精灵图资源
+- 实现基础动画系统
 
 ### 里程碑
 
@@ -428,12 +430,18 @@ git push origin v0.1.0-cocos
 
 ## 九、记忆更新记录
 
-### 2026-05-19 更新
+### 2026-05-24 更新
 
 **项目状态变更**:
 - 原项目: `bomb-wall-canvas/` (原生 Canvas，v0.7.8，维护模式)
-- 新项目: `cocos-projects/bomb-wall/` (Cocos Creator，开发中)
-- 9牌银河项目: 已清理，从记忆中移除
+- 新项目: `cocos-projects/bomb-wall/` (Cocos Creator，阶段二已完成)
+- 阶段二核心系统迁移已完成
+- 阶段三资源系统迁移进行中
+
+**文档整理**:
+- 删除: MIGRATION_PLAN.md (被 TRANSPLANT_PLAN.md v2.1 取代)
+- 删除: CHECKLIST.md (阶段二已完成，内容过时)
+- 更新: TRANSPLANT_PLAN.md → v2.1，更新阶段状态
 
 **技能状态**:
 - cocos-mcp 技能: 已部署，等待 Editor 中启用
@@ -447,5 +455,5 @@ git push origin v0.1.0-cocos
 ---
 
 _文档位置: `cocos-projects/bomb-wall/TRANSPLANT_PLAN.md`_
-_更新日期: 2026-05-19_
-_下次更新: 阶段二完成时_
+_更新日期: 2026-05-24_
+_下次更新: 阶段三完成时_

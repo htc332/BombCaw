@@ -6,6 +6,7 @@
 - **类型**: 2D 游戏
 - **目标平台**: 微信小游戏
 - **原项目**: bomb-wall-canvas (Canvas 原生版)
+- **当前状态**: 阶段二已完成，阶段三进行中
 
 ## 目录结构
 
@@ -17,7 +18,9 @@ assets/
 │   └── components/  # 组件
 ├── scenes/          # 场景文件
 │   ├── Main.scene   # 主场景
-│   └── Game.scene   # 游戏场景
+│   ├── Game.scene   # 游戏场景
+│   ├── LevelSelect.scene  # 关卡选择
+│   └── Result.scene       # 结算界面
 ├── prefabs/         # 预制体
 │   ├── Bomb.prefab
 │   ├── Wall.prefab
@@ -28,34 +31,20 @@ assets/
 │   └── levels/      # 关卡配置
 └── textures/        # 纹理
 
-wiki/                # 迁移的文档
+wiki/                # 项目文档
 ├── GAMEPLAY_DESIGN.md
 ├── LEVEL_DESIGN.md
 ├── ARCHITECTURE.md
 └── ...
 ```
 
-## Git 工作流
-
-### 备份（每次修改前）
-```bash
-git add -A
-git commit -m "backup: 修改前_功能描述"
-```
-
-### 提交更新
-```bash
-git add -A
-git commit -m "feat/fix/doc: 具体描述"
-```
-
 ## 开发阶段
 
 | 阶段 | 状态 | 说明 |
 |-----|------|------|
-| 一：项目初始化 | 🔄 进行中 | 创建目录结构，迁移文档 |
-| 二：核心系统迁移 | ⏳ 待开始 | 场景、节点、逻辑、动画 |
-| 三：资源迁移 | ⏳ 待开始 | 精灵图、UI、音效 |
+| 一：项目初始化 | ✅ 完成 | 创建目录结构，迁移文档 |
+| 二：核心系统迁移 | ✅ 完成 | 场景、节点、逻辑、动画 |
+| 三：资源迁移 | 🔄 进行中 | 精灵图、UI、音效 |
 | 四：特效重构 | ⏳ 待开始 | 爆炸、升级、飘字 |
 | 五：微信适配 | ⏳ 待开始 | 构建、调试、优化 |
 | 六：文档整合 | ⏳ 待开始 | 技能、自动化 |
@@ -66,6 +55,9 @@ git commit -m "feat/fix/doc: 具体描述"
 - **状态**: ✅ 已部署
 - **使用**: 扩展 → Cocos MCP Server → 启动服务器
 
----
+## 完整移植计划
 
-_迁移计划: MIGRATION_PLAN.md_
+详见: [TRANSPLANT_PLAN.md](./TRANSPLANT_PLAN.md)
+
+---
+_更新日期: 2026-05-24_
