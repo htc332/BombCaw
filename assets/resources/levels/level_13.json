@@ -1,0 +1,20 @@
+{
+  "id": 13,
+  "name": "只用静态炸弹",
+  "gridSize": 5,
+  "bombs": 1,
+  "hint": "只有一个炸弹，让它触发连锁",
+  "walls": [
+    {"x": 0, "y": 2, "type": "normal"},
+    {"x": 4, "y": 2, "type": "normal"},
+    {"x": 2, "y": 0, "type": "normal"},
+    {"x": 2, "y": 4, "type": "normal"}
+  ],
+  "staticBombs": [
+    {"x": 1, "y": 2, "evolution": 0},
+    {"x": 3, "y": 2, "evolution": 0},
+    {"x": 2, "y": 1, "evolution": 0},
+    {"x": 2, "y": 3, "evolution": 0}
+  ],
+  "starThresholds": [100, 250, 400]
+}

@@ -1,0 +1,17 @@
+{
+  "id": 12,
+  "name": "效率最大化",
+  "gridSize": 7,
+  "bombs": 3,
+  "hint": "3个炸弹激活所有静态炸弹",
+  "walls": [
+    {"x": 0, "y": 0, "type": "normal"},
+    {"x": 6, "y": 6, "type": "normal"}
+  ],
+  "staticBombs": [
+    {"x": 1, "y": 1, "evolution": 0},
+    {"x": 3, "y": 3, "evolution": 0},
+    {"x": 5, "y": 5, "evolution": 0}
+  ],
+  "starThresholds": [150, 350, 550]
+}

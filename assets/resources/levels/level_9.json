@@ -1,0 +1,21 @@
+{
+  "id": 9,
+  "name": "多米诺连锁",
+  "gridSize": 7,
+  "bombs": 1,
+  "hint": "只需一个炸弹，看连锁反应",
+  "walls": [
+    {"x": 0, "y": 3, "type": "normal"},
+    {"x": 6, "y": 3, "type": "normal"},
+    {"x": 3, "y": 0, "type": "normal"},
+    {"x": 3, "y": 6, "type": "normal"}
+  ],
+  "staticBombs": [
+    {"x": 1, "y": 3, "evolution": 0},
+    {"x": 2, "y": 3, "evolution": 0},
+    {"x": 3, "y": 3, "evolution": 0},
+    {"x": 4, "y": 3, "evolution": 0},
+    {"x": 5, "y": 3, "evolution": 0}
+  ],
+  "starThresholds": [100, 250, 400]
+}

@@ -1,0 +1,15 @@
+{
+  "id": 8,
+  "name": "静态炸弹 vs 加固墙",
+  "gridSize": 5,
+  "bombs": 2,
+  "hint": "1级静态炸弹可以一次炸掉加固墙",
+  "walls": [
+    {"x": 2, "y": 0, "type": "elite", "hp": 2},
+    {"x": 2, "y": 4, "type": "elite", "hp": 2}
+  ],
+  "staticBombs": [
+    {"x": 2, "y": 2, "evolution": 1}
+  ],
+  "starThresholds": [200, 400, 600]
+}

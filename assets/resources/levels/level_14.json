@@ -1,0 +1,25 @@
+{
+  "id": 14,
+  "name": "最大化连锁",
+  "gridSize": 7,
+  "bombs": 2,
+  "hint": "制造最大的连锁爆炸！",
+  "walls": [
+    {"x": 0, "y": 0, "type": "normal"},
+    {"x": 0, "y": 6, "type": "normal"},
+    {"x": 6, "y": 0, "type": "normal"},
+    {"x": 6, "y": 6, "type": "normal"}
+  ],
+  "staticBombs": [
+    {"x": 1, "y": 3, "evolution": 0},
+    {"x": 2, "y": 3, "evolution": 0},
+    {"x": 3, "y": 1, "evolution": 0},
+    {"x": 3, "y": 2, "evolution": 0},
+    {"x": 3, "y": 3, "evolution": 0},
+    {"x": 3, "y": 4, "evolution": 0},
+    {"x": 3, "y": 5, "evolution": 0},
+    {"x": 4, "y": 3, "evolution": 0},
+    {"x": 5, "y": 3, "evolution": 0}
+  ],
+  "starThresholds": [150, 350, 600]
+}

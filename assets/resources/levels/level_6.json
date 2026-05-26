@@ -1,0 +1,17 @@
+{
+  "id": 6,
+  "name": "范围叠加",
+  "gridSize": 7,
+  "bombs": 5,
+  "hint": "三个炸弹十字相邻，威力最大！",
+  "walls": [
+    {"x": 3, "y": 0, "type": "normal"},
+    {"x": 3, "y": 6, "type": "normal"},
+    {"x": 0, "y": 3, "type": "normal"},
+    {"x": 6, "y": 3, "type": "normal"}
+  ],
+  "staticBombs": [
+    {"x": 3, "y": 3, "evolution": 0}
+  ],
+  "starThresholds": [200, 450, 700]
+}

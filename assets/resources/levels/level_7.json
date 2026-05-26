@@ -1,0 +1,15 @@
+{
+  "id": 7,
+  "name": "静态炸弹 + 炸弹墙",
+  "gridSize": 5,
+  "bombs": 2,
+  "hint": "用静态炸弹的爆炸触发黄色炸弹墙",
+  "walls": [
+    {"x": 2, "y": 4, "type": "bomb", "color": "yellow"},
+    {"x": 4, "y": 2, "type": "bomb", "color": "yellow"}
+  ],
+  "staticBombs": [
+    {"x": 2, "y": 2, "evolution": 1}
+  ],
+  "starThresholds": [150, 300, 500]
+}

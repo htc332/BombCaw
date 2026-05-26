@@ -1,0 +1,19 @@
+{
+  "id": 5,
+  "name": "选择与规划",
+  "gridSize": 5,
+  "bombs": 3,
+  "hint": "先激活哪个静态炸弹？规划你的策略",
+  "walls": [
+    {"x": 0, "y": 2, "type": "normal"},
+    {"x": 4, "y": 2, "type": "normal"},
+    {"x": 2, "y": 0, "type": "normal"},
+    {"x": 2, "y": 4, "type": "normal"},
+    {"x": 2, "y": 2, "type": "normal"}
+  ],
+  "staticBombs": [
+    {"x": 1, "y": 2, "evolution": 0},
+    {"x": 3, "y": 2, "evolution": 0}
+  ],
+  "starThresholds": [150, 350, 550]
+}

@@ -1,0 +1,25 @@
+{
+  "id": 16,
+  "name": "综合挑战 A",
+  "gridSize": 7,
+  "bombs": 4,
+  "hint": "综合运用你学到的所有技巧",
+  "walls": [
+    {"x": 0, "y": 0, "type": "normal"},
+    {"x": 0, "y": 3, "type": "elite", "hp": 2},
+    {"x": 0, "y": 6, "type": "normal"},
+    {"x": 3, "y": 0, "type": "elite", "hp": 2},
+    {"x": 3, "y": 6, "type": "elite", "hp": 2},
+    {"x": 6, "y": 0, "type": "normal"},
+    {"x": 6, "y": 3, "type": "elite", "hp": 2},
+    {"x": 6, "y": 6, "type": "normal"},
+    {"x": 1, "y": 1, "type": "bomb", "color": "yellow"},
+    {"x": 5, "y": 5, "type": "bomb", "color": "red"}
+  ],
+  "staticBombs": [
+    {"x": 2, "y": 2, "evolution": 0},
+    {"x": 4, "y": 4, "evolution": 1},
+    {"x": 3, "y": 3, "evolution": 0}
+  ],
+  "starThresholds": [400, 700, 1000]
+}

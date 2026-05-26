@@ -1,0 +1,19 @@
+{
+  "id": 11,
+  "name": "混合战场",
+  "gridSize": 7,
+  "bombs": 4,
+  "hint": "先处理哪个？想清楚顺序",
+  "walls": [
+    {"x": 1, "y": 1, "type": "normal"},
+    {"x": 5, "y": 1, "type": "elite", "hp": 2},
+    {"x": 1, "y": 5, "type": "bomb", "color": "yellow"},
+    {"x": 5, "y": 5, "type": "bomb", "color": "red"},
+    {"x": 3, "y": 3, "type": "normal"}
+  ],
+  "staticBombs": [
+    {"x": 2, "y": 3, "evolution": 0},
+    {"x": 4, "y": 3, "evolution": 1}
+  ],
+  "starThresholds": [250, 500, 750]
+}

@@ -1,0 +1,36 @@
+{
+  "id": 18,
+  "name": "最终试炼",
+  "gridSize": 8,
+  "bombs": 6,
+  "hint": "大师级挑战",
+  "walls": [
+    {"x": 1, "y": 1, "type": "normal"},
+    {"x": 2, "y": 1, "type": "normal"},
+    {"x": 5, "y": 1, "type": "normal"},
+    {"x": 6, "y": 1, "type": "normal"},
+    {"x": 1, "y": 2, "type": "elite", "hp": 2},
+    {"x": 6, "y": 2, "type": "elite", "hp": 2},
+    {"x": 3, "y": 3, "type": "normal"},
+    {"x": 4, "y": 3, "type": "normal"},
+    {"x": 3, "y": 4, "type": "normal"},
+    {"x": 4, "y": 4, "type": "normal"},
+    {"x": 1, "y": 5, "type": "elite", "hp": 2},
+    {"x": 6, "y": 5, "type": "elite", "hp": 2},
+    {"x": 1, "y": 6, "type": "normal"},
+    {"x": 2, "y": 6, "type": "normal"},
+    {"x": 5, "y": 6, "type": "normal"},
+    {"x": 6, "y": 6, "type": "normal"}
+  ],
+  "staticBombs": [
+    {"x": 0, "y": 0, "evolution": 0},
+    {"x": 7, "y": 0, "evolution": 0},
+    {"x": 0, "y": 7, "evolution": 0},
+    {"x": 7, "y": 7, "evolution": 0},
+    {"x": 3, "y": 1, "evolution": 0},
+    {"x": 4, "y": 1, "evolution": 0},
+    {"x": 3, "y": 6, "evolution": 0},
+    {"x": 4, "y": 6, "evolution": 0}
+  ],
+  "starThresholds": [600, 1000, 1500]
+}

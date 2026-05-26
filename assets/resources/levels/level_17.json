@@ -1,0 +1,30 @@
+{
+  "id": 17,
+  "name": "综合挑战 B",
+  "gridSize": 7,
+  "bombs": 5,
+  "hint": "最难的谜题",
+  "walls": [
+    {"x": 0, "y": 0, "type": "normal"},
+    {"x": 1, "y": 0, "type": "normal"},
+    {"x": 2, "y": 0, "type": "elite", "hp": 2},
+    {"x": 4, "y": 0, "type": "elite", "hp": 2},
+    {"x": 5, "y": 0, "type": "normal"},
+    {"x": 6, "y": 0, "type": "normal"},
+    {"x": 0, "y": 3, "type": "normal"},
+    {"x": 6, "y": 3, "type": "normal"},
+    {"x": 0, "y": 6, "type": "normal"},
+    {"x": 1, "y": 6, "type": "normal"},
+    {"x": 2, "y": 6, "type": "elite", "hp": 2},
+    {"x": 4, "y": 6, "type": "elite", "hp": 2},
+    {"x": 5, "y": 6, "type": "normal"},
+    {"x": 6, "y": 6, "type": "normal"}
+  ],
+  "staticBombs": [
+    {"x": 1, "y": 3, "evolution": 0},
+    {"x": 2, "y": 3, "evolution": 0},
+    {"x": 4, "y": 3, "evolution": 0},
+    {"x": 5, "y": 3, "evolution": 0}
+  ],
+  "starThresholds": [500, 800, 1200]
+}

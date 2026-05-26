@@ -1,0 +1,17 @@
+{
+  "id": 15,
+  "name": "精准控制",
+  "gridSize": 7,
+  "bombs": 3,
+  "hint": "太强的爆炸会触发不好的东西...",
+  "walls": [
+    {"x": 2, "y": 3, "type": "normal"},
+    {"x": 4, "y": 3, "type": "normal"}
+  ],
+  "staticBombs": [
+    {"x": 1, "y": 3, "evolution": 0},
+    {"x": 3, "y": 3, "evolution": 0},
+    {"x": 5, "y": 3, "evolution": 0}
+  ],
+  "starThresholds": [100, 250, 400]
+}
