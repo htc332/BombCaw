@@ -53,11 +53,19 @@ export class Bomb extends Component {
         let uiTransform = this.getComponent(UITransform);
         if (!uiTransform) {
             uiTransform = this.addComponent(UITransform);
-            uiTransform.contentSize = new Size(64, 64);
+            if (uiTransform) {
+                uiTransform.contentSize = new Size(64, 64);
+            }
         }
         
         // 初始化动画辅助器
-        this.animHelper = new SpriteAnimationHelper(this.sprite);
+        this.animHelper = this.getComponent(SpriteAnimationHelper);
+        if (!this.animHelper) {
+            this.animHelper = this.addComponent(SpriteAnimationHelper);
+        }
+        if (this.animHelper) {
+            this.animHelper.sprite = this.sprite;
+        }
     }
     
     start() {
@@ -73,6 +81,18 @@ export class Bomb extends Component {
                 this.explode();
             }
         }
+    }
+    
+    /**
+     * 初始化炸弹（由GameManager调用）
+     */
+    init(gx: number, gy: number, evolution: number = 1, isStatic: boolean = false) {
+        this.setGridPosition(gx, gy);
+        this.evolution = evolution;
+        this.isStatic = isStatic;
+        
+        // 设置节点名称
+        this.node.name = isStatic ? `StaticBomb_${gx}_${gy}` : `Bomb_${gx}_${gy}`;
     }
     
     /**
@@ -108,7 +128,10 @@ export class Bomb extends Component {
         
         // 播放倒计时动画
         if (this.animHelper) {
-            this.animHelper.playCountdown(this.countdown);
+            this.animHelper.play('lv' + this.evolution, {
+                mode: 'countdown',
+                countdownDuration: this.countdown
+            });
         }
     }
     
@@ -120,8 +143,11 @@ export class Bomb extends Component {
         
         // 播放爆炸动画
         if (this.animHelper) {
-            this.animHelper.playExplosion(() => {
-                this.onExplosionComplete();
+            this.animHelper.play('lv' + this.evolution + '_explode', {
+                mode: 'once',
+                onComplete: () => {
+                    this.onExplosionComplete();
+                }
             });
         } else {
             this.onExplosionComplete();

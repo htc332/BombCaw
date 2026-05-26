@@ -112,7 +112,7 @@ export class GameManager extends Component {
         if (!this.wallContainer || !this.wallPrefab) return;
         
         walls.forEach(wallData => {
-            const wallNode = instantiate(this.wallPrefab!) as unknown as Node;
+            const wallNode = instantiate(this.wallPrefab!);
             if (!wallNode) return;
             
             const wall = wallNode.getComponent(Wall);
