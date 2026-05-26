@@ -1,0 +1,1 @@
+{"__type__":"cc.AutoAtlas","_name":"auto-atlas","_objFlags":0,"maxWidth":2048,"maxHeight":2048,"padding":2,"allowRotation":true,"forceSquared":false}

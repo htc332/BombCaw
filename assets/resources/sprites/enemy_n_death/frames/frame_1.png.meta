@@ -1,0 +1,35 @@
+{
+  "ver": "1.0.27",
+  "importer": "sprite-frame",
+  "imported": true,
+  "uuid": "7267ddb4-7267-4267-67dd-7267ddb4",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "trimType": "custom",
+    "trimThreshold": 1,
+    "rotated": false,
+    "offsetX": 0,
+    "offsetY": 0,
+    "trimX": 64,
+    "trimY": 0,
+    "width": 64,
+    "height": 64,
+    "rawWidth": 256,
+    "rawHeight": 256,
+    "borderTop": 0,
+    "borderBottom": 0,
+    "borderLeft": 0,
+    "borderRight": 0,
+    "packable": true,
+    "pixelsToUnit": 100,
+    "pivotX": 0.5,
+    "pivotY": 0.5,
+    "meshType": 0,
+    "isUuid": true,
+    "imageUuidOrDatabaseUri": "4f6385d1-8b1a-49b4-8320-e89a54e76d30@6c48a",
+    "atlasUuid": ""
+  }
+}
