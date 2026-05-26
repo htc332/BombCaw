@@ -1,0 +1,20 @@
+{
+  "name": "sprite-sheet-processor",
+  "version": "1.0.0",
+  "description": "自动处理精灵图切割，生成 SpriteFrame",
+  "main": "main.js",
+  "contributions": {
+    "menu": [
+      {
+        "path": "扩展/SpriteSheetProcessor",
+        "label": "处理所有精灵图",
+        "message": "process-all"
+      }
+    ],
+    "messages": {
+      "process-all": {
+        "methods": ["processAllSpriteSheets"]
+      }
+    }
+  }
+}
