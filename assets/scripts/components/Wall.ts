@@ -35,9 +35,6 @@ export class Wall extends Component {
     // 动画辅助器
     private animHelper: SpriteAnimationHelper | null = null;
     
-    // 受伤震动
-    private shakeTime: number = 0;
-    
     onLoad() {
         // 获取或创建组件
         if (!this.sprite) {
@@ -114,10 +111,6 @@ export class Wall extends Component {
         if (this.isDead) return false;
         
         this.hp -= damage;
-        this.shakeTime = 0.2; // 震动0.2秒
-        
-        // 受伤震动效果
-        this.startShake();
         
         if (this.hp <= 0) {
             this.die();
@@ -130,30 +123,6 @@ export class Wall extends Component {
         }
         
         return false; // 还活着
-    }
-    
-    /**
-     * 震动效果
-     */
-    private startShake() {
-        const originalPos = this.node.position.clone();
-        
-        let elapsed = 0;
-        const duration = 0.2;
-        const magnitude = 5;
-        
-        this.schedule(() => {
-            elapsed += 0.016;
-            if (elapsed >= duration) {
-                this.node.setPosition(originalPos);
-                this.unschedule(this.startShake);
-                return;
-            }
-            
-            const offsetX = (Math.random() - 0.5) * magnitude;
-            const offsetY = (Math.random() - 0.5) * magnitude;
-            this.node.setPosition(originalPos.x + offsetX, originalPos.y + offsetY);
-        }, 0.016);
     }
     
     /**

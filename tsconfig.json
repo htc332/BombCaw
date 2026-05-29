@@ -15,8 +15,8 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "cc": ["./node_modules/@cocos/creator-types/engine.d.ts"],
-      "cc/*": ["./node_modules/@cocos/creator-types/engine/*.d.ts"]
+      "cc": ["./temp/declarations/cc.d.ts"],
+      "cc/*": ["./temp/declarations/cc.d.ts"]
     }
   },
   "include": [
@@ -27,6 +27,7 @@
     "node_modules",
     "library",
     "temp",
-    "build"
+    "build",
+    "assets/scripts/editor"
   ]
 }

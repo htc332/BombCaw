@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Vec2, Vec3, EventTarget, Sprite, instantiate, Prefab } from 'cc';
 import { AnimationManager } from '../managers/AnimationManager';
 import { ScoreManager } from '../managers/ScoreManager';
+import { GridManager } from '../core/GridManager';
 
 const { ccclass, property } = _decorator;
 
@@ -77,6 +78,9 @@ export class GameLogic extends Component {
      * 初始化关卡
      */
     initLevel(levelConfig: any) {
+        // 清理现有游戏对象
+        this.clearAllGameObjects();
+        
         this.gridSize = levelConfig.gridSize || 5;
         this.bombsLeft = levelConfig.bombs || 0;
         this.gameActive = true;
@@ -113,6 +117,38 @@ export class GameLogic extends Component {
         });
 
         return this.getState();
+    }
+    
+    /**
+     * 清理所有游戏对象
+     */
+    private clearAllGameObjects() {
+        // 清理炸弹
+        this.bombs.forEach((bomb) => {
+            if (bomb.node && bomb.node.isValid) {
+                bomb.node.destroy();
+            }
+        });
+        this.bombs.clear();
+        
+        // 清理静态炸弹
+        this.staticBombs.forEach((bomb) => {
+            if (bomb.node && bomb.node.isValid) {
+                bomb.node.destroy();
+            }
+        });
+        this.staticBombs.clear();
+        
+        // 清理墙壁
+        this.walls.forEach((wall) => {
+            if (wall.node && wall.node.isValid) {
+                wall.node.destroy();
+            }
+        });
+        this.walls.clear();
+        
+        // 取消所有定时器
+        this.unscheduleAllCallbacks();
     }
 
     /**
@@ -170,11 +206,17 @@ export class GameLogic extends Component {
     }
 
     /**
-     * 网格坐标转世界坐标
+     * 网格坐标转世界坐标（使用 GridManager 的坐标系）
      */
     private gridToWorld(gx: number, gy: number): Vec3 {
-        // 根据网格大小和屏幕尺寸计算
-        const cellSize = 70; // 格子大小
+        // 使用 GridManager 的坐标系（如果可用）
+        const gridManager = this.node.getComponent(GridManager);
+        if (gridManager) {
+            return gridManager.gridToWorld(gx, gy);
+        }
+        
+        // 回退到默认计算
+        const cellSize = 70;
         const startX = -this.gridSize * cellSize / 2;
         const startY = -this.gridSize * cellSize / 2;
 
@@ -238,7 +280,7 @@ export class GameLogic extends Component {
      */
     private explodeBomb(key: string) {
         const bomb = this.bombs.get(key);
-        if (!bomb) return;
+        if (!bomb || !bomb.node || !bomb.node.isValid) return;
 
         console.log(`[GameLogic] Bomb exploded at ${bomb.x}, ${bomb.y}`);
 
@@ -251,7 +293,7 @@ export class GameLogic extends Component {
         });
 
         // 移除炸弹
-        if (bomb.node) {
+        if (bomb.node && bomb.node.isValid) {
             bomb.node.destroy();
         }
         this.bombs.delete(key);
@@ -329,15 +371,20 @@ export class GameLogic extends Component {
         const key = `${x},${y}`;
         const wall = this.walls.get(key);
 
-        if (!wall) return;
+        if (!wall || !wall.node || !wall.node.isValid) return;
 
         wall.hp--;
+        
+        // 发送墙壁受损事件
+        this.emitEvent('wall_damaged', { x, y, hp: wall.hp });
 
         if (wall.hp <= 0) {
             // 播放死亡动画
             this.animManager?.playDeathAnimation(wall.node, wall.type, () => {
                 // 动画完成后销毁节点
-                wall.node.destroy();
+                if (wall.node && wall.node.isValid) {
+                    wall.node.destroy();
+                }
                 this.walls.delete(key);
 
                 // 添加分数
@@ -346,6 +393,9 @@ export class GameLogic extends Component {
                 this.scoreManager?.addScore(scoreType, {
                     position: worldPos
                 });
+                
+                // 发送墙壁摧毁事件
+                this.emitEvent('wall_destroyed', { x, y, type: wall.type });
             });
         } else {
             // 精英鼠破损过渡
@@ -382,7 +432,7 @@ export class GameLogic extends Component {
      */
     private explodeStaticBomb(key: string) {
         const bomb = this.staticBombs.get(key);
-        if (!bomb) return;
+        if (!bomb || !bomb.node || !bomb.node.isValid) return;
 
         // 类似普通炸弹爆炸
         const destroyed = this.calculateExplosion(bomb.x, bomb.y, bomb.level);
@@ -391,7 +441,7 @@ export class GameLogic extends Component {
             this.destroyWall(item.x, item.y);
         });
 
-        if (bomb.node) {
+        if (bomb.node && bomb.node.isValid) {
             bomb.node.destroy();
         }
         this.staticBombs.delete(key);
@@ -405,6 +455,9 @@ export class GameLogic extends Component {
     checkVictory(): boolean {
         if (this.walls.size === 0) {
             this.pendingVictory = true;
+            
+            // 取消所有待爆炸弹的定时器，避免新的爆炸干扰结算
+            this.unscheduleAllCallbacks();
 
             // 延迟结算，等待动画完成
             this.scheduleOnce(() => {

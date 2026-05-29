@@ -216,14 +216,19 @@ export class AnimationManager extends Component {
             
             animHelper = targetNode.addComponent(SpriteAnimationHelper);
             animHelper.sprite = sprite;
-            
-            // 从全局缓存复制帧数据
-            const globalHelper = this.animHelpers.get(clipName);
-            if (globalHelper) {
-                const info = globalHelper.getCurrentClipInfo();
-                // 这里需要一种方式复制已注册的 clip
-                // 实际实现中可能需要重新加载或共享数据
-            }
+        }
+        
+        // 从全局缓存复制帧数据（如果可用）
+        const globalHelper = this.animHelpers.get(clipName);
+        if (globalHelper && animHelper) {
+            const clips = globalHelper.getRegisteredClips();
+            clips.forEach(clipName => {
+                const frames = globalHelper.getClipFrames(clipName);
+                const timings = globalHelper.getClipTimings(clipName);
+                if (frames && frames.length > 0) {
+                    animHelper!.registerClip(clipName, frames, timings);
+                }
+            });
         }
         
         return animHelper;

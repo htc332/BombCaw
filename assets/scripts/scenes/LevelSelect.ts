@@ -89,12 +89,18 @@ export class LevelSelect extends Component {
     private createLevelButton(levelId: number, isUnlocked: boolean): Node {
         const buttonNode = new Node(`LevelButton_${levelId}`);
         
+        // 添加 UITransform
+        const uiTransform = buttonNode.addComponent(UITransform);
+        uiTransform.setContentSize(80, 80);
+        
         // 添加按钮组件
         const button = buttonNode.addComponent(Button);
         
         // 添加背景精灵
         const bgNode = new Node('Background');
         buttonNode.addChild(bgNode);
+        const bgTransform = bgNode.addComponent(UITransform);
+        bgTransform.setContentSize(80, 80);
         const bgSprite = bgNode.addComponent(Sprite);
         
         // 根据解锁状态设置颜色
@@ -108,6 +114,8 @@ export class LevelSelect extends Component {
         // 添加关卡编号标签
         const labelNode = new Node('Label');
         buttonNode.addChild(labelNode);
+        const labelTransform = labelNode.addComponent(UITransform);
+        labelTransform.setContentSize(80, 40);
         const label = labelNode.addComponent(Label);
         label.string = `${levelId}`;
         label.fontSize = 32;
@@ -118,6 +126,8 @@ export class LevelSelect extends Component {
         if (stars > 0 && isUnlocked) {
             const starsNode = new Node('Stars');
             buttonNode.addChild(starsNode);
+            const starsTransform = starsNode.addComponent(UITransform);
+            starsTransform.setContentSize(80, 20);
             const starsLabel = starsNode.addComponent(Label);
             starsLabel.string = '★'.repeat(stars);
             starsLabel.fontSize = 16;
@@ -131,10 +141,6 @@ export class LevelSelect extends Component {
                 this.onLevelClick(levelId);
             }, this);
         }
-        
-        // 设置大小
-        const uiTransform = buttonNode.addComponent(UITransform);
-        uiTransform.setContentSize(80, 80);
         
         return buttonNode;
     }

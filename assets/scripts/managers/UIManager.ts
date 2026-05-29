@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, ProgressBar, Button, Vec3, UIOpacity, Color, Sprite } from 'cc';
+import { _decorator, Component, Node, Label, ProgressBar, Button, Vec3, UIOpacity, Color, Sprite, UITransform } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -90,6 +90,8 @@ export class UIManager extends Component {
         // 创建分数标签
         const scoreNode = new Node('ScoreLabel');
         this.node.addChild(scoreNode);
+        const scoreTransform = scoreNode.addComponent(UITransform);
+        scoreTransform.setContentSize(200, 30);
         this.scoreLabel = scoreNode.addComponent(Label);
         this.scoreLabel.string = 'Score: 0';
         this.scoreLabel.fontSize = 24;
@@ -99,6 +101,8 @@ export class UIManager extends Component {
         // 创建剩余炸弹标签
         const bombsNode = new Node('BombsLeftLabel');
         this.node.addChild(bombsNode);
+        const bombsTransform = bombsNode.addComponent(UITransform);
+        bombsTransform.setContentSize(200, 30);
         this.bombsLeftLabel = bombsNode.addComponent(Label);
         this.bombsLeftLabel.string = 'Bombs: 3';
         this.bombsLeftLabel.fontSize = 20;
@@ -108,6 +112,8 @@ export class UIManager extends Component {
         // 创建关卡信息标签
         const levelNode = new Node('LevelInfoLabel');
         this.node.addChild(levelNode);
+        const levelTransform = levelNode.addComponent(UITransform);
+        levelTransform.setContentSize(300, 30);
         this.levelInfoLabel = levelNode.addComponent(Label);
         this.levelInfoLabel.string = 'Test Level - Walls: 5';
         this.levelInfoLabel.fontSize = 18;
@@ -180,12 +186,17 @@ export class UIManager extends Component {
         // 背景
         const bg = new Node('Background');
         panel.addChild(bg);
+        const bgTransform = bg.addComponent(UITransform);
+        bgTransform.setContentSize(400, 300);
         const bgSprite = bg.addComponent(Sprite);
-        // TODO: 设置背景颜色或图片
+        bgSprite.type = Sprite.Type.SIMPLE;
+        bgSprite.color = new Color(0, 0, 0, 200);
         
         // 标题
         const titleNode = new Node('Title');
         panel.addChild(titleNode);
+        const titleTransform = titleNode.addComponent(UITransform);
+        titleTransform.setContentSize(300, 60);
         const titleLabel = titleNode.addComponent(Label);
         titleLabel.string = 'Victory!';
         titleLabel.fontSize = 48;
@@ -195,6 +206,8 @@ export class UIManager extends Component {
         // 分数
         const scoreNode = new Node('VictoryScore');
         panel.addChild(scoreNode);
+        const scoreTransform = scoreNode.addComponent(UITransform);
+        scoreTransform.setContentSize(300, 40);
         const scoreLabel = scoreNode.addComponent(Label);
         scoreLabel.string = 'Score: 0';
         scoreLabel.fontSize = 32;
@@ -204,6 +217,8 @@ export class UIManager extends Component {
         // 星级
         const starsNode = new Node('StarsLabel');
         panel.addChild(starsNode);
+        const starsTransform = starsNode.addComponent(UITransform);
+        starsTransform.setContentSize(300, 40);
         const starsLabel = starsNode.addComponent(Label);
         starsLabel.string = '★★★';
         starsLabel.fontSize = 40;
@@ -213,19 +228,25 @@ export class UIManager extends Component {
         // 下一关按钮
         const nextBtnNode = new Node('NextLevelButton');
         panel.addChild(nextBtnNode);
+        const nextBtnTransform = nextBtnNode.addComponent(UITransform);
+        nextBtnTransform.setContentSize(150, 50);
         const nextBtn = nextBtnNode.addComponent(Button);
         const nextBtnLabel = nextBtnNode.addComponent(Label);
         nextBtnLabel.string = 'Next Level';
         nextBtnLabel.fontSize = 24;
+        nextBtnLabel.color = Color.WHITE;
         nextBtnNode.setPosition(0, -80);
         
         // 重置按钮
         const resetBtnNode = new Node('ResetButton');
         panel.addChild(resetBtnNode);
+        const resetBtnTransform = resetBtnNode.addComponent(UITransform);
+        resetBtnTransform.setContentSize(150, 50);
         const resetBtn = resetBtnNode.addComponent(Button);
         const resetBtnLabel = resetBtnNode.addComponent(Label);
         resetBtnLabel.string = 'Retry';
         resetBtnLabel.fontSize = 24;
+        resetBtnLabel.color = Color.WHITE;
         resetBtnNode.setPosition(0, -130);
         
         panel.active = false;

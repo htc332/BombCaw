@@ -256,9 +256,11 @@ export class GameScene extends Component {
         const touch = event.touch;
         const pos = touch.getLocation();
         
-        // 转换为本地坐标
-        const localPos = this.gameLayer.getComponent(UITransform)?.convertToNodeSpaceAR(new Vec3(pos.x, pos.y, 0));
-        if (!localPos) return;
+        // 转换为本地坐标（使用 UITransform 的 convertToNodeSpaceAR）
+        const uiTransform = this.gameLayer.getComponent(UITransform);
+        if (!uiTransform) return;
+        
+        const localPos = uiTransform.convertToNodeSpaceAR(new Vec3(pos.x, pos.y, 0));
         
         // 计算网格坐标
         const gridPos = this.gridManager.worldToGrid(localPos.x, localPos.y);
@@ -311,19 +313,28 @@ export class GameScene extends Component {
     /**
      * 重置关卡
      */
-    resetLevel() {
+    async resetLevel() {
         console.log('[GameScene] Resetting level...');
         
-        const levelId = this.currentLevelData?.id || 1;
-        this.loadLevel(levelId).then(() => {
-            this.startGame();
+        // 清理现有游戏对象
+        this.gameLogic?.initLevel({
+            gridSize: this.currentLevelData?.gridSize || 5,
+            bombs: this.currentLevelData?.bombs || 0,
+            walls: [],
+            staticBombs: []
         });
+        
+        const levelId = this.currentLevelData?.id || 1;
+        const success = await this.loadLevel(levelId);
+        if (success) {
+            this.startGame();
+        }
     }
     
     /**
      * 下一关
      */
-    nextLevel() {
+    async nextLevel() {
         console.log('[GameScene] Loading next level...');
         
         const nextLevelId = (this.currentLevelData?.id || 1) + 1;
@@ -331,9 +342,10 @@ export class GameScene extends Component {
         // 检查是否解锁
         if (this.levelManager?.isLevelUnlocked(nextLevelId)) {
             this.levelManager?.setCurrentLevel(nextLevelId);
-            this.loadLevel(nextLevelId).then(() => {
+            const success = await this.loadLevel(nextLevelId);
+            if (success) {
                 this.startGame();
-            });
+            }
         } else {
             console.log('[GameScene] Next level not unlocked');
             // 返回关卡选择

@@ -318,6 +318,20 @@ export class SpriteAnimationHelper extends Component {
     }
     
     /**
+     * 获取指定 clip 的帧数组
+     */
+    getClipFrames(clipName: string): SpriteFrame[] | undefined {
+        return this.spriteFrames.get(clipName);
+    }
+    
+    /**
+     * 获取指定 clip 的时间戳数组
+     */
+    getClipTimings(clipName: string): number[] | undefined {
+        return this.frameTimings.get(clipName);
+    }
+    
+    /**
      * 获取已注册的动画列表
      */
     getRegisteredClips(): string[] {
