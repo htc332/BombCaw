@@ -28,7 +28,11 @@ export class ParticleManager extends Component {
     // 对象池
     private explosionPool: Node[] = [];
     private upgradePool: Node[] = [];
+    private victoryPool: Node[] = [];
+    
+    // 活跃粒子跟踪
     private activeParticles: Map<string, Node> = new Map();
+    private particleIdCounter: number = 0;
     
     onLoad() {
         console.log('[ParticleManager] Loading...');
@@ -36,6 +40,8 @@ export class ParticleManager extends Component {
     
     /**
      * 播放爆炸特效
+     * @param position 世界坐标位置
+     * @param evolution 炸弹进化等级 (1-4)
      */
     playExplosion(position: Vec3, evolution: number = 1) {
         const node = this.getParticleFromPool('explosion');
@@ -44,80 +50,93 @@ export class ParticleManager extends Component {
             return;
         }
         
-        // 设置位置
-        node.setPosition(position);
-        
-        // 根据等级设置颜色
         const particleSystem = node.getComponent(ParticleSystem2D);
+        
         if (particleSystem) {
+            // 根据进化等级设置颜色
             particleSystem.startColor = this.getExplosionColor(evolution);
             particleSystem.endColor = new Color(255, 100, 0, 0);
-        }
-        
-        // 播放
-        node.active = true;
-        if (particleSystem) {
+            
+            // 设置位置
+            node.setPosition(position);
+            node.active = true;
+            
+            // 重置并播放
             particleSystem.resetSystem();
+            
+            // 跟踪活跃粒子
+            const id = `explosion_${this.particleIdCounter++}`;
+            this.activeParticles.set(id, node);
+            
+            // 自动回收
+            this.scheduleOnce(() => {
+                this.recycleParticle('explosion', node);
+                this.activeParticles.delete(id);
+            }, 2.0);
         }
-        
-        // 自动回收
-        this.scheduleOnce(() => {
-            this.recycleParticle('explosion', node);
-        }, 2.0);
         
         console.log(`[ParticleManager] Explosion at ${position.x}, ${position.y}`);
     }
     
     /**
      * 播放升级特效
+     * @param position 世界坐标位置
+     * @param newEvolution 新的进化等级 (2-4)
      */
     playUpgrade(position: Vec3, newEvolution: number) {
         const node = this.getParticleFromPool('upgrade');
         if (!node) return;
         
-        node.setPosition(position);
-        
         const particleSystem = node.getComponent(ParticleSystem2D);
+        
         if (particleSystem) {
             particleSystem.startColor = this.getUpgradeColor(newEvolution);
-        }
-        
-        node.active = true;
-        if (particleSystem) {
+            
+            node.setPosition(position);
+            node.active = true;
             particleSystem.resetSystem();
+            
+            const id = `upgrade_${this.particleIdCounter++}`;
+            this.activeParticles.set(id, node);
+            
+            this.scheduleOnce(() => {
+                this.recycleParticle('upgrade', node);
+                this.activeParticles.delete(id);
+            }, 1.5);
         }
-        
-        this.scheduleOnce(() => {
-            this.recycleParticle('upgrade', node);
-        }, 1.5);
         
         console.log(`[ParticleManager] Upgrade to level ${newEvolution}`);
     }
     
     /**
      * 播放胜利特效
+     * @param position 世界坐标位置
      */
     playVictory(position: Vec3) {
         const node = this.getParticleFromPool('victory');
         if (!node) return;
         
-        node.setPosition(position);
-        node.active = true;
-        
         const particleSystem = node.getComponent(ParticleSystem2D);
-        if (particleSystem) {
-            particleSystem.resetSystem();
-        }
         
-        this.scheduleOnce(() => {
-            this.recycleParticle('victory', node);
-        }, 3.0);
+        if (particleSystem) {
+            node.setPosition(position);
+            node.active = true;
+            particleSystem.resetSystem();
+            
+            const id = `victory_${this.particleIdCounter++}`;
+            this.activeParticles.set(id, node);
+            
+            this.scheduleOnce(() => {
+                this.recycleParticle('victory', node);
+                this.activeParticles.delete(id);
+            }, 3.0);
+        }
         
         console.log('[ParticleManager] Victory effect');
     }
     
     /**
-     * 从对象池获取粒子
+     * 从对象池获取粒子节点
      */
     private getParticleFromPool(type: string): Node | null {
         let pool: Node[];
@@ -133,7 +152,7 @@ export class ParticleManager extends Component {
                 prefab = this.upgradePrefab;
                 break;
             case 'victory':
-                pool = [];
+                pool = this.victoryPool;
                 prefab = this.victoryPrefab;
                 break;
             default:
@@ -154,6 +173,7 @@ export class ParticleManager extends Component {
             return newNode;
         }
         
+        console.warn(`[ParticleManager] No prefab for ${type}`);
         return null;
     }
     
@@ -162,6 +182,13 @@ export class ParticleManager extends Component {
      */
     private recycleParticle(type: string, node: Node) {
         node.active = false;
+        node.setPosition(new Vec3(0, 0, 0));
+        
+        // 停止粒子发射
+        const ps = node.getComponent(ParticleSystem2D);
+        if (ps) {
+            ps.stopSystem();
+        }
         
         switch (type) {
             case 'explosion':
@@ -169,6 +196,9 @@ export class ParticleManager extends Component {
                 break;
             case 'upgrade':
                 this.upgradePool.push(node);
+                break;
+            case 'victory':
+                this.victoryPool.push(node);
                 break;
         }
     }
@@ -203,9 +233,55 @@ export class ParticleManager extends Component {
      */
     clearAll() {
         this.activeParticles.forEach((node, key) => {
+            const ps = node.getComponent(ParticleSystem2D);
+            if (ps) ps.stopSystem();
             node.active = false;
         });
         this.activeParticles.clear();
     }
+    
+    /**
+     * 获取当前活跃粒子数
+     */
+    getActiveCount(): number {
+        return this.activeParticles.size;
+    }
+    
+    /**
+     * 预创建粒子池（性能优化）
+     * @param type 粒子类型
+     * @param count 预创建数量
+     */
+    prewarmPool(type: string, count: number) {
+        let prefab: Node | null;
+        let pool: Node[];
+        
+        switch (type) {
+            case 'explosion':
+                prefab = this.explosionPrefab;
+                pool = this.explosionPool;
+                break;
+            case 'upgrade':
+                prefab = this.upgradePrefab;
+                pool = this.upgradePool;
+                break;
+            case 'victory':
+                prefab = this.victoryPrefab;
+                pool = this.victoryPool;
+                break;
+            default:
+                return;
+        }
+        
+        if (!prefab) return;
+        
+        for (let i = 0; i < count; i++) {
+            const node = instantiate(prefab);
+            node.active = false;
+            this.node.addChild(node);
+            pool.push(node);
+        }
+        
+        console.log(`[ParticleManager] Prewarmed ${count} ${type} particles`);
+    }
 }
-

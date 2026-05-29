@@ -1,73 +1,97 @@
 # 炸弹牛项目 - 粒子特效适配Cocos需求与实现方案
 
-**版本**: v1.0  
+**版本**: v2.0（已移除震动设计）  
 **日期**: 2026-05-29  
 **引擎**: Cocos Creator 3.8.8  
 **平台**: 微信小游戏
 
 ---
 
-## 一、现状分析
+## 一、设计约束声明
 
-### 1.1 已有实现
+### 1.1 已移除的功能
+- ❌ **屏幕震动** - 全部移除，包括代码实现、事件触发、配置参数
+- ❌ **微信震动反馈** (`wx.vibrateShort` / `wx.vibrateLong`) - 全部移除
+- ❌ **相机震动偏移** - 全部移除
 
-当前 `ParticleManager.ts` 已使用 Cocos `ParticleSystem2D` 组件，支持：
-- 爆炸特效（按进化等级变色）
-- 升级特效
-- 胜利特效
-- 对象池复用
-
-### 1.2 存在的问题
-
-| 问题 | 影响 | 原因 |
-|------|------|------|
-| 粒子预制体缺失 | 特效无法显示 | explosionPrefab/upgradePrefab/victoryPrefab 未绑定 |
-| 无美术资产 | 效果简陋 | 使用纯代码粒子，无精灵图纹理 |
-| 与原有设计脱节 | 视觉效果不达标 | 未参考 `EFFECTS_ASSET_REQUIREMENTS.md` 的美术规格 |
-| 缺少屏幕震动 | 打击感不足 | GameScene 未接入震动反馈 |
-
-### 1.3 原有设计规格（需保留）
-
-来自 `EFFECTS_ASSET_REQUIREMENTS.md` 和 `GAMEPLAY_DESIGN.md`：
-
-**爆炸特效等级化：**
-- Lv.0（基础）：橙色火花，8-12个粒子，0.5秒
-- Lv.1（强化）：蓝色火花，15-20个粒子，0.8秒，带烟雾
-- Lv.2（超级）：紫色火花，25-30个粒子，1.2秒，带烟雾+星光
-- Lv.3（究极）：红色火花，35-50个粒子，1.5秒，屏幕震动
-
-**分层渲染顺序：**
-1. 游戏世界（renderer.render）
-2. 背景特效层（烟雾）
-3. 实体特效层（冲击波）
-4. 前景特效层（火花，Additive混合）
-5. UI层
+### 1.2 保留的原有规则
+- ✅ 粒子特效等级化（Lv.1-Lv.4 不同颜色/数量/持续时间）
+- ✅ 分层渲染架构（背景/实体/前景）
+- ✅ 对象池复用机制
+- ✅ 爆炸/升级/胜利三种特效类型
+- ✅ 原有色调体系（橙/蓝/紫/红/金）
 
 ---
 
-## 二、适配方案（不改变原有规则）
+## 二、原有特效实现构成分析
 
-### 2.1 方案选择：纯代码粒子 → Cocos ParticleSystem2D
+### 2.1 爆炸特效（来自 EFFECTS_TEST.md / EFFECTS_ASSET_REQUIREMENTS.md）
 
-**决策理由：**
-- 微信小游戏性能敏感，避免额外图片资源
-- Cocos `ParticleSystem2D` 支持代码配置所有参数
-- 与现有 `ParticleManager` 架构兼容
-- 无需美术资产即可运行，后续可无缝替换为图片纹理
+**Lv.0 基础爆炸（橙色）**：
+- 中心闪光（金色 #FFD700）
+- 8-12个橙色火花向四周散射
+- 小型冲击波环（半径60px）
+- 持续时间：0.5秒
+- 主色：#FF6B35（橙红）
+- 尾迹：#FF4500（红橙）
 
-### 2.2 核心设计原则
+**Lv.1 强化爆炸（蓝色）**：
+- 强烈中心闪光（白色）
+- 15-20个蓝色火花散射
+- 中型冲击波环（半径100px）
+- 蓝色烟雾向上飘散
+- 持续时间：0.8秒
+- 主色：#5BA3F5（天蓝）
+- 尾迹：#4169E1（皇家蓝）
+- 烟雾：#A0C4FF（淡蓝）
 
-1. **逻辑驱动表现**：特效由 GameLogic 事件触发，位置/等级/颜色由逻辑层决定
-2. **等级化配置**：每个进化等级独立粒子参数
-3. **对象池复用**：避免运行时创建销毁开销
-4. **分层管理**：背景/实体/前景三层独立控制
-5. **可扩展**：预留图片纹理替换接口
+**Lv.2 超级爆炸（紫色）**：
+- 极强烈中心闪光（白色，持续0.3秒）
+- 25-30个紫色火花高速散射
+- 大型冲击波环（半径140px）
+- 紫色烟雾 + 金色星光粒子
+- 持续时间：1.2秒
+- 主色：#C084FC（紫罗兰）
+- 尾迹：#8A2BE2（蓝紫）
+- 烟雾：#D0A0FF（淡紫）
+- 星光：#FFD700（金色）
+
+**Lv.3 究极爆炸（红色）**：
+- 35-50个红色火花超高速散射
+- 超大型冲击波环（半径180px）
+- 红色烟雾 + 金色星光 + 白色闪光残留
+- 持续时间：1.5秒
+- 主色：#FF0000（纯红）
+- 尾迹：#8B0000（暗红）
+- 星光：#FFD700（金色）
+
+### 2.2 升级特效（来自 GAMEPLAY_DESIGN.md）
+
+- Lv.1→Lv.2：绿色光环上升（#00FF64）
+- Lv.2→Lv.3：蓝色光环上升（#0096FF）
+- Lv.3→Lv.4：紫色光环上升（#FF00FF）
+- 伴随粒子向上飘散效果
+- 持续时间：0.6-1.0秒
+
+### 2.3 胜利特效（来自原有设计）
+
+- 金色粒子雨从屏幕上方飘落
+- 持续时间：3.0秒
+- 颜色：#FFD700（金色）
+- 伴随少量白色闪光粒子
 
 ---
 
-## 三、详细实现方案
+## 三、Cocos ParticleSystem2D 适配方案
 
-### 3.1 粒子预制体结构（Cocos Editor 中创建）
+### 3.1 核心设计决策
+
+**使用纯代码配置 ParticleSystem2D，不依赖外部图片纹理**
+- 微信小游戏包体敏感，避免额外资源
+- Cocos 内置粒子支持代码全参数配置
+- 后续可无缝替换为自定义纹理
+
+### 3.2 粒子预制体结构（Editor 中创建）
 
 #### ExplosionParticle.prefab
 ```
@@ -84,11 +108,11 @@ Node: "ExplosionParticle"
 │   ├── startSize: 8
 │   ├── startSizeVar: 4
 │   ├── endSize: 2
-│   ├── startColor: (255, 200, 0, 255)  // 橙色默认
+│   ├── startColor: (255, 200, 0, 255)  // 默认黄色
 │   ├── endColor: (255, 100, 0, 0)
 │   ├── gravity: (0, -40)
 │   ├── positionType: FREE
-│   └── texture: null (使用代码设置)
+│   └── texture: null (使用默认点状纹理)
 └── UITransform (组件)
 ```
 
@@ -105,7 +129,7 @@ Node: "UpgradeParticle"
 │   ├── speedVar: 40
 │   ├── startSize: 12
 │   ├── endSize: 4
-│   ├── startColor: (0, 255, 100, 255)  // 绿色默认
+│   ├── startColor: (0, 255, 100, 255)  // 默认绿色
 │   ├── endColor: (0, 150, 255, 0)
 │   ├── gravity: (0, -20)
 │   └── positionType: FREE
@@ -132,21 +156,19 @@ Node: "VictoryParticle"
 └── UITransform (组件)
 ```
 
-### 3.2 ParticleManager 代码增强
+### 3.3 ParticleManager 代码实现
 
 ```typescript
-// 增强版 ParticleManager - 适配原有设计规则
-
 import { _decorator, Component, Node, Vec3, ParticleSystem2D, Color, instantiate } from 'cc';
 
 const { ccclass, property } = _decorator;
 
 /**
- * 粒子特效配置（按进化等级）
+ * 爆炸特效配置（按进化等级）
  * 与 EFFECTS_ASSET_REQUIREMENTS.md 规格对应
  */
 const EXPLOSION_CONFIG = {
-    1: {  // Lv.0 基础
+    1: {  // Lv.0 基础 - 橙色
         count: 12,
         speed: 100,
         speedVar: 60,
@@ -159,7 +181,7 @@ const EXPLOSION_CONFIG = {
         gravity: new Vec3(0, -40, 0),
         duration: 0.5
     },
-    2: {  // Lv.1 强化
+    2: {  // Lv.1 强化 - 蓝色
         count: 18,
         speed: 120,
         speedVar: 80,
@@ -172,7 +194,7 @@ const EXPLOSION_CONFIG = {
         gravity: new Vec3(0, -30, 0),
         duration: 0.8
     },
-    3: {  // Lv.2 超级
+    3: {  // Lv.2 超级 - 紫色
         count: 28,
         speed: 150,
         speedVar: 100,
@@ -185,7 +207,7 @@ const EXPLOSION_CONFIG = {
         gravity: new Vec3(0, -20, 0),
         duration: 1.0
     },
-    4: {  // Lv.3 究极
+    4: {  // Lv.3 究极 - 红色
         count: 40,
         speed: 180,
         speedVar: 120,
@@ -201,24 +223,24 @@ const EXPLOSION_CONFIG = {
 };
 
 const UPGRADE_CONFIG = {
-    2: {  // 升到 Lv.1
+    2: {  // 升到 Lv.1 - 绿色
         count: 15,
         speed: 80,
-        startColor: new Color(0, 255, 100, 255),       // 绿色
+        startColor: new Color(0, 255, 100, 255),       // #00FF64
         endColor: new Color(0, 150, 255, 0),
         duration: 0.6
     },
-    3: {  // 升到 Lv.2
+    3: {  // 升到 Lv.2 - 蓝色
         count: 20,
         speed: 100,
-        startColor: new Color(0, 150, 255, 255),      // 蓝色
+        startColor: new Color(0, 150, 255, 255),      // #0096FF
         endColor: new Color(255, 0, 255, 0),
         duration: 0.8
     },
-    4: {  // 升到 Lv.3
+    4: {  // 升到 Lv.3 - 紫色
         count: 25,
         speed: 120,
-        startColor: new Color(255, 0, 255, 255),      // 紫色
+        startColor: new Color(255, 0, 255, 255),      // #FF00FF
         endColor: new Color(255, 215, 0, 0),
         duration: 1.0
     }
@@ -503,171 +525,36 @@ export class ParticleManager extends Component {
 }
 ```
 
-### 3.3 屏幕震动集成（GameScene 增强）
+### 3.4 GameScene 事件绑定（无震动版本）
 
 ```typescript
-// 在 GameScene.ts 中添加屏幕震动
-
-import { _decorator, Component, Node, Vec3, screen, view } from 'cc';
-
-// 震动配置（与 GAMEPLAY_DESIGN.md 对应）
-const SHAKE_CONFIG = {
-    light: { duration: 0.015, intensity: 2 },    // 升级
-    medium: { duration: 0.025, intensity: 4 },   // 墙壁摧毁
-    heavy: { duration: 0.04, intensity: 6 }      // 爆炸
-};
-
-export class GameScene extends Component {
+private bindEvents() {
+    if (!this.gameLogic) return;
     
-    // ... 现有代码 ...
-    
-    private shakeDuration: number = 0;
-    private shakeIntensity: number = 0;
-    private shakeTimer: number = 0;
-    private originalCameraPos: Vec3 = new Vec3();
-    
-    update(dt: number) {
-        // 处理屏幕震动
-        if (this.shakeTimer > 0) {
-            this.shakeTimer -= dt;
-            
-            if (this.shakeTimer <= 0) {
-                // 恢复相机位置
-                const camera = this.node.scene.getComponentInChildren(Camera);
-                if (camera) {
-                    camera.node.setPosition(this.originalCameraPos);
-                }
-            } else {
-                // 应用震动
-                const offsetX = (Math.random() - 0.5) * this.shakeIntensity * 2;
-                const offsetY = (Math.random() - 0.5) * this.shakeIntensity * 2;
-                
-                const camera = this.node.scene.getComponentInChildren(Camera);
-                if (camera) {
-                    const newPos = this.originalCameraPos.clone();
-                    newPos.x += offsetX;
-                    newPos.y += offsetY;
-                    camera.node.setPosition(newPos);
-                }
-            }
-        }
-    }
-    
-    /**
-     * 触发屏幕震动
-     * @param type 震动类型: 'light' | 'medium' | 'heavy'
-     */
-    triggerScreenShake(type: 'light' | 'medium' | 'heavy') {
-        const config = SHAKE_CONFIG[type];
-        if (!config) return;
+    // 炸弹爆炸 - 仅播放粒子和音效，无震动
+    this.gameLogic.onEvent('bomb_exploded', (data: any) => {
+        this.audioManager?.playSfx('bomb_explode');
         
-        // 保存原始相机位置
-        const camera = this.node.scene.getComponentInChildren(Camera);
-        if (camera && this.shakeTimer <= 0) {
-            this.originalCameraPos = camera.node.position.clone();
+        // 播放爆炸粒子
+        const pos = this.gridManager?.gridToWorld(data.x, data.y);
+        if (pos) {
+            this.particleManager?.playExplosion(pos, data.evolution);
         }
         
-        this.shakeDuration = config.duration;
-        this.shakeIntensity = config.intensity;
-        this.shakeTimer = config.duration;
+        this.updateUI();
+    });
+    
+    // 炸弹升级 - 仅播放粒子和音效，无震动
+    this.gameLogic.onEvent('bomb_upgraded', (data: any) => {
+        this.audioManager?.playSfx('bomb_upgrade');
         
-        // 微信震动反馈（真机）
-        if (typeof wx !== 'undefined' && wx.vibrateShort) {
-            switch (type) {
-                case 'light':
-                    wx.vibrateShort({ type: 'light' });
-                    break;
-                case 'medium':
-                    wx.vibrateShort({ type: 'medium' });
-                    break;
-                case 'heavy':
-                    wx.vibrateLong();
-                    break;
-            }
+        const pos = this.gridManager?.gridToWorld(data.x, data.y);
+        if (pos) {
+            this.particleManager?.playUpgrade(pos, data.newEvolution);
         }
-    }
+    });
     
-    // 在事件绑定中接入震动
-    private bindEvents() {
-        // ... 现有事件绑定 ...
-        
-        // 炸弹爆炸 - 触发重震动
-        this.gameLogic.onEvent('bomb_exploded', (data: any) => {
-            this.audioManager?.playSfx('bomb_explode');
-            
-            const pos = this.gridManager?.gridToWorld(data.x, data.y);
-            if (pos) {
-                this.particleManager?.playExplosion(pos, data.evolution);
-                
-                // 根据进化等级选择震动强度
-                const shakeType = data.evolution >= 3 ? 'heavy' : 'medium';
-                this.triggerScreenShake(shakeType);
-            }
-            
-            this.updateUI();
-        });
-        
-        // 炸弹升级 - 触发轻震动
-        this.gameLogic.onEvent('bomb_upgraded', (data: any) => {
-            this.audioManager?.playSfx('bomb_upgrade');
-            
-            const pos = this.gridManager?.gridToWorld(data.x, data.y);
-            if (pos) {
-                this.particleManager?.playUpgrade(pos, data.newEvolution);
-                this.triggerScreenShake('light');
-            }
-        });
-        
-        // ... 其他事件 ...
-    }
-}
-```
-
-### 3.4 分层渲染架构（可选增强）
-
-如需实现原有设计的分层渲染，创建三个 ParticleManager 实例：
-
-```typescript
-// GameScene.ts 中初始化分层粒子系统
-
-@property(Node)
-backgroundEffectLayer: Node | null = null;  // 烟雾层
-
-@property(Node)
-entityEffectLayer: Node | null = null;      // 冲击波层
-
-@property(Node)
-foregroundEffectLayer: Node | null = null;  // 火花层
-
-private bgParticleManager: ParticleManager | null = null;
-private entityParticleManager: ParticleManager | null = null;
-private fgParticleManager: ParticleManager | null = null;
-
-private initManagers() {
-    // ... 现有管理器初始化 ...
-    
-    // 分层粒子管理器
-    if (this.backgroundEffectLayer) {
-        this.bgParticleManager = this.backgroundEffectLayer.addComponent(ParticleManager);
-    }
-    if (this.entityEffectLayer) {
-        this.entityParticleManager = this.entityEffectLayer.addComponent(ParticleManager);
-    }
-    if (this.foregroundEffectLayer) {
-        this.fgParticleManager = this.foregroundEffectLayer.addComponent(ParticleManager);
-    }
-}
-
-// 爆炸时分层播放
-playLayeredExplosion(position: Vec3, evolution: number) {
-    // 背景层：烟雾（低透明度）
-    this.bgParticleManager?.playExplosion(position, evolution);
-    
-    // 实体层：冲击波（缩放扩散）
-    this.entityParticleManager?.playExplosion(position, evolution);
-    
-    // 前景层：火花（Additive混合）
-    this.fgParticleManager?.playExplosion(position, evolution);
+    // ... 其他事件绑定保持不变
 }
 ```
 
@@ -677,9 +564,9 @@ playLayeredExplosion(position: Vec3, evolution: number) {
 
 ### 4.1 创建粒子预制体
 
-1. **创建空节点**：在层级管理器中右键 → 创建节点 → 创建空节点
+1. **创建空节点**：层级管理器右键 → 创建节点 → 创建空节点
 2. **命名**：`ExplosionParticle`
-3. **添加组件**：Inspector 面板 → 添加组件 → 渲染 → ParticleSystem2D
+3. **添加组件**：Inspector → 添加组件 → 渲染 → ParticleSystem2D
 4. **配置参数**：按 3.1 节表格填写
 5. **保存预制体**：拖入 `assets/prefabs/` 目录
 6. **重复**：创建 UpgradeParticle 和 VictoryParticle
@@ -687,12 +574,12 @@ playLayeredExplosion(position: Vec3, evolution: number) {
 ### 4.2 场景绑定
 
 1. 打开 `Game.scene`
-2. 在 `GameRoot` 节点上：
-   - 确认 `ParticleManager` 组件已挂载
-   - 将 `ExplosionParticle.prefab` 拖到 `Explosion Prefab` 属性
-   - 将 `UpgradeParticle.prefab` 拖到 `Upgrade Prefab` 属性
-   - 将 `VictoryParticle.prefab` 拖到 `Victory Prefab` 属性
-3. 保存场景
+2. 在 `GameRoot` 节点上确认 `ParticleManager` 组件已挂载
+3. 将预制体拖到对应属性：
+   - `ExplosionParticle.prefab` → `Explosion Prefab`
+   - `UpgradeParticle.prefab` → `Upgrade Prefab`
+   - `VictoryParticle.prefab` → `Victory Prefab`
+4. 保存场景
 
 ### 4.3 性能优化设置
 
@@ -708,10 +595,6 @@ playLayeredExplosion(position: Vec3, evolution: number) {
    this.particleManager?.prewarmPool('upgrade', 5);
    ```
 
-3. **纹理设置**：
-   - 如使用自定义粒子纹理，设置为 SpriteFrame
-   - 压缩格式：微信小游戏使用 ASTC 或 ETC2
-
 ---
 
 ## 五、验证清单
@@ -722,39 +605,34 @@ playLayeredExplosion(position: Vec3, evolution: number) {
 - [ ] 不同进化等级爆炸颜色不同（橙/蓝/紫/红）
 - [ ] 炸弹升级时有绿色/蓝色/紫色升级特效
 - [ ] 关卡胜利时有金色粒子雨
-- [ ] 爆炸时有屏幕震动（真机测试）
 - [ ] 连续爆炸不卡顿（性能测试）
 - [ ] 粒子对象池正常工作（无内存泄漏）
+- [ ] **确认无屏幕震动效果**（真机测试）
 
 ---
 
-## 六、后续扩展（可选）
+## 六、已清理的震动相关代码
 
-### 6.1 替换为美术资产
+### 6.1 Wall.ts 清理内容
+- ❌ 移除 `shakeTime` 属性
+- ❌ 移除 `startShake()` 方法
+- ❌ 移除 `takeDamage()` 中的震动调用
 
-当美术提供粒子纹理后：
+### 6.2 GameScene.ts 清理内容
+- ❌ 移除 `triggerScreenShake()` 方法
+- ❌ 移除 `SHAKE_CONFIG` 配置
+- ❌ 移除 `update()` 中的震动处理
+- ❌ 移除事件绑定中的 `triggerScreenShake()` 调用
+- ❌ 移除微信 `wx.vibrateShort` / `wx.vibrateLong` 调用
 
-1. 导入纹理到 `assets/resources/effects/`
-2. 在 ParticleSystem2D 组件中设置 `SpriteFrame`
-3. 调整粒子尺寸和生命周期匹配美术效果
-4. 无需修改代码，仅调整 Editor 参数
-
-### 6.2 添加新特效类型
-
-```typescript
-// 在 ParticleManager 中添加
-playWallDestroy(position: Vec3, wallType: string) {
-    // 墙壁摧毁特效：碎石飞溅
-}
-
-playComboEffect(position: Vec3, comboCount: number) {
-    // 连击特效：数字飘字 + 光环
-}
-```
+### 6.3 文档清理内容
+- ❌ 移除所有震动配置说明
+- ❌ 移除震动触发条件描述
+- ❌ 移除 `vibrateConfig` 相关设计
 
 ---
 
-**文档版本**: v1.0  
+**文档版本**: v2.0（已移除震动）  
 **更新日期**: 2026-05-29  
 **负责人**: 2B (AI Assistant)  
 **状态**: 待实施
