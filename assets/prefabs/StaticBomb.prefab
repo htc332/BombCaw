@@ -1,5 +1,6 @@
 [
   {
+    "ver": "1.1.27",
     "__type__": "cc.Prefab",
     "_name": "StaticBomb",
     "_objFlags": 0,
@@ -30,11 +31,11 @@
         "__id__": 6
       },
       {
-        "__id__": 9
+        "__id__": 8
       }
     ],
     "_prefab": {
-      "__id__": 10
+      "__id__": 9
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -153,7 +154,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 10
+      "__id__": 9
     },
     "sprite": {
       "__id__": 4

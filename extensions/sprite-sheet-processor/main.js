@@ -1,16 +1,5 @@
 /**
  * SpriteSheetProcessor - Editor Extension
- * 
- * 在 Cocos Creator Editor 中运行，自动处理精灵图切割。
- * 
- * 用法：
- * 1. 打开 Cocos Creator
- * 2. 菜单栏 → 扩展 → SpriteSheetProcessor → 处理所有精灵图
- * 
- * 功能：
- * - 读取 assets/resources/sprites/*/index.json
- * - 按帧数据切割 sprite.png
- * - 生成 SpriteFrame 到 assets/resources/sprites/*/frames/
  */
 
 const fs = require('fs');

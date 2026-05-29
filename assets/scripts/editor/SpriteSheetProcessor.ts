@@ -1,4 +1,4 @@
-import { _decorator, Component, Sprite, SpriteFrame, Texture2D, assetManager, Size, Rect, Vec2 } from 'cc';
+import { _decorator, Component, Sprite, SpriteFrame, Texture2D, assetManager, Size, Rect, Vec2, CCString } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -19,7 +19,7 @@ const { ccclass, property } = _decorator;
 @ccclass('SpriteSheetProcessor')
 export class SpriteSheetProcessor extends Component {
     
-    @property([String])
+    @property([CCString])
     spriteSheetConfigs: string[] = [
         'sprites/lv1',
         'sprites/lv2',

@@ -1,8 +1,12 @@
 {
   "name": "sprite-sheet-processor",
   "version": "1.0.0",
-  "description": "自动处理精灵图切割，生成 SpriteFrame",
+  "package_version": 2,
+  "description": "Auto process sprite sheet cutting",
   "main": "main.js",
+  "engines": {
+    "creator": ">=3.0.0"
+  },
   "contributions": {
     "menu": [
       {

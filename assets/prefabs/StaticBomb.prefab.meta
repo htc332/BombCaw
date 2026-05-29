@@ -1,5 +1,5 @@
 {
-  "ver": "1.0.27",
+  "ver": "1.1.50",
   "importer": "prefab",
   "imported": true,
   "uuid": "c3d4e5f6-a7b8-9012-cdef-345678901234",
@@ -8,6 +8,7 @@
   ],
   "subMetas": {},
   "userData": {
-    "redirect": "c3d4e5f6-a7b8-9012-cdef-345678901234@f9941"
+    "redirect": "c3d4e5f6-a7b8-9012-cdef-345678901234@f9941",
+    "syncNodeName": "StaticBomb"
   }
 }
