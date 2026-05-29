@@ -69,14 +69,19 @@ export class SpriteSheetLoader extends Component {
     
     /**
      * 加载纹理
+     * 路径格式：相对于 resources 目录，不带扩展名
+     * 例如：sprites/lv1/sprite
      */
     private loadTexture(path: string, callback: (texture: Texture2D | null) => void) {
+        // 去掉可能的 .png 后缀和 resources/ 前缀
+        let cleanPath = path.replace(/^resources\//, '').replace(/\.png$/, '');
+        
         // 使用 resources 目录下的资源
         const bundle = assetManager.getBundle('resources');
         if (bundle) {
-            bundle.load(path, Texture2D, (err, texture) => {
+            bundle.load(cleanPath, Texture2D, (err, texture) => {
                 if (err) {
-                    console.error('[SpriteSheetLoader] Bundle load error:', err);
+                    console.error('[SpriteSheetLoader] Bundle load error:', err, 'path:', cleanPath);
                     callback(null);
                     return;
                 }
@@ -97,25 +102,31 @@ export class SpriteSheetLoader extends Component {
     
     /**
      * 加载索引 JSON
+     * 路径格式：相对于 resources 目录，不带扩展名
+     * 例如：sprites/lv1/index
      */
     private loadIndexJson(texture: Texture2D, indexPath: string) {
+        // 去掉可能的 .json 后缀和 resources/ 前缀
+        let cleanPath = indexPath.replace(/^resources\//, '').replace(/\.json$/, '');
+        
         // 从 resources 加载 json
         const bundle = assetManager.getBundle('resources');
         if (bundle) {
-            bundle.load(indexPath, (err, asset) => {
+            bundle.load(cleanPath, (err, asset) => {
                 if (err) {
-                    console.error('[SpriteSheetLoader] JSON load error:', err);
+                    console.error('[SpriteSheetLoader] JSON load error:', err, 'path:', cleanPath);
                     return;
                 }
                 const indexData = asset as any;
-                this.processSpriteSheet(texture, indexData.json ? indexData.json.frames : indexData.frames);
+                const frames = indexData.json ? indexData.json.frames : (indexData.frames || []);
+                this.processSpriteSheet(texture, frames);
             });
         } else {
             // 使用 fetch 回退
             fetch(indexPath)
                 .then(response => response.json())
                 .then(data => {
-                    this.processSpriteSheet(texture, data.frames);
+                    this.processSpriteSheet(texture, data.frames || []);
                 })
                 .catch(err => {
                     console.error('[SpriteSheetLoader] Failed to load index json:', err);

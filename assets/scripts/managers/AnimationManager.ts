@@ -77,8 +77,8 @@ export class AnimationManager extends Component {
         const sprite = loaderNode.addComponent(Sprite);
         const animHelper = loaderNode.addComponent(SpriteAnimationHelper);
         
-        loader.spriteSheetPath = `${path}/sprite.png`;
-        loader.indexJsonPath = `${path}/index.json`;
+        loader.spriteSheetPath = `${path}/sprite`;
+        loader.indexJsonPath = `${path}/index`;
         loader.targetSprite = sprite;
         
         loader.loadSpriteSheet(loader.spriteSheetPath, loader.indexJsonPath, (frames: SpriteFrame[]) => {
