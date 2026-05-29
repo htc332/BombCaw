@@ -70,6 +70,9 @@
       },
       {
         "__id__": 4
+      },
+      {
+        "__id__": 8
       }
     ],
     "_active": true,
@@ -208,15 +211,90 @@
       "__uuid__": "9cc63530-9855-47c5-a111-f643b0c00f1a",
       "__expectedType__": "cc.Prefab"
     },
-    "staticBombPrefab": null,
+    "staticBombPrefab": {
+      "__uuid__": "ca78e900-5b6a-4768-b62f-c11d78cbc686",
+      "__expectedType__": "cc.Prefab"
+    },
     "gameLayer": {
       "__id__": 3
     },
     "uiLayer": {
       "__id__": 4
     },
-    "canvas": null,
+    "canvas": {
+      "__id__": 2
+    },
+    "particleLayer": {
+      "__id__": 8
+    },
     "_id": "04lWBzISZCorSfPdKMgpoJ"
+  },
+  {
+    "__type__": "cc.Node",
+    "_name": "particleLayer",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "_parent": {
+      "__id__": 2
+    },
+    "_children": [],
+    "_active": true,
+    "_components": [
+      {
+        "__id__": 9
+      }
+    ],
+    "_prefab": null,
+    "_lpos": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_lrot": {
+      "__type__": "cc.Quat",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "w": 1
+    },
+    "_lscale": {
+      "__type__": "cc.Vec3",
+      "x": 1,
+      "y": 1,
+      "z": 1
+    },
+    "_mobility": 0,
+    "_layer": 1073741824,
+    "_euler": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_id": "f8jKlMnOpQrStUvWxYz1234"
+  },
+  {
+    "__type__": "cc.UITransform",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 8
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "_contentSize": {
+      "__type__": "cc.Size",
+      "width": 960,
+      "height": 640
+    },
+    "_anchorPoint": {
+      "__type__": "cc.Vec2",
+      "x": 0.5,
+      "y": 0.5
+    },
+    "_id": "f8jKlMnOpQrStUvWxYz1235"
   },
   {
     "__type__": "cc.SceneGlobals",

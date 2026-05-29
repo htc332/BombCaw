@@ -25,10 +25,13 @@
       },
       {
         "__id__": 4
+      },
+      {
+        "__id__": 7
       }
     ],
     "_prefab": {
-      "__id__": 6
+      "__id__": 8
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -73,8 +76,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 100,
-      "height": 100
+      "width": 64,
+      "height": 64
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -118,6 +121,27 @@
   {
     "__type__": "cc.CompPrefabInfo",
     "fileId": "A+1d7vRQ1maQXz/nI6KwNK"
+  },
+  {
+    "__type__": "Wall",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "__prefab": {
+      "__id__": 8
+    },
+    "sprite": {
+      "__id__": 4
+    },
+    "hp": 1,
+    "maxHp": 1,
+    "type": "normal",
+    "isDead": false,
+    "_id": ""
   },
   {
     "__type__": "cc.PrefabInfo",

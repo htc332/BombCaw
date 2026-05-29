@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Label, ScrollView, Layout, director, Color, Sprite } from 'cc';
+import { _decorator, Component, Node, Button, Label, ScrollView, Layout, director, Color, Sprite, UITransform } from 'cc';
 import { LevelManager } from '../managers/LevelManager';
 
 const { ccclass, property } = _decorator;
@@ -173,5 +173,3 @@ export class LevelSelect extends Component {
     }
 }
 
-// 需要导入 UITransform
-import { UITransform } from 'cc';

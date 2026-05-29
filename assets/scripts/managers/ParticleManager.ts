@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, ParticleSystem2D, Color, Size } from 'cc';
+import { _decorator, Component, Node, Vec3, ParticleSystem2D, Color, Size, instantiate } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -209,5 +209,3 @@ export class ParticleManager extends Component {
     }
 }
 
-// 需要导入 instantiate
-import { instantiate } from 'cc';

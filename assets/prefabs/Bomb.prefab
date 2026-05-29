@@ -28,10 +28,13 @@
       },
       {
         "__id__": 6
+      },
+      {
+        "__id__": 9
       }
     ],
     "_prefab": {
-      "__id__": 8
+      "__id__": 10
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -76,8 +79,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 100,
-      "height": 100
+      "width": 64,
+      "height": 64
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -139,6 +142,28 @@
   {
     "__type__": "cc.CompPrefabInfo",
     "fileId": "bxV0BBbe0GHrdpQH+Bqaw9"
+  },
+  {
+    "__type__": "Bomb",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "__prefab": {
+      "__id__": 10
+    },
+    "sprite": {
+      "__id__": 4
+    },
+    "evolution": 1,
+    "countdown": 3,
+    "isStatic": false,
+    "isActive": false,
+    "power": 1,
+    "_id": ""
   },
   {
     "__type__": "cc.PrefabInfo",
