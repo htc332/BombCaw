@@ -731,7 +731,7 @@
     "_spriteFrame": {
       "__uuid__": "default_sprite_frame",
       "__expectedType__": "cc.SpriteFrame"
-    },
+    }
   },
   {
     "__type__": "cc.Button",
@@ -876,7 +876,7 @@
     "_spriteFrame": {
       "__uuid__": "default_sprite_frame",
       "__expectedType__": "cc.SpriteFrame"
-    },
+    }
   },
   {
     "__type__": "cc.Button",
@@ -1021,7 +1021,7 @@
     "_spriteFrame": {
       "__uuid__": "default_sprite_frame",
       "__expectedType__": "cc.SpriteFrame"
-    },
+    }
   },
   {
     "__type__": "cc.Button",
