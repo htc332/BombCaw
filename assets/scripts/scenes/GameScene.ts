@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate, Vec3, UITransform, Size, Canvas, director, EventTarget, JsonAsset, resources, Vec2 } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, Vec3, UITransform, Size, Canvas, director, EventTarget, JsonAsset, resources, Vec2, Label, Button } from 'cc';
 import { GameLogic } from '../core/GameLogic';
 import { GridManager } from '../core/GridManager';
 import { AnimationManager } from '../managers/AnimationManager';
@@ -6,6 +6,7 @@ import { UIManager } from '../managers/UIManager';
 import { AudioManager } from '../managers/AudioManager';
 import { ParticleManager } from '../managers/ParticleManager';
 import { LevelManager, LevelData } from '../managers/LevelManager';
+import { ScoreManager } from '../managers/ScoreManager';
 
 const { ccclass, property } = _decorator;
 
@@ -53,6 +54,7 @@ export class GameScene extends Component {
     private audioManager: AudioManager | null = null;
     private particleManager: ParticleManager | null = null;
     private levelManager: LevelManager | null = null;
+    private scoreManager: ScoreManager | null = null;
     
     // 当前关卡数据
     private currentLevelData: LevelData | null = null;
@@ -132,6 +134,12 @@ export class GameScene extends Component {
         if (!this.levelManager) {
             this.levelManager = this.addComponent(LevelManager);
         }
+        
+        // ScoreManager
+        this.scoreManager = this.getComponent(ScoreManager);
+        if (!this.scoreManager) {
+            this.scoreManager = this.addComponent(ScoreManager);
+        }
     }
     
     /**
@@ -163,6 +171,56 @@ export class GameScene extends Component {
         // 更新 UI
         this.uiManager?.updateLevelInfo(levelId, levelData.walls.length);
         this.uiManager?.updateBombsLeft(levelData.bombs);
+        
+        // 绑定 ScoreManager 的 UI 引用
+        if (this.scoreManager && this.uiLayer) {
+            const scoreLabel = this.uiLayer.getChildByName('scoreLabel');
+            const comboLabel = this.uiLayer.getChildByName('comboLabel');
+            const floatingContainer = this.uiLayer.getChildByName('floatingTextContainer');
+            
+            if (scoreLabel) {
+                this.scoreManager.scoreLabel = scoreLabel.getComponent(Label) || null;
+            }
+            if (comboLabel) {
+                this.scoreManager.comboLabel = comboLabel.getComponent(Label) || null;
+            }
+            if (floatingContainer) {
+                this.scoreManager.floatingTextContainer = floatingContainer;
+            }
+        }
+        
+        // 绑定 UIManager 的 UI 引用
+        if (this.uiManager && this.uiLayer) {
+            const scoreLabel = this.uiLayer.getChildByName('scoreLabel');
+            const bombsLeftLabel = this.uiLayer.getChildByName('bombsLeftLabel');
+            const levelInfoLabel = this.uiLayer.getChildByName('levelInfoLabel');
+            const victoryPanel = this.uiLayer.getChildByName('victoryPanel');
+            const gameOverPanel = this.uiLayer.getChildByName('gameOverPanel');
+            const resetButton = this.uiLayer.getChildByName('resetButton');
+            const nextLevelButton = this.uiLayer.getChildByName('nextLevelButton');
+            
+            if (scoreLabel) {
+                this.uiManager.scoreLabel = scoreLabel.getComponent(Label) || null;
+            }
+            if (bombsLeftLabel) {
+                this.uiManager.bombsLeftLabel = bombsLeftLabel.getComponent(Label) || null;
+            }
+            if (levelInfoLabel) {
+                this.uiManager.levelInfoLabel = levelInfoLabel.getComponent(Label) || null;
+            }
+            if (victoryPanel) {
+                this.uiManager.victoryPanel = victoryPanel;
+            }
+            if (gameOverPanel) {
+                this.uiManager.gameOverPanel = gameOverPanel;
+            }
+            if (resetButton) {
+                this.uiManager.resetButton = resetButton.getComponent(Button) || null;
+            }
+            if (nextLevelButton) {
+                this.uiManager.nextLevelButton = nextLevelButton.getComponent(Button) || null;
+            }
+        }
         
         console.log(`[GameScene] Level ${levelId} loaded: ${levelData.name}`);
         return true;
