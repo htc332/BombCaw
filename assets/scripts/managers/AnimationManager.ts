@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Sprite, SpriteFrame, Texture2D, assetManager, Size, Rect, Vec3 } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, Texture2D, assetManager, Size, Rect, Vec3, UITransform } from 'cc';
 import { SpriteAnimationHelper } from '../components/SpriteAnimationHelper';
 import { SpriteSheetLoader } from '../components/SpriteSheetLoader';
 
