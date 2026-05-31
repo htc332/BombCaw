@@ -73,6 +73,10 @@ export class AnimationManager extends Component {
         const loaderNode = new Node(`Loader_${name}`);
         this.node.addChild(loaderNode);
         
+        // 必须添加 UITransform 才能渲染
+        const uiTransform = loaderNode.addComponent(UITransform);
+        uiTransform.setContentSize(64, 64);
+        
         const loader = loaderNode.addComponent(SpriteSheetLoader);
         const sprite = loaderNode.addComponent(Sprite);
         const animHelper = loaderNode.addComponent(SpriteAnimationHelper);
@@ -208,6 +212,13 @@ export class AnimationManager extends Component {
         let animHelper = targetNode.getComponent(SpriteAnimationHelper);
         
         if (!animHelper) {
+            // 确保有 UITransform
+            let uiTransform = targetNode.getComponent(UITransform);
+            if (!uiTransform) {
+                uiTransform = targetNode.addComponent(UITransform);
+                uiTransform.setContentSize(64, 64);
+            }
+            
             // 确保有 Sprite 组件
             let sprite = targetNode.getComponent(Sprite);
             if (!sprite) {
