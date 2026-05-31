@@ -3,6 +3,7 @@ import { GameLogic } from '../core/GameLogic';
 import { GridManager } from '../core/GridManager';
 import { Bomb } from '../components/Bomb';
 import { Wall } from '../components/Wall';
+import { LevelManager, LevelData } from './LevelManager';
 
 const { ccclass, property } = _decorator;
 
@@ -37,6 +38,7 @@ export class GameManager extends Component {
     // 核心逻辑
     private gameLogic: GameLogic | null = null;
     private gridManager: GridManager | null = null;
+    private levelManager: LevelManager | null = null;
     
     // 对象池
     private bombPool: Node[] = [];
@@ -55,13 +57,21 @@ export class GameManager extends Component {
             this.gridManager = this.gridNode.getComponent(GridManager);
         }
         
+        // 获取LevelManager
+        this.levelManager = this.getComponent(LevelManager);
+        if (!this.levelManager) {
+            this.levelManager = this.addComponent(LevelManager);
+        }
+        
         // 监听游戏事件
         this.setupEventListeners();
     }
     
     start() {
         console.log('[GameManager] Starting...');
-        this.startLevel(this.currentLevel);
+        this.startLevel(this.currentLevel).catch(err => {
+            console.error('[GameManager] Failed to start level:', err);
+        });
     }
     
     /**
@@ -78,31 +88,51 @@ export class GameManager extends Component {
     }
     
     /**
-     * 开始关卡
+     * 开始关卡 - 使用LevelManager加载JSON配置
      */
-    startLevel(level: number) {
+    async startLevel(level: number) {
         console.log('[GameManager] Starting level', level);
         
-        // TODO: 加载关卡配置
-        const levelConfig = {
-            gridSize: 5,
-            bombs: 3,
-            walls: [
-                { x: 1, y: 1, type: 'normal' },
-                { x: 3, y: 2, type: 'elite' }
-            ],
-            staticBombs: [
-                { x: 2, y: 2, evolution: 1 }
-            ]
-        };
+        if (!this.levelManager) {
+            console.error('[GameManager] LevelManager not found');
+            return;
+        }
+        
+        // 设置当前关卡
+        this.levelManager.setCurrentLevel(level);
+        
+        // 异步加载关卡配置
+        const levelData = await this.levelManager.loadLevelConfig(level);
+        if (!levelData) {
+            console.error('[GameManager] Failed to load level config for level', level);
+            return;
+        }
+        
+        // 转换为GameLogic需要的格式
+        const levelConfig = this.convertLevelData(levelData);
         
         if (this.gameLogic) {
             this.gameLogic.initLevel(levelConfig);
         }
         
         // 创建游戏对象
-        this.createWalls(levelConfig.walls);
-        this.createStaticBombs(levelConfig.staticBombs);
+        this.createWalls(levelData.walls || []);
+        this.createStaticBombs(levelData.staticBombs || []);
+        
+        console.log('[GameManager] Level', level, 'started:', levelData.name);
+    }
+    
+    /**
+     * 转换LevelData为GameLogic配置格式
+     */
+    private convertLevelData(levelData: LevelData): any {
+        return {
+            gridSize: levelData.gridSize,
+            bombs: levelData.bombs,
+            walls: levelData.walls,
+            staticBombs: levelData.staticBombs,
+            starThresholds: levelData.starThresholds
+        };
     }
     
     /**

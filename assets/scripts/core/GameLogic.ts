@@ -99,14 +99,14 @@ export class GameLogic extends Component {
         // 初始化墙壁
         if (levelConfig.walls) {
             levelConfig.walls.forEach((wall: any) => {
-                this.createWall(wall.x, wall.y, wall.type);
+                this.createWall(wall.x, wall.y, wall.type, wall.hp);
             });
         }
 
         // 初始化静态炸弹
         if (levelConfig.staticBombs) {
             levelConfig.staticBombs.forEach((bomb: any) => {
-                this.createStaticBomb(bomb.x, bomb.y, bomb.level);
+                this.createStaticBomb(bomb.x, bomb.y, bomb.evolution || 1);
             });
         }
 
@@ -154,7 +154,7 @@ export class GameLogic extends Component {
     /**
      * 创建墙壁
      */
-    private createWall(x: number, y: number, type: string = 'normal') {
+    private createWall(x: number, y: number, type: string = 'normal', hp: number = 1) {
         const key = `${x},${y}`;
         if (!this.wallPrefab || !this.gameLayer) return;
 
@@ -171,8 +171,8 @@ export class GameLogic extends Component {
             this.walls.set(key, {
                 x, y,
                 type,
-                hp: type === 'elite' ? 2 : 1,
-                maxHp: type === 'elite' ? 2 : 1,
+                hp: hp || (type === 'elite' ? 2 : 1),
+                maxHp: hp || (type === 'elite' ? 2 : 1),
                 node: wallNode
             });
 

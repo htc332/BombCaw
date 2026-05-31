@@ -313,9 +313,20 @@ export class ScoreManager extends Component {
      * 检查是否新纪录
      */
     private checkNewRecord(): boolean {
-        // TODO: 从本地存储读取历史最高分
-        const bestScore = 0; // sys.localStorage.getItem('best_score') || 0;
-        return this.currentScore > bestScore;
+        try {
+            const bestScoreStr = localStorage.getItem('bomb_wall_best_score');
+            const bestScore = bestScoreStr ? parseInt(bestScoreStr) : 0;
+            const isNewRecord = this.currentScore > bestScore;
+            
+            if (isNewRecord) {
+                localStorage.setItem('bomb_wall_best_score', this.currentScore.toString());
+            }
+            
+            return isNewRecord;
+        } catch (e) {
+            console.error('[ScoreManager] Failed to check new record:', e);
+            return false;
+        }
     }
     
     /**
