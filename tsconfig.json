@@ -2,8 +2,9 @@
   "compilerOptions": {
     "target": "ES2020",
     "lib": ["ES2020", "DOM"],
-    "module": "commonjs",
-    "strict": true,
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "strict": false,
     "noImplicitAny": false,
     "strictNullChecks": true,
     "noImplicitThis": true,
@@ -13,21 +14,22 @@
     "skipLibCheck": true,
     "ignoreDeprecations": "6.0",
     "forceConsistentCasingInFileNames": true,
+    "types": [],
     "baseUrl": ".",
     "paths": {
-      "cc": ["./temp/declarations/cc.d.ts"],
-      "cc/env": ["./temp/declarations/cc.env.d.ts"]
+      "cc": ["./node_modules/@cocos/creator-types/engine/cc.d.ts"],
+      "cc/env": ["./node_modules/@cocos/creator-types/engine/cc.env.d.ts"]
     }
   },
   "include": [
-    "assets/**/*.ts",
-    "assets/**/*.js"
+    "assets/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "library",
     "temp",
     "build",
-    "assets/scripts/editor"
+    "assets/scripts/editor",
+    "assets/migrate-canvas.ts"
   ]
 }
