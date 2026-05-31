@@ -151,9 +151,6 @@ export class LevelSelect extends Component {
     private onLevelClick(levelId: number) {
         console.log(`[LevelSelect] Level ${levelId} selected`);
         
-        // 播放点击音效
-        // this.getComponent(AudioManager)?.playSfx('click');
-        
         // 设置当前关卡
         this.levelManager?.setCurrentLevel(levelId);
         
@@ -168,9 +165,6 @@ export class LevelSelect extends Component {
      */
     private onBackClick() {
         console.log('[LevelSelect] Back clicked');
-        
-        // 播放点击音效
-        // this.getComponent(AudioManager)?.playSfx('click');
         
         // 返回主菜单
         director.loadScene('MainMenu', () => {

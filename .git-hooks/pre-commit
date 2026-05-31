@@ -1,0 +1,35 @@
+#!/bin/bash
+# Git 自动提交提醒钩子
+# 在提交前检查是否有未跟踪的大文件或敏感信息
+
+echo "🔍 正在检查提交内容..."
+
+# 检查是否包含 temp/ 或 library/ 目录（不应该提交）
+if git diff --cached --name-only | grep -E "^(temp/|library/)"; then
+    echo "❌ 错误：不应该提交 temp/ 或 library/ 目录"
+    echo "这些目录会在 Cocos Creator 启动时自动生成"
+    exit 1
+fi
+
+# 检查是否有 .log 文件
+if git diff --cached --name-only | grep "\.log$"; then
+    echo "⚠️  警告：正在提交日志文件，建议添加到 .gitignore"
+fi
+
+# 检查提交信息是否包含规范前缀
+COMMIT_MSG_FILE=$1
+if [ -f "$COMMIT_MSG_FILE" ]; then
+    MSG=$(cat "$COMMIT_MSG_FILE")
+    if ! echo "$MSG" | grep -E "^\[(自动|修复|功能|优化|文档|重构|测试)\]" > /dev/null; then
+        echo "⚠️  提交信息建议添加前缀："
+        echo "   [自动] - 自动备份/生成"
+        echo "   [修复] - Bug 修复"
+        echo "   [功能] - 新功能"
+        echo "   [优化] - 性能/代码优化"
+        echo "   [文档] - 文档更新"
+        echo "   [重构] - 代码重构"
+        echo "   [测试] - 测试相关"
+    fi
+fi
+
+echo "✅ 检查完成"

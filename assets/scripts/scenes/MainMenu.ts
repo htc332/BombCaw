@@ -113,11 +113,9 @@ export class MainMenu extends Component {
     private onStartClick() {
         console.log('[MainMenu] Start game clicked');
         
-        // 播放点击音效
-        // this.getComponent(AudioManager)?.playSfx('click');
-        
-        // 获取当前关卡
+        // 设置当前关卡为最新解锁关卡
         const currentLevel = this.levelManager?.getUnlockedLevel() || 1;
+        this.levelManager?.setCurrentLevel(currentLevel);
         
         // 加载游戏场景
         director.loadScene('Game', () => {
@@ -130,9 +128,6 @@ export class MainMenu extends Component {
      */
     private onLevelSelectClick() {
         console.log('[MainMenu] Level select clicked');
-        
-        // 播放点击音效
-        // this.getComponent(AudioManager)?.playSfx('click');
         
         // 加载关卡选择场景
         director.loadScene('LevelSelect', () => {
