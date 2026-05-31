@@ -728,21 +728,10 @@
       "b": 100,
       "a": 255
     },
-    "_spriteFrame": null,
-    "_type": 1,
-    "_fillType": 0,
-    "_sizeMode": 0,
-    "_fillCenter": {
-      "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
+    "_spriteFrame": {
+      "__uuid__": "default_sprite_frame",
+      "__expectedType__": "cc.SpriteFrame"
     },
-    "_fillStart": 0,
-    "_fillRange": 0,
-    "_isTrimmedMode": true,
-    "_useGrayscale": false,
-    "_atlas": null,
-    "_id": "startbutton-sprite-uuid"
   },
   {
     "__type__": "cc.Button",
@@ -884,21 +873,10 @@
       "b": 255,
       "a": 255
     },
-    "_spriteFrame": null,
-    "_type": 1,
-    "_fillType": 0,
-    "_sizeMode": 0,
-    "_fillCenter": {
-      "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
+    "_spriteFrame": {
+      "__uuid__": "default_sprite_frame",
+      "__expectedType__": "cc.SpriteFrame"
     },
-    "_fillStart": 0,
-    "_fillRange": 0,
-    "_isTrimmedMode": true,
-    "_useGrayscale": false,
-    "_atlas": null,
-    "_id": "levelselectbutton-sprite-uuid"
   },
   {
     "__type__": "cc.Button",
@@ -1040,21 +1018,10 @@
       "b": 150,
       "a": 255
     },
-    "_spriteFrame": null,
-    "_type": 1,
-    "_fillType": 0,
-    "_sizeMode": 0,
-    "_fillCenter": {
-      "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
+    "_spriteFrame": {
+      "__uuid__": "default_sprite_frame",
+      "__expectedType__": "cc.SpriteFrame"
     },
-    "_fillStart": 0,
-    "_fillRange": 0,
-    "_isTrimmedMode": true,
-    "_useGrayscale": false,
-    "_atlas": null,
-    "_id": "settingsbutton-sprite-uuid"
   },
   {
     "__type__": "cc.Button",
