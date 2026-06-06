@@ -1,0 +1,22 @@
+<svg width="750" height="1334" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A1A2E"/>
+      <stop offset="50%" style="stop-color:#16213E"/>
+      <stop offset="100%" style="stop-color:#0F1628"/>
+    </linearGradient>
+    <radialGradient id="cloud1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#2A3A5E" stop-opacity="0.5"/>
+      <stop offset="100%" style="stop-color:#1A1A2E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cloud2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#3A4A6E" stop-opacity="0.3"/>
+      <stop offset="100%" style="stop-color:#1A1A2E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="750" height="1334" fill="url(#bgGrad)"/>
+  <ellipse cx="150" cy="300" rx="200" ry="150" fill="url(#cloud1)"/>
+  <ellipse cx="600" cy="500" rx="180" ry="120" fill="url(#cloud2)"/>
+  <ellipse cx="100" cy="800" rx="220" ry="160" fill="url(#cloud1)"/>
+  <ellipse cx="650" cy="1000" rx="160" ry="100" fill="url(#cloud2)"/>
+</svg>

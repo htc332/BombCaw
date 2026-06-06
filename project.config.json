@@ -1,0 +1,73 @@
+{
+  "compileType": "game",
+  "appid": "wx14a9f8ce89e44b26",
+  "projectname": "炸弹推墙",
+  "description": "放置炸弹牛摧毁墙壁的益智游戏",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "newFeature": false,
+    "coverView": true,
+    "nodeModules": false,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": true,
+    "scopeDataCheck": false,
+    "uglifyFileName": false,
+    "compileWorklet": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "compileHotReLoad": true,
+    "lazyloadPlaceholderEnable": false,
+    "useMultiFrameRuntime": true,
+    "useApiHook": true,
+    "useApiHostProcess": true,
+    "enableEngineNative": false,
+    "useIsolateContext": false,
+    "userConfirmedBundleSwitch": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": true,
+    "preloadBackgroundData": false
+  },
+  "packOptions": {
+    "ignore": [
+      {
+        "value": ".DS_Store",
+        "type": "file"
+      },
+      {
+        "value": "node_modules",
+        "type": "folder"
+      },
+      {
+        "value": ".git",
+        "type": "folder"
+      }
+    ],
+    "include": []
+  },
+  "libVersion": "3.0.0",
+  "simulatorPluginLibVersion": {},
+  "isGameTourist": false,
+  "editorSetting": {
+    "tabIndent": "insertSpaces",
+    "tabSize": 2
+  },
+  "condition": {}
+}

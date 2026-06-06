@@ -1,0 +1,19 @@
+<svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bombGrad" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" style="stop-color:#4A4A5A"/>
+      <stop offset="100%" style="stop-color:#1A1A2E"/>
+    </radialGradient>
+    <filter id="bombGlow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <circle cx="32" cy="36" r="22" fill="url(#bombGrad)" stroke="#5A5A6A" stroke-width="2"/>
+  <rect x="30" y="8" width="4" height="12" rx="2" fill="#FFD700"/>
+  <circle cx="32" cy="10" r="4" fill="#FF6B6B"/>
+  <path d="M28 36 L36 36 M32 28 L32 44" stroke="#FFF" stroke-width="2" opacity="0.3"/>
+</svg>

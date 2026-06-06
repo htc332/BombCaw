@@ -1,0 +1,18 @@
+<svg width="200" height="60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F0D85C"/>
+      <stop offset="100%" style="stop-color:#E5C84B"/>
+    </linearGradient>
+    <filter id="btnShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#D4B73A" flood-opacity="0.4"/>
+    </filter>
+    <filter id="innerGlow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <rect x="0" y="0" width="200" height="60" rx="30" ry="30" fill="url(#goldGrad)" filter="url(#btnShadow)"/>
+  <rect x="2" y="2" width="196" height="56" rx="28" ry="28" fill="none" stroke="#FFF" stroke-width="1" opacity="0.3"/>
+  <text x="100" y="38" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#1A1A2E" text-anchor="middle">开始游戏</text>
+</svg>

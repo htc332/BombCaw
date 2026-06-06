@@ -1,0 +1,33 @@
+/* 炸弹推墙 - 颜色变量 */
+/* 参考天天爱消除风格 */
+
+:root {
+  /* 主色调 */
+  --color-primary: #E5C84B;
+  --color-primary-light: #F0D85C;
+  --color-primary-dark: #D4B73A;
+  
+  /* 背景 */
+  --color-bg-dark: #1A1A2E;
+  --color-bg-mid: #16213E;
+  --color-bg-light: #1E2A4A;
+  
+  /* 辅助色 */
+  --color-accent: #5BA3F5;
+  --color-success: #5ECB8B;
+  --color-warning: #FF9F5E;
+  --color-danger: #FF7A7A;
+  
+  /* 中性色 */
+  --color-text: #FFFFFF;
+  --color-text-dim: #A0A8C0;
+  --color-panel: rgba(255,255,255,0.1);
+  --color-border: rgba(255,255,255,0.15);
+  
+  /* 游戏元素 */
+  --color-wall: #4A4A5A;
+  --color-wall-strong: #5A5A6A;
+  --color-bomb-yellow: #E5C84B;
+  --color-bomb-blue: #5BA3F5;
+  --color-bomb-purple: #C084FC;
+}

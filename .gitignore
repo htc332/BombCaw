@@ -1,0 +1,6 @@
+# 忽略子模块和临时文件
+bomb-wall-godot/
+godot-love-wechat/
+*.log
+.DS_Store
+node_modules/

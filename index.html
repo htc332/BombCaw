@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>牛牛炸鼠</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0D0D15;
+      overflow: hidden;
+      touch-action: none;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+    #loading {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #0D0D15;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #FFD700;
+      font-family: sans-serif;
+      z-index: 100;
+    }
+    #loading.hidden { display: none; }
+    .loading-spinner {
+      width: 50px; height: 50px;
+      border: 4px solid #2A2A3E;
+      border-top-color: #FFD700;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #error {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      color: #FF6B35;
+      font-family: sans-serif;
+      text-align: center;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div class="loading-spinner"></div>
+    <div>加载中...</div>
+  </div>
+  <div id="error"></div>
+  <canvas id="gameCanvas"></canvas>
+  
+  <!-- 数据层 -->
+  <script src="src/data/LevelData.js"></script>
+  <script src="src/data/Storage.js"></script>
+  
+  <!-- 核心逻辑层 -->
+  <script src="src/core/GameLogic.js"></script>
+  <script src="src/core/LevelSystem.js"></script>
+  
+  <!-- 表现层 -->
+  <script src="src/view/Renderer.js"></script>
+  <script src="src/view/Animator.js"></script>
+  <script src="src/view/ParticleSystem.js"></script>
+  <script src="src/view/UIManager.js"></script>
+  
+  <!-- 系统层 -->
+  <script src="src/system/AudioManager.js"></script>
+  <script src="src/system/AdManager.js"></script>
+  
+  <!-- 主入口 -->
+  <script src="src/main.js"></script>
+  
+  <script>
+    // 微信小游戏环境 - 无需浏览器兼容代码
+    
+    // 启动游戏
+    window.onload = () => {
+      try {
+        if (typeof BombWallGame === 'undefined') {
+          throw new Error('Game module not loaded');
+        }
+        new BombWallGame();
+        document.getElementById('loading').classList.add('hidden');
+      } catch (e) {
+        console.error('[Init Error]', e);
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'block';
+        document.getElementById('error').textContent = '加载失败: ' + e.message;
+      }
+    };
+  </script>
+</body>
+</html>
