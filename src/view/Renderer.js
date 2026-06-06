@@ -101,7 +101,8 @@ class Renderer {
   loadImages() { return Promise.resolve(); }
   
   loadSubpackageImages(callback) {
-    console.log('[Renderer] loadSubpackageImages called');
+    // 生产环境关闭加载日志
+    // console.log('[Renderer] loadSubpackageImages called');
     const loadImg = (src) => new Promise((resolve) => {
       const img = wx.createImage();
       let done = false;
@@ -164,7 +165,8 @@ class Renderer {
     ];
     
     Promise.all(promises).then((results) => {
-      console.log('[Renderer] All promises resolved, count:', results.length);
+      // 生产环境关闭加载完成日志
+      // console.log('[Renderer] All promises resolved, count:', results.length);
       // UI
       this.uiImages.login = results[0];
       this.uiImages.loading = results[1];
@@ -202,16 +204,17 @@ class Renderer {
       this.staticBombSprites.level3 = { sheet: results[25], loaded: !!results[25], frameCount: 1 };
       this.staticBombSprites.level4 = { sheet: results[26], loaded: !!results[26], frameCount: 1 };
       
-      console.log('[Renderer] Static bomb sprites loaded:', {
-        lv1: this.staticBombSprites.level1.loaded,
-        lv2: this.staticBombSprites.level2.loaded,
-        lv3: this.staticBombSprites.level3.loaded,
-        lv4: this.staticBombSprites.level4.loaded,
-        sheet1: !!this.staticBombSprites.level1.sheet,
-        sheet2: !!this.staticBombSprites.level2.sheet,
-        sheet3: !!this.staticBombSprites.level3.sheet,
-        sheet4: !!this.staticBombSprites.level4.sheet
-      });
+      // 生产环境关闭静态炸弹精灵加载日志
+      // console.log('[Renderer] Static bomb sprites loaded:', {
+      //   lv1: this.staticBombSprites.level1.loaded,
+      //   lv2: this.staticBombSprites.level2.loaded,
+      //   lv3: this.staticBombSprites.level3.loaded,
+      //   lv4: this.staticBombSprites.level4.loaded,
+      //   sheet1: !!this.staticBombSprites.level1.sheet,
+      //   sheet2: !!this.staticBombSprites.level2.sheet,
+      //   sheet3: !!this.staticBombSprites.level3.sheet,
+      //   sheet4: !!this.staticBombSprites.level4.sheet
+      // });
       
       // 调试：打印所有墙壁精灵图状态
       console.log('[Renderer] Wall sprites detail:', {
@@ -796,8 +799,8 @@ class Renderer {
       // 获取静态炸弹等级：0=1级, 1=2级, 2=3级, 3=4级
       const level = sb.evolution || 0;
       
-      // 关键日志：确认绘制时使用的等级
-      console.log('[StaticBomb] Draw:', sb.active ? 'ACTIVE' : 'SLEEP', 'evolution:', sb.evolution, 'level:', level, 'pos:', sb.x, sb.y);
+      // 生产环境关闭静态炸弹绘制日志（高频触发）
+      // console.log('[StaticBomb] Draw:', sb.active ? 'ACTIVE' : 'SLEEP', 'evolution:', sb.evolution, 'level:', level, 'pos:', sb.x, sb.y);
       
       if (sb.active) {
         // 激活后：绘制对应等级牛牛炸弹
@@ -837,10 +840,12 @@ class Renderer {
       const drawY = cy - drawH / 2;
       
       ctx.drawImage(sheet, 0, 0, imgW, imgH, drawX, drawY, drawW, drawH);
-      console.log('[StaticBomb] Drew Sleep image at level', level);
+      // 生产环境关闭绘制日志
+      // console.log('[StaticBomb] Drew Sleep image at level', level);
     } else {
       // 没有图片，画虚线圆圈
-      console.log('[StaticBomb] No Sleep image, drawing circle fallback');
+      // 生产环境关闭绘制日志
+      // console.log('[StaticBomb] No Sleep image, drawing circle fallback');
       this.drawStaticBombCircle(ctx, sb, cx, cy, cs, pr, false);
     }
   }
