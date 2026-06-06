@@ -216,40 +216,42 @@ class Renderer {
       //   sheet4: !!this.staticBombSprites.level4.sheet
       // });
       
-      // 调试：打印所有墙壁精灵图状态
-      console.log('[Renderer] Wall sprites detail:', {
-        enemy_elite: { loaded: this.wallSprites.enemy_elite.loaded, sheet: !!this.wallSprites.enemy_elite.sheet, frames: this.wallSprites.enemy_elite.frameCount },
-        enemy_n: { loaded: this.wallSprites.enemy_n.loaded, sheet: !!this.wallSprites.enemy_n.sheet, frames: this.wallSprites.enemy_n.frameCount },
-        enemy_elite_break: { loaded: this.wallSprites.enemy_elite_break.loaded, sheet: !!this.wallSprites.enemy_elite_break.sheet, frames: this.wallSprites.enemy_elite_break.frameCount },
-        enemy_elite_break_idle: { loaded: this.wallSprites.enemy_elite_break_idle.loaded, sheet: !!this.wallSprites.enemy_elite_break_idle.sheet, frames: this.wallSprites.enemy_elite_break_idle.frameCount },
-        enemy_elite_death: { loaded: this.wallSprites.enemy_elite_death.loaded, sheet: !!this.wallSprites.enemy_elite_death.sheet, frames: this.wallSprites.enemy_elite_death.frameCount }
-      });
+      // 生产环境关闭墙壁精灵图调试日志
+      // console.log('[Renderer] Wall sprites detail:', {
+      //   enemy_elite: { loaded: this.wallSprites.enemy_elite.loaded, sheet: !!this.wallSprites.enemy_elite.sheet, frames: this.wallSprites.enemy_elite.frameCount },
+      //   enemy_n: { loaded: this.wallSprites.enemy_n.loaded, sheet: !!this.wallSprites.enemy_n.sheet, frames: this.wallSprites.enemy_n.frameCount },
+      //   enemy_elite_break: { loaded: this.wallSprites.enemy_elite_break.loaded, sheet: !!this.wallSprites.enemy_elite_break.sheet, frames: this.wallSprites.enemy_elite_break.frameCount },
+      //   enemy_elite_break_idle: { loaded: this.wallSprites.enemy_elite_break_idle.loaded, sheet: !!this.wallSprites.enemy_elite_break_idle.sheet, frames: this.wallSprites.enemy_elite_break_idle.frameCount },
+      //   enemy_elite_death: { loaded: this.wallSprites.enemy_elite_death.loaded, sheet: !!this.wallSprites.enemy_elite_death.sheet, frames: this.wallSprites.enemy_elite_death.frameCount }
+      // });
       
       // 调试：打印 getWallSpriteType 结果
-      const testWall = { type: 'strong', state: 'idle' };
-      const spriteType = this.getWallSpriteType(testWall);
-      console.log('[Renderer] getWallSpriteType test:', { wall: testWall, spriteType, spriteLoaded: spriteType ? this.wallSprites[spriteType]?.loaded : false });
+      // const testWall = { type: 'strong', state: 'idle' };
+      // const spriteType = this.getWallSpriteType(testWall);
+      // console.log('[Renderer] getWallSpriteType test:', { wall: testWall, spriteType, spriteLoaded: spriteType ? this.wallSprites[spriteType]?.loaded : false });
       
       this.imagesLoaded = true;
-      console.log('[Renderer] Sprites loaded:', {
-        lv1: this.bombSprites.level1.loaded,
-        lv2: this.bombSprites.level2.loaded,
-        lv3: this.bombSprites.level3.loaded,
-        lv4: this.bombSprites.level4.loaded,
-        enemy: this.wallSprites.enemy_n.loaded,
-        elite: this.wallSprites.enemy_elite.loaded,
-        enemy_death: this.wallSprites.enemy_n_death.loaded,
-        elite_break: this.wallSprites.enemy_elite_break.loaded,
-        elite_break_idle: this.wallSprites.enemy_elite_break_idle.loaded,
-        elite_death: this.wallSprites.enemy_elite_death.loaded,
-        static_lv1: this.staticBombSprites.level1.loaded,
-        static_lv2: this.staticBombSprites.level2.loaded,
-        static_lv3: this.staticBombSprites.level3.loaded,
-        static_lv4: this.staticBombSprites.level4.loaded
-      });
+      // 生产环境关闭精灵加载总览日志
+      // console.log('[Renderer] Sprites loaded:', {
+      //   lv1: this.bombSprites.level1.loaded,
+      //   lv2: this.bombSprites.level2.loaded,
+      //   lv3: this.bombSprites.level3.loaded,
+      //   lv4: this.bombSprites.level4.loaded,
+      //   enemy: this.wallSprites.enemy_n.loaded,
+      //   elite: this.wallSprites.enemy_elite.loaded,
+      //   enemy_death: this.wallSprites.enemy_n_death.loaded,
+      //   elite_break: this.wallSprites.enemy_elite_break.loaded,
+      //   elite_break_idle: this.wallSprites.enemy_elite_break_idle.loaded,
+      //   elite_death: this.wallSprites.enemy_elite_death.loaded,
+      //   static_lv1: this.staticBombSprites.level1.loaded,
+      //   static_lv2: this.staticBombSprites.level2.loaded,
+      //   static_lv3: this.staticBombSprites.level3.loaded,
+      //   static_lv4: this.staticBombSprites.level4.loaded
+      // });
       
       if (callback) {
-        console.log('[Renderer] Calling callback');
+        // 生产环境关闭回调日志
+      // console.log('[Renderer] Calling callback');
         callback();
       }
     }).catch((err) => {
@@ -825,7 +827,8 @@ class Renderer {
     const sheet = sleepImages[level];
     
     // 关键日志：确认level和sheet状态
-    console.log('[StaticBomb] Sleep level:', level, 'sheet exists:', !!sheet, 'sheet.width:', sheet ? sheet.width : 0);
+    // 生产环境关闭静态炸弹Sleep日志
+  // console.log('[StaticBomb] Sleep level:', level, 'sheet exists:', !!sheet, 'sheet.width:', sheet ? sheet.width : 0);
     
     if (sheet && sheet.width > 0) {
       // 计算绘制大小（适配格子）
