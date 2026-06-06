@@ -255,12 +255,14 @@ class SettingsScene extends BaseScene {
       value: opt.value
     });
     
-    console.log(`[Settings] ${opt.label}: ${opt.value}`);
+    // 生产环境关闭设置日志
+    // console.log(`[Settings] ${opt.label}: ${opt.value}`);
   }
 
   clearData() {
     // 预留：确认对话框
-    console.log('[Settings] Clear data requested');
+    // 生产环境关闭日志
+    // console.log('[Settings] Clear data requested');
     
     // 实际清除
     PlayerData.getInstance().reset();

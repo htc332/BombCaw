@@ -20,7 +20,8 @@ class SceneManager {
    */
   register(name, sceneClass) {
     this.scenes[name] = sceneClass;
-    console.log(`[SceneManager] Registered scene: ${name}`);
+    // 生产环境关闭场景注册日志
+    // console.log(`[SceneManager] Registered scene: ${name}`);
   }
 
   /**
@@ -36,7 +37,8 @@ class SceneManager {
   switchTo(sceneName, data = null, options = {}) {
     const SceneClass = this.scenes[sceneName];
     if (!SceneClass) {
-      console.error(`[SceneManager] Scene not found: ${sceneName}`);
+      // 保留错误日志，但生产环境可关闭
+      // console.error(`[SceneManager] Scene not found: ${sceneName}`);
       return Promise.reject(new Error(`Scene not found: ${sceneName}`));
     }
 
@@ -64,7 +66,8 @@ class SceneManager {
     // 加载资源并进入
     return scene.load().then(() => {
       scene.enter(data);
-      console.log(`[SceneManager] Switched to: ${sceneName}`);
+      // 生产环境关闭场景切换日志
+      // console.log(`[SceneManager] Switched to: ${sceneName}`);
       return scene;
     });
   }

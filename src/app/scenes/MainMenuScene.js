@@ -98,7 +98,8 @@ class MainMenuScene extends BaseScene {
     this.currentLevel = playerData.progress.currentLevel;
     this.unlockedLevel = playerData.progress.unlockedLevel;
     
-    console.log(`[MainMenu] Entered, current level: ${this.currentLevel}`);
+    // 生产环境关闭场景进入日志
+    // console.log(`[MainMenu] Entered, current level: ${this.currentLevel}`);
   }
 
   onUpdate(dt) {

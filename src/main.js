@@ -8,6 +8,7 @@ class BombWallGame {
     this.startTime = Date.now();
     this.debugLogs = [];
     this.maxLogs = 20;
+    this.isDebugMode = false; // 生产环境关闭调试日志
     
     this.initCanvas();
     this.initSystems();
@@ -25,7 +26,10 @@ class BombWallGame {
     if (this.debugLogs.length > this.maxLogs) {
       this.debugLogs.shift();
     }
-    console.log(logMsg);
+    // 生产环境关闭日志输出，只保留到debugLogs数组用于屏幕显示
+    if (this.isDebugMode) {
+      console.log(logMsg);
+    }
   }
 
   initCanvas() {
@@ -120,16 +124,16 @@ class BombWallGame {
     this.pendingLevel = this.levelSystem.currentLevel || 1;
     
     this.renderer.loadImages().then(() => {
-      console.log('[Game] Main images loaded');
+      // console.log('[Game] Main images loaded');
     }).catch(err => {
-      console.warn('[Game] Main images load failed:', err);
+      // console.warn('[Game] Main images load failed:', err);
     });
     
     this.startDownload();
   }
 
   startDownload() {
-    console.log('[Game] startDownload');
+    // console.log('[Game] startDownload');
     this.loadingStatus = '正在加载资源...';
     this.loadingProgress = 0;
     this.downloadFailed = false;
@@ -137,11 +141,11 @@ class BombWallGame {
     // 备用：5秒后强制进入
     this._downloadForceTimer = setTimeout(() => {
       if (this.gameState === 'login') {
-        console.log('[Game] Download timeout, forcing entry');
+        // console.log('[Game] Download timeout, forcing entry');
         this.loadingProgress = 1;
         this.loadingStatus = '加载超时，尝试进入...';
         this.renderer.loadSubpackageImages(() => {
-          console.log('[Game] Timeout callback executed');
+          // console.log('[Game] Timeout callback executed');
           this.gameState = 'playing';
           this.startLevel(this.pendingLevel || 1);
         });
@@ -151,7 +155,7 @@ class BombWallGame {
     var task = wx.loadSubpackage({
       name: 'res',
       success: () => {
-        console.log('[Game] Subpackage loaded');
+        // console.log('[Game] Subpackage loaded');
         this.loadingProgress = 1;
         this.loadingStatus = '资源加载完成';
         
@@ -163,15 +167,15 @@ class BombWallGame {
         var imagesLoaded = false;
         var imageTimeout = setTimeout(() => {
           if (!imagesLoaded) {
-            console.log('[Game] Image load timeout, entering game');
+            // console.log('[Game] Image load timeout, entering game');
             this.gameState = 'playing';
             this.startLevel(this.pendingLevel || 1);
           }
         }, 3000);
         
-        console.log('[Game] Loading subpackage images...');
+        // console.log('[Game] Loading subpackage images...');
         this.renderer.loadSubpackageImages(() => {
-          console.log('[Game] Subpackage images loaded');
+          // console.log('[Game] Subpackage images loaded');
           imagesLoaded = true;
           clearTimeout(imageTimeout);
           this.gameState = 'playing';
@@ -179,7 +183,7 @@ class BombWallGame {
         });
       },
       fail: (err) => {
-        console.error('[Game] Subpackage failed:', err);
+        // console.error('[Game] Subpackage failed:', err);
         this.loadingStatus = '资源加载失败，点击重试';
         this.downloadFailed = true;
         
@@ -198,7 +202,7 @@ class BombWallGame {
   }
 
   startLevel(level) {
-    console.log('[Game] Starting level', level);
+    // console.log('[Game] Starting level', level);
     
     this.gameState = 'playing';
     this.gameLogic.level = level;
@@ -225,19 +229,19 @@ class BombWallGame {
     });
 
     wx.onShow(() => {
-      console.log('[BombWall] Game shown');
+      // console.log('[BombWall] Game shown');
     });
 
     wx.onHide(() => {
-      console.log('[BombWall] Game hidden');
+      // console.log('[BombWall] Game hidden');
     });
   }
 
   handleTouch(x, y) {
-    console.log('[Touch] handleTouch called', x, y, 'gameState:', this.gameState);
+    // console.log('[Touch] handleTouch called', x, y, 'gameState:', this.gameState);
     
     if (this.gameState === 'login') {
-      console.log('[Touch] rejected: login state');
+      // console.log('[Touch] rejected: login state');
       if (this.downloadFailed) {
         this.downloadFailed = false;
         this.startDownload();
@@ -246,25 +250,25 @@ class BombWallGame {
     }
     
     if (this.uiManager.currentScene !== 'game') {
-      console.log('[Touch] rejected: ui scene', this.uiManager.currentScene);
+      // console.log('[Touch] rejected: ui scene', this.uiManager.currentScene);
       this.uiManager.handleTouch(x, y);
       return;
     }
     
     if (this.gameState !== 'playing') {
-      console.log('[Touch] rejected: not playing', this.gameState);
+      // console.log('[Touch] rejected: not playing', this.gameState);
       return;
     }
     
     var gridPos = this.screenToGrid(x, y);
-    console.log('[Touch] gridPos:', gridPos);
+    // console.log('[Touch] gridPos:', gridPos);
     if (!gridPos) {
-      console.log('[Touch] rejected: invalid grid position');
+      // console.log('[Touch] rejected: invalid grid position');
       return;
     }
     
     var success = this.gameLogic.tryPlaceBomb(gridPos.x, gridPos.y);
-    console.log('[Touch] tryPlaceBomb result:', success);
+    // console.log('[Touch] tryPlaceBomb result:', success);
     
     if (success) {
       this.audio.play('place');
@@ -361,7 +365,7 @@ class BombWallGame {
     var cellSize = this.renderer.cellSize;
     var evo = event.evolution || 0;
     
-    console.log('[Main] Bomb explode at', event.x, event.y, 'evo', evo);
+    // console.log('[Main] Bomb explode at', event.x, event.y, 'evo', evo);
     
     // 音效即时触发
     this.audio.play('explosion');
@@ -371,7 +375,7 @@ class BombWallGame {
     var gridSize = this.gameLogic.gridSize;
     var centerGridX = event.x;
     var centerGridY = event.y;
-    console.log('[Main] Creating explosion with power:', power, 'gridSize:', gridSize, 'center:', centerGridX, centerGridY);
+    // console.log('[Main] Creating explosion with power:', power, 'gridSize:', gridSize, 'center:', centerGridX, centerGridY);
     this.animator.createCrossExplosion(pos.cx, pos.cy, cellSize, power, gridSize, centerGridX, centerGridY);
     
     // 轻量辅助粒子（仅中心）- 只在evolution<=1时触发，避免高等级时粒子过多
@@ -422,7 +426,7 @@ class BombWallGame {
   }
 
   onEnemyDeath(event) {
-    console.log('[Main] onEnemyDeath called', event.x, event.y, 'isElite:', event.isElite);
+    // console.log('[Main] onEnemyDeath called', event.x, event.y, 'isElite:', event.isElite);
     // 播放死亡动画（精英鼠使用专用动画）
     this.renderer.addDeathAnimation(event.x, event.y, event.isElite);
     this.audio.play('break');
@@ -438,7 +442,7 @@ class BombWallGame {
     var pos = this.toScreen(event.x, event.y);
     var evo = event.evolution || 0;  // 使用 evolution，不是 newEvolution
     
-    console.log('[Main] Bomb upgraded at', event.x, event.y, 'evo:', evo);
+    // console.log('[Main] Bomb upgraded at', event.x, event.y, 'evo:', evo);
     
     // Animator: 光环
     this.animator.createUpgrade(pos.cx, pos.cy, this.renderer.cellSize);
@@ -535,7 +539,10 @@ class BombWallGame {
       this.render(dt);
     } catch (e) {
       this.log('[LOOP ERROR] ' + e.message);
-      console.error('[LOOP ERROR]', e);
+      // 生产环境只记录到debugLogs，不输出到console
+      if (this.isDebugMode) {
+        console.error('[LOOP ERROR]', e);
+      }
     }
   }
 
@@ -548,7 +555,10 @@ class BombWallGame {
       
       if (this.gameState === 'login') {
         this.drawLoginScreen(ctx, w, h, pr);
-        this.drawDebugLogs(ctx, pr);
+        // 生产环境关闭屏幕日志显示
+        if (this.isDebugMode) {
+          this.drawDebugLogs(ctx, pr);
+        }
         return;
       }
       
@@ -588,14 +598,20 @@ class BombWallGame {
       ctx.restore(); // 恢复裁剪
       
       this.renderUI();
-      this.drawDebugLogs(ctx, pr);
+      // 生产环境关闭屏幕日志显示
+      if (this.isDebugMode) {
+        this.drawDebugLogs(ctx, pr);
+      }
       
       ctx.restore();
       
       this.animator.drawScreenFlash(ctx, w, h);
     } catch (e) {
       this.log('[RENDER ERROR] ' + e.message);
-      console.error('[RENDER ERROR]', e);
+      // 生产环境只记录到debugLogs，不输出到console
+      if (this.isDebugMode) {
+        console.error('[RENDER ERROR]', e);
+      }
     }
   }
 

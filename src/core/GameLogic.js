@@ -46,7 +46,8 @@ class GameLogic {
       time: Date.now()
     };
     
-    console.log('[Score]', reason, '+', basePoints, '=', this.score);
+    // 生产环境关闭日志输出
+    // console.log('[Score]', reason, '+', basePoints, '=', this.score);
   }
 
   // ========== 关卡初始化 ==========
@@ -122,7 +123,8 @@ class GameLogic {
   tryPlaceBomb(x, y) {
     // 清除连击（玩家新操作）
     if (this.isInCombo) {
-      console.log('[Combo] 连击结束! 最高x' + this.comboCount, '总分=' + this.score);
+      // 生产环境关闭连击结束日志
+      // console.log('[Combo] 连击结束! 最高x' + this.comboCount, '总分=' + this.score);
       this.isInCombo = false;
       this.comboCount = 0;
     }
@@ -224,7 +226,8 @@ class GameLogic {
     if (!this.isInCombo) {
       this.isInCombo = true;
       this.comboCount = 0;
-      console.log('[Combo] 连击开始');
+      // 生产环境关闭连击日志
+      // console.log('[Combo] 连击开始');
     }
     
     this.bombs.delete(bomb.key);
@@ -232,11 +235,13 @@ class GameLogic {
 
     // 计算爆炸范围
     const range = this.getExplosionRange(bomb);
-    console.log('[Explosion] Bomb at', bomb.x, bomb.y, 'evo:', bomb.evolution, 'range:', JSON.stringify(range));
+    // 生产环境关闭详细爆炸日志
+    // console.log('[Explosion] Bomb at', bomb.x, bomb.y, 'evo:', bomb.evolution, 'range:', JSON.stringify(range));
     
     // 处理爆炸范围内的所有格子
     range.forEach(pos => {
-      console.log('[Explosion] Hit pos:', pos.x, pos.y, 'type:', pos.distance === 0 ? 'center' : (Math.abs(pos.x - bomb.x) === Math.abs(pos.y - bomb.y) ? 'diag' : 'cross'));
+      // 生产环境关闭详细命中日志
+      // console.log('[Explosion] Hit pos:', pos.x, pos.y, 'type:', pos.distance === 0 ? 'center' : (Math.abs(pos.x - bomb.x) === Math.abs(pos.y - bomb.y) ? 'diag' : 'cross'));
       this.processExplosionHit(pos.x, pos.y, bomb.evolution);
     });
 
@@ -278,10 +283,11 @@ class GameLogic {
       });
     }
     
-    console.log('[ExplosionRange] evo:', evo, 'power:', power, 'diagPower:', diagPower, 'total:', range.length);
-    if (evo >= 2) {
-      console.log('[ExplosionRange] Lv' + (evo+1) + ' range:', JSON.stringify(range));
-    }
+    // 生产环境关闭详细爆炸范围日志
+    // console.log('[ExplosionRange] evo:', evo, 'power:', power, 'diagPower:', diagPower, 'total:', range.length);
+    // if (evo >= 2) {
+    //   console.log('[ExplosionRange] Lv' + (evo+1) + ' range:', JSON.stringify(range));
+    // }
 
     return range;
   }
@@ -290,10 +296,10 @@ class GameLogic {
     const key = `${x},${y}`;
     const wall = this.walls.get(key);
     
-    // 4级炸弹调试日志
-    if (bombEvo >= 3) {
-      console.log('[Explosion] Lv4 Check wall at', x, y, 'key:', key, 'found:', !!wall, 'hp:', wall ? wall.hp : 'N/A');
-    }
+    // 4级炸弹调试日志（生产环境关闭）
+    // if (bombEvo >= 3) {
+    //   console.log('[Explosion] Lv4 Check wall at', x, y, 'key:', key, 'found:', !!wall, 'hp:', wall ? wall.hp : 'N/A');
+    // }
     
     if (!wall) return;
 
@@ -542,7 +548,8 @@ class GameLogic {
     // 计算剩余墙壁（包括所有类型）
     const remaining = this.walls.size;
 
-    console.log('[GameLogic] Check state - remaining walls:', remaining, 'bombsLeft:', this.bombsLeft, 'activeBombs:', this.bombs.size, 'staticBombs:', this.staticBombs.size);
+    // 生产环境关闭详细状态日志
+    // console.log('[GameLogic] Check state - remaining walls:', remaining, 'bombsLeft:', this.bombsLeft, 'activeBombs:', this.bombs.size, 'staticBombs:', this.staticBombs.size);
 
     if (remaining === 0) {
       // 胜利
@@ -560,14 +567,16 @@ class GameLogic {
     const bonus = this.bombsLeft * 50;
     this.score += bonus;
     
-    console.log('[GameLogic] Victory pending! Level:', this.level, 'Score:', this.score, 'Bonus:', bonus);
+    // 生产环境关闭胜利日志
+    // console.log('[GameLogic] Victory pending! Level:', this.level, 'Score:', this.score, 'Bonus:', bonus);
   }
 
   confirmVictory() {
     if (!this.pendingVictory) return;
     this.pendingVictory = false;
     
-    console.log('[GameLogic] Victory confirmed! Level:', this.level);
+    // 生产环境关闭胜利确认日志
+    // console.log('[GameLogic] Victory confirmed! Level:', this.level);
     
     this.emitEvent('level_complete', { 
       level: this.level,
@@ -590,7 +599,8 @@ class GameLogic {
     // 检查是否还有可放置的炸弹
     const hasBombsLeft = this.bombsLeft > 0;
 
-    console.log('[GameLogic] Check failure - hasActiveBombs:', hasActiveBombs, 'hasActiveStaticBombs:', hasActiveStaticBombs, 'hasInactiveStaticBombs:', hasInactiveStaticBombs, 'hasBombsLeft:', hasBombsLeft);
+    // 生产环境关闭详细失败检查日志
+    // console.log('[GameLogic] Check failure - hasActiveBombs:', hasActiveBombs, 'hasActiveStaticBombs:', hasActiveStaticBombs, 'hasInactiveStaticBombs:', hasInactiveStaticBombs, 'hasBombsLeft:', hasBombsLeft);
 
     // 失败条件：没有任何可以产生爆炸的东西了
     // - 没有活跃的玩家炸弹
@@ -603,7 +613,8 @@ class GameLogic {
       
       const remainingWalls = this.walls.size;
       
-      console.log('[GameLogic] Game Over! Remaining walls:', remainingWalls);
+      // 生产环境关闭游戏结束日志
+      // console.log('[GameLogic] Game Over! Remaining walls:', remainingWalls);
       
       this.emitEvent('level_failed', { 
         reason: 'out_of_bombs',

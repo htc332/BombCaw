@@ -64,7 +64,8 @@ class ResultScene extends BaseScene {
       this.autoTransitionTimer = 3;
     }
     
-    console.log(`[Result] ${this.result.isVictory ? 'Victory' : 'Failed'} - Level ${this.result.level}`);
+    // 生产环境关闭结果场景日志
+    // console.log(`[Result] ${this.result.isVictory ? 'Victory' : 'Failed'} - Level ${this.result.level}`);
   }
 
   onExit() {
@@ -291,7 +292,8 @@ class ResultScene extends BaseScene {
   revive() {
     const adCount = PlayerData.getInstance().getTodayAdCount();
     if (adCount >= Constants.AD.MAX_REVIVE_COUNT) {
-      console.log('[Result] Max ad watches reached');
+      // 生产环境关闭广告日志
+      // console.log('[Result] Max ad watches reached');
       return;
     }
     

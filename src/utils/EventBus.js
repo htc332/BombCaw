@@ -63,7 +63,8 @@ class EventBus {
             listener.callback(data);
           }
         } catch (e) {
-          console.error(`[EventBus] Error in event ${event}:`, e);
+          // 生产环境关闭事件错误日志
+          // console.error(`[EventBus] Error in event ${event}:`, e);
         }
       });
     }
@@ -78,7 +79,8 @@ class EventBus {
             listener.callback(data);
           }
         } catch (e) {
-          console.error(`[EventBus] Error in once event ${event}:`, e);
+          // 生产环境关闭一次性事件错误日志
+          // console.error(`[EventBus] Error in once event ${event}:`, e);
         }
       });
       delete this.onceEvents[event];

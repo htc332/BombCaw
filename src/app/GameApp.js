@@ -18,7 +18,8 @@ class GameApp {
    * 初始化应用
    */
   init() {
-    console.log(`[GameApp] Initializing ${Constants.GAME_NAME} v${Constants.VERSION}...`);
+    // 生产环境关闭初始化日志
+    // console.log(`[GameApp] Initializing ${Constants.GAME_NAME} v${Constants.VERSION}...`);
     
     // 初始化画布
     this.initCanvas();
@@ -38,7 +39,8 @@ class GameApp {
     // 切换到登录场景
     this.switchToLogin();
     
-    console.log('[GameApp] Initialized successfully');
+    // 生产环境关闭初始化成功日志
+    // console.log('[GameApp] Initialized successfully');
   }
 
   /**
@@ -53,7 +55,8 @@ class GameApp {
     this.canvas.width = info.windowWidth * this.pixelRatio;
     this.canvas.height = info.windowHeight * this.pixelRatio;
     
-    console.log(`[Canvas] Size: ${this.canvas.width}x${this.canvas.height}, PixelRatio: ${this.pixelRatio}`);
+    // 生产环境关闭 Canvas 尺寸日志
+    // console.log(`[Canvas] Size: ${this.canvas.width}x${this.canvas.height}, PixelRatio: ${this.pixelRatio}`);
   }
 
   /**
@@ -83,7 +86,8 @@ class GameApp {
     this.sceneManager.register('result', ResultScene);
     this.sceneManager.register('settings', SettingsScene);
     
-    console.log('[GameApp] All scenes registered');
+    // 生产环境关闭场景注册日志
+    // console.log('[GameApp] All scenes registered');
   }
 
   /**
@@ -91,9 +95,11 @@ class GameApp {
    */
   switchToLogin() {
     this.sceneManager.switchTo('login').then(() => {
-      console.log('[GameApp] Entered login scene');
+      // 生产环境关闭场景进入日志
+      // console.log('[GameApp] Entered login scene');
     }).catch(err => {
-      console.error('[GameApp] Failed to enter login:', err);
+      // 保留错误日志，但生产环境可关闭
+      // console.error('[GameApp] Failed to enter login:', err);
     });
   }
 
@@ -117,7 +123,8 @@ class GameApp {
     }
     
     return this.sceneManager.switchTo('game', { level }).then(() => {
-      console.log(`[GameApp] Entered game scene, level ${level}`);
+      // 生产环境关闭场景进入日志
+      // console.log(`[GameApp] Entered game scene, level ${level}`);
     });
   }
 
@@ -136,7 +143,8 @@ class GameApp {
     
     // 监听场景切换
     this.eventBus.on(Constants.EVENTS.SCENE_CHANGE, (data) => {
-      console.log(`[GameApp] Scene changed: ${data.from} -> ${data.to}`);
+      // 生产环境关闭场景切换日志
+      // console.log(`[GameApp] Scene changed: ${data.from} -> ${data.to}`);
     });
     
     // 监听关卡完成
@@ -156,12 +164,14 @@ class GameApp {
     
     // 微信生命周期
     wx.onShow(() => {
-      console.log('[GameApp] Game shown');
+      // 生产环境关闭生命周期日志
+      // console.log('[GameApp] Game shown');
       this.sceneManager.resume();
     });
     
     wx.onHide(() => {
-      console.log('[GameApp] Game hidden');
+      // 生产环境关闭生命周期日志
+      // console.log('[GameApp] Game hidden');
       this.sceneManager.pause();
     });
   }
@@ -178,7 +188,8 @@ class GameApp {
     // 解锁下一关
     this.playerData.unlockLevel(level + 1);
     
-    console.log(`[GameApp] Level ${level} completed with score ${score}`);
+    // 生产环境关闭关卡完成日志
+    // console.log(`[GameApp] Level ${level} completed with score ${score}`);
     
     // 预留：显示结算界面
     // setTimeout(() => {
@@ -196,7 +207,8 @@ class GameApp {
    */
   onLevelFail(data) {
     const { level } = data;
-    console.log(`[GameApp] Level ${level} failed`);
+    // 生产环境关闭关卡失败日志
+    // console.log(`[GameApp] Level ${level} failed`);
     
     // 预留：显示失败结算/广告复活
     // this.sceneManager.switchTo('result', { 
@@ -209,7 +221,8 @@ class GameApp {
    * 分享处理（预留）
    */
   onShare(data) {
-    console.log('[GameApp] Share requested:', data);
+    // 生产环境关闭分享日志
+    // console.log('[GameApp] Share requested:', data);
     
     // 预留：调用微信分享API
     // wx.shareAppMessage({

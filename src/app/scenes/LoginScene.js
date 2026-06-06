@@ -60,9 +60,11 @@ class LoginScene extends BaseScene {
     
     // 加载游戏场景所需资源
     resMgr.preloadForScene('game').then(() => {
-      console.log('[LoginScene] Game resources preloaded');
+      // 生产环境关闭预加载日志
+      // console.log('[LoginScene] Game resources preloaded');
     }).catch(err => {
-      console.warn('[LoginScene] Preload warning:', err);
+      // 保留警告日志，但生产环境可关闭
+      // console.warn('[LoginScene] Preload warning:', err);
     });
   }
 

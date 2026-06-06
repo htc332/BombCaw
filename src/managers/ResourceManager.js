@@ -82,12 +82,14 @@ class ResourceManager {
     this.stats.failedPackages = 0;
     
     if (this.loadingQueue.length === 0) {
-      console.log('[ResourceManager] All packages already loaded');
+      // 生产环境关闭已加载日志
+      // console.log('[ResourceManager] All packages already loaded');
       if (this.onComplete) this.onComplete();
       return;
     }
     
-    console.log('[ResourceManager] Loading packages:', this.loadingQueue.join(', '));
+    // 生产环境关闭加载日志
+    // console.log('[ResourceManager] Loading packages:', this.loadingQueue.join(', '));
     this._loadNextPackage();
   }
 
@@ -96,7 +98,8 @@ class ResourceManager {
    */
   _loadNextPackage() {
     if (this.loadingQueue.length === 0) {
-      console.log('[ResourceManager] All packages loaded');
+      // 生产环境关闭全部加载完成日志
+      // console.log('[ResourceManager] All packages loaded');
       if (this.onComplete) this.onComplete();
       return;
     }
@@ -105,7 +108,8 @@ class ResourceManager {
     const pkg = this.packages[packageName];
     
     if (!pkg) {
-      console.warn('[ResourceManager] Unknown package:', packageName);
+      // 生产环境关闭未知包警告
+      // console.warn('[ResourceManager] Unknown package:', packageName);
       this._loadNextPackage();
       return;
     }
@@ -131,7 +135,8 @@ class ResourceManager {
     
     const tryLoad = () => {
       attempt++;
-      console.log(`[ResourceManager] Loading ${pkg.displayName} (${packageName}), attempt ${attempt}/${maxRetries}`);
+      // 生产环境关闭重试日志
+      // console.log(`[ResourceManager] Loading ${pkg.displayName} (${packageName}), attempt ${attempt}/${maxRetries}`);
       
       pkg.loading = true;
       this.currentTask = this._doLoadPackage(packageName);
@@ -166,7 +171,8 @@ class ResourceManager {
       const task = wx.loadSubpackage({
         name: pkg.name,
         success: () => {
-          console.log(`[ResourceManager] Package ${packageName} loaded successfully`);
+          // 生产环境关闭加载成功日志
+          // console.log(`[ResourceManager] Package ${packageName} loaded successfully`);
           pkg.loaded = true;
           pkg.loading = false;
           this.stats.loadedPackages++;
@@ -175,7 +181,8 @@ class ResourceManager {
           resolve();
         },
         fail: (err) => {
-          console.error(`[ResourceManager] Package ${packageName} failed:`, err);
+          // 生产环境关闭加载失败日志
+          // console.error(`[ResourceManager] Package ${packageName} failed:`, err);
           pkg.loading = false;
           this._handleLoadFailure(packageName, err);
           reject(err);
@@ -201,14 +208,16 @@ class ResourceManager {
       const delayMs = Math.min(1000 * Math.pow(2, pkg.retryCount - 1), 5000);
       const status = `${pkg.displayName}加载失败，${delayMs / 1000}s后重试...`;
       
-      console.log(`[ResourceManager] Retrying ${packageName} in ${delayMs}ms`);
+      // 生产环境关闭重试日志
+      // console.log(`[ResourceManager] Retrying ${packageName} in ${delayMs}ms`);
       if (this.onProgress) this.onProgress(0, status);
       
       setTimeout(() => {
         this._loadPackageWithRetry(packageName, maxRetries);
       }, delayMs);
     } else {
-      console.error(`[ResourceManager] Package ${packageName} failed after ${maxRetries} retries`);
+      // 生产环境关闭最终失败日志
+      // console.error(`[ResourceManager] Package ${packageName} failed after ${maxRetries} retries`);
       this.stats.failedPackages++;
       
       if (this.onError) {
@@ -253,7 +262,8 @@ class ResourceManager {
         resolve(img);
       };
       img.onerror = () => {
-        console.warn('[ResourceManager] Failed to load image:', src);
+        // 生产环境关闭图片加载失败日志
+        // console.warn('[ResourceManager] Failed to load image:', src);
         reject(new Error('Failed to load image: ' + src));
       };
       img.src = src;
