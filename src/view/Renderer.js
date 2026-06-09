@@ -733,13 +733,26 @@ class Renderer {
     const frames = sprite.index.frames;
     const totalFrames = frames.length;
     
-    // 根据倒计时进度播放动画
-    // 新动画从 t=1.583 开始，需要映射到有效帧范围
     const progress = 1 - (bomb.countdown || 0) / 90; // 0~1
     
-    // 对于 level1 (BabyCow)，动画从第0帧(t=1.583)开始
-    // 直接映射进度到帧索引，让倒计时结束时刚好到最后一帧
-    const frameIdx = Math.min(Math.floor(progress * totalFrames), totalFrames - 1);
+    // 对于 level1 (BabyCow)，新动画从 t=1.583 开始
+    // 映射：倒计时90秒 → 动画总时长约4.167秒（最后一帧t=4.167）
+    // 但倒计时是90秒，所以用 progress 映射到有效帧范围
+    
+    // 新动画的时间范围：1.583 ~ 4.167（约2.6秒）
+    // 但倒计时是90秒，所以需要按进度映射
+    
+    // 简单方案：按进度选择帧，让倒计时结束时显示最后一帧（紧张感）
+    let frameIdx;
+    if (evo === 0) {
+      // LV1: 新动画30帧，从第0帧到第29帧
+      // 倒计时90秒，progress从0到1
+      // 让动画在倒计时前50%快速播完，然后停在最后一帧（约45秒播完30帧）
+      const animProgress = Math.min(progress / 0.5, 1.0); // 前50%播完动画，约45秒
+      frameIdx = Math.min(Math.floor(animProgress * totalFrames), totalFrames - 1);
+    } else {
+      frameIdx = Math.min(Math.floor(progress * totalFrames), totalFrames - 1);
+    }
     
     const frame = frames[frameIdx];
     const sheet = sprite.sheet;
