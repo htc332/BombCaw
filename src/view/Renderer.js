@@ -19,9 +19,9 @@ class Renderer {
     // 资产适配配置
     this.spriteComp = {
       level1: { scale: 1.8, yOff: -2 },
-      level2: { scale: 1.5, yOff: -0.1 },
-      level3: { scale: 1.5, yOff: -1.6 },
-      level4: { scale: 1.5, yOff: 0.8 }
+      level2: { scale: 1.8, yOff: -2 },
+      level3: { scale: 1.8, yOff: -2 },
+      level4: { scale: 1.8, yOff: -2 }
     };
     this.wallComp = {
       enemy_n: { scale: 1.0, yOff: -0.5 },
