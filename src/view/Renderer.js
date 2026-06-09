@@ -18,7 +18,7 @@ class Renderer {
     
     // 资产适配配置
     this.spriteComp = {
-      level1: { scale: 1.5, yOff: -6.5 },
+      level1: { scale: 1.8, yOff: -2 },
       level2: { scale: 1.5, yOff: -0.1 },
       level3: { scale: 1.5, yOff: -1.6 },
       level4: { scale: 1.5, yOff: 0.8 }
@@ -734,7 +734,11 @@ class Renderer {
     const totalFrames = frames.length;
     
     // 根据倒计时进度播放动画
+    // 新动画从 t=1.583 开始，需要映射到有效帧范围
     const progress = 1 - (bomb.countdown || 0) / 90; // 0~1
+    
+    // 对于 level1 (BabyCow)，动画从第0帧(t=1.583)开始
+    // 直接映射进度到帧索引，让倒计时结束时刚好到最后一帧
     const frameIdx = Math.min(Math.floor(progress * totalFrames), totalFrames - 1);
     
     const frame = frames[frameIdx];
