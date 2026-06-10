@@ -65,6 +65,7 @@ class Renderer {
       level3: { loaded: false },
       level4: { loaded: false }
     };
+    // 静态炸弹精灵图（单图/帧动画）
     this.staticBombSprites = {
       level1: { loaded: false },
       level2: { loaded: false },
@@ -159,9 +160,13 @@ class Renderer {
       loadJson(`${bp}/sprites/enemy_elite_death/index.json`),
       // 静态炸弹精灵图（使用子包路径）
       loadImg(`${bp}/sprites/static_bombs/Sleep/Sleep_lv1.png`),
+      loadJson(`${bp}/sprites/static_bombs/Sleep/Sleep_lv1.json`),
       loadImg(`${bp}/sprites/static_bombs/Sleep/Sleep_lv2.png`),
+      loadJson(`${bp}/sprites/static_bombs/Sleep/Sleep_lv2.json`),
       loadImg(`${bp}/sprites/static_bombs/Sleep/Sleep_lv3.png`),
+      loadJson(`${bp}/sprites/static_bombs/Sleep/Sleep_lv3.json`),
       loadImg(`${bp}/sprites/static_bombs/Sleep/Sleep_lv4.png`),
+      loadJson(`${bp}/sprites/static_bombs/Sleep/Sleep_lv4.json`),
     ];
     
     Promise.all(promises).then((results) => {
@@ -198,11 +203,19 @@ class Renderer {
       // 精英鼠死亡动画
       this.wallSprites.enemy_elite_death = makeSprite(results[21], results[22]);
       
-      // 静态炸弹精灵图（单图）
-      this.staticBombSprites.level1 = { sheet: results[23], loaded: !!results[23], frameCount: 1 };
-      this.staticBombSprites.level2 = { sheet: results[24], loaded: !!results[24], frameCount: 1 };
-      this.staticBombSprites.level3 = { sheet: results[25], loaded: !!results[25], frameCount: 1 };
-      this.staticBombSprites.level4 = { sheet: results[26], loaded: !!results[26], frameCount: 1 };
+      // 静态炸弹精灵图（帧动画）
+      const makeStaticSprite = (sheet, index) => ({
+        sheet, index,
+        loaded: !!(sheet && index && index.frames && index.frames.length > 0),
+        frameCount: (index && index.frames) ? index.frames.length : 0,
+        animDuration: (index && index.frames && index.frames.length > 0)
+          ? index.frames[index.frames.length - 1].t + 0.033
+          : 1
+      });
+      this.staticBombSprites.level1 = makeStaticSprite(results[23], results[24]);
+      this.staticBombSprites.level2 = makeStaticSprite(results[25], results[26]);
+      this.staticBombSprites.level3 = makeStaticSprite(results[27], results[28]);
+      this.staticBombSprites.level4 = makeStaticSprite(results[29], results[30]);
       
       // 生产环境关闭静态炸弹精灵加载日志
       // console.log('[Renderer] Static bomb sprites loaded:', {
@@ -831,42 +844,75 @@ class Renderer {
     });
   }
   
-  // 未激活：绘制Sleep图片
+  // 未激活：绘制Sleep帧动画
   drawStaticBombSleep(ctx, sb, cx, cy, cs, pr, level) {
-    // 获取对应Sleep图片
-    const sleepImages = [
-      this.staticBombSprites.level1.sheet,
-      this.staticBombSprites.level2.sheet,
-      this.staticBombSprites.level3.sheet,
-      this.staticBombSprites.level4.sheet
+    // 获取对应Sleep精灵图
+    const sleepSprites = [
+      this.staticBombSprites.level1,
+      this.staticBombSprites.level2,
+      this.staticBombSprites.level3,
+      this.staticBombSprites.level4
     ];
     
-    const sheet = sleepImages[level];
+    const sprite = sleepSprites[level];
     
-    // 关键日志：确认level和sheet状态
-    // 生产环境关闭静态炸弹Sleep日志
-  // console.log('[StaticBomb] Sleep level:', level, 'sheet exists:', !!sheet, 'sheet.width:', sheet ? sheet.width : 0);
-    
-    if (sheet && sheet.width > 0) {
+    if (sprite && sprite.loaded && sprite.sheet) {
+      // 使用帧动画（循环播放）
+      const frames = sprite.index.frames;
+      const totalDuration = sprite.animDuration || 1;
+      const loopedTime = this.animTime % totalDuration;
+      
+      // 找到当前帧
+      let frameIdx = 0;
+      for (let i = frames.length - 1; i >= 0; i--) {
+        if (loopedTime >= frames[i].t) {
+          frameIdx = i;
+          break;
+        }
+      }
+      
+      const frame = frames[frameIdx];
+      const sheet = sprite.sheet;
+      
       // 计算绘制大小（适配格子）
-      const imgW = sheet.width;
-      const imgH = sheet.height;
-      const maxDim = Math.max(imgW, imgH);
+      const frameW = frame.w;
+      const frameH = frame.h;
+      const maxDim = Math.max(frameW, frameH);
       const scale = (cs * 0.95) / maxDim; // 占格子95%
       
-      const drawW = imgW * scale;
-      const drawH = imgH * scale;
+      const drawW = frameW * scale;
+      const drawH = frameH * scale;
       const drawX = cx - drawW / 2;
       const drawY = cy - drawH / 2;
       
-      ctx.drawImage(sheet, 0, 0, imgW, imgH, drawX, drawY, drawW, drawH);
-      // 生产环境关闭绘制日志
-      // console.log('[StaticBomb] Drew Sleep image at level', level);
+      ctx.drawImage(sheet, frame.x, frame.y, frame.w, frame.h, drawX, drawY, drawW, drawH);
     } else {
-      // 没有图片，画虚线圆圈
-      // 生产环境关闭绘制日志
-      // console.log('[StaticBomb] No Sleep image, drawing circle fallback');
-      this.drawStaticBombCircle(ctx, sb, cx, cy, cs, pr, false);
+      // 没有精灵图，回退到单图或画虚线圆圈
+      const sleepImages = [
+        this.staticBombSprites.level1.sheet,
+        this.staticBombSprites.level2.sheet,
+        this.staticBombSprites.level3.sheet,
+        this.staticBombSprites.level4.sheet
+      ];
+      const sheet = sleepImages[level];
+      
+      if (sheet && sheet.width > 0) {
+        // 回退：单图绘制
+        const imgW = sheet.width;
+        const imgH = sheet.height;
+        const maxDim = Math.max(imgW, imgH);
+        const scale = (cs * 0.95) / maxDim;
+        
+        const drawW = imgW * scale;
+        const drawH = imgH * scale;
+        const drawX = cx - drawW / 2;
+        const drawY = cy - drawH / 2;
+        
+        ctx.drawImage(sheet, 0, 0, imgW, imgH, drawX, drawY, drawW, drawH);
+      } else {
+        // 没有图片，画虚线圆圈
+        this.drawStaticBombCircle(ctx, sb, cx, cy, cs, pr, false);
+      }
     }
   }
   
