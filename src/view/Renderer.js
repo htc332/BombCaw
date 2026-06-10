@@ -948,16 +948,18 @@ class Renderer {
       const frame = frames[frameIdx];
       const sheet = sprite.sheet;
       
-      // 计算绘制大小（激活后放大到1.5倍）
+      // 计算绘制大小（激活后使用spriteComp统一缩放）
       const frameW = frame.w;
       const frameH = frame.h;
       const maxDim = Math.max(frameW, frameH);
-      const scale = (cs * 1.5) / maxDim;
+      const comp = this.spriteComp['level' + (level + 1)] || { scale: 1.2, yOff: 0 };
+      const baseScale = cs / maxDim;
+      const drawScale = baseScale * comp.scale;
       
-      const drawW = frameW * scale;
-      const drawH = frameH * scale;
+      const drawW = frameW * drawScale;
+      const drawH = frameH * drawScale;
       const drawX = cx - drawW / 2;
-      const drawY = cy - drawH / 2;
+      const drawY = cy - drawH / 2 + comp.yOff;
       
       ctx.drawImage(sheet, frame.x, frame.y, frame.w, frame.h, drawX, drawY, drawW, drawH);
     } else {
