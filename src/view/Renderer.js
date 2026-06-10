@@ -18,10 +18,10 @@ class Renderer {
     
     // 资产适配配置
     this.spriteComp = {
-      level1: { scale: 1.8, yOff: -2 },
-      level2: { scale: 1.8, yOff: -2 },
-      level3: { scale: 1.8, yOff: -2 },
-      level4: { scale: 1.8, yOff: -2 }
+      level1: { scale: 1.2, yOff: -2 },
+      level2: { scale: 1.2, yOff: -2 },
+      level3: { scale: 1.2, yOff: -2 },
+      level4: { scale: 1.2, yOff: -2 }
     };
     this.wallComp = {
       enemy_n: { scale: 1.0, yOff: -0.5 },
@@ -757,7 +757,7 @@ class Renderer {
     const frame = frames[frameIdx];
     const sheet = sprite.sheet;
     
-    const comp = this.spriteComp[level] || { scale: 1.5, yOff: 0 };
+    const comp = this.spriteComp[level] || { scale: 1.2, yOff: 0 };
     const frameW = frame.w;
     const frameH = frame.h;
     const maxDim = Math.max(frameW, frameH);
