@@ -918,7 +918,8 @@ class Renderer {
     }
   }
   
-  // 激活后：绘制对应等级的动态炸弹动画（使用倒计时进度，非循环）
+  // 激活后：绘制对应等级的牛牛炸弹动画（使用倒计时进度，非循环）
+  // [v0.7.9] 静态炸弹激活后 = 对应等级动态炸弹，清除循环动画，接爆炸逻辑
   drawStaticBombActive(ctx, sb, cx, cy, cs, pr, level) {
     // 获取对应牛牛炸弹精灵图
     const bombSprites = [
