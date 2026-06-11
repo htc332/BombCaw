@@ -391,13 +391,11 @@ class BombWallGame {
     // 音效即时触发
     this.audio.play('explosion');
     
-    // 创建十字蔓延爆炸 - 使用正确的power和网格坐标
-    var power = 1 + evo; // power = 1 + evolution
+    // 创建爆炸特效 - 传入 evo 让 Animator 根据新的爆炸范围绘制
     var gridSize = this.gameLogic.gridSize;
     var centerGridX = event.x;
     var centerGridY = event.y;
-    // console.log('[Main] Creating explosion with power:', power, 'gridSize:', gridSize, 'center:', centerGridX, centerGridY);
-    this.animator.createCrossExplosion(pos.cx, pos.cy, cellSize, power, gridSize, centerGridX, centerGridY);
+    this.animator.createCrossExplosion(pos.cx, pos.cy, cellSize, evo, gridSize, centerGridX, centerGridY);
     
     // 轻量辅助粒子（仅中心）- 只在evolution<=1时触发，避免高等级时粒子过多
     if (evo <= 1) {
@@ -421,12 +419,11 @@ class BombWallGame {
     var pos = this.toScreen(event.x, event.y);
     var cellSize = this.renderer.cellSize;
     var evo = event.evolution || 0;
-    var power = 1 + evo;
     var gridSize = this.gameLogic.gridSize;
     
-    // 补齐缺失的参数
+    // 传入 evo 让 Animator 根据新的爆炸范围绘制
     this.animator.createCrossExplosion(
-      pos.cx, pos.cy, cellSize, power,
+      pos.cx, pos.cy, cellSize, evo,
       gridSize, event.x, event.y
     );
     

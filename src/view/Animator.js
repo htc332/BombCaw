@@ -51,7 +51,7 @@ var ExplosionConfig = {
 
 // ========== SimpleExplosion: 极简爆炸 ==========
 
-function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerGridY) {
+function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerGridY, evo) {
   this.cx = cx;
   this.cy = cy;
   this.cellSize = cellSize;
@@ -66,33 +66,32 @@ function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerG
   this.minY = -half;
   this.maxY = gridSize % 2 === 0 ? half - 1 : half;
   
-  // 根据power创建不同形状
-  // power=1: 十字5格
-  // power=2: 3x3范围9格
-  // power=3: 十字延伸(中心+4方向各3格)
-  // power=4: 各方向衍生2格
+  // [v0.7.9] 根据 evo 创建正确的爆炸形状
+  // evo=0 (Lv1): 十字 1 格
+  // evo=2 (Lv2): 上下 2 格（竖直）
+  // evo=3 (Lv3): 左右 2 格（横向）
+  // evo=5 (Lv4): 十字 1 格 + 对角 1 格
   
-  if (this.power === 2) {
-    // 2级：3x3范围（含斜向）9格
-    for (var dx = -1; dx <= 1; dx++) {
-      for (var dy = -1; dy <= 1; dy++) {
-        var distance = Math.max(Math.abs(dx), Math.abs(dy));
+  if (evo === 2) {
+    // Lv2 蓝色：上下 2 格（竖直方向）
+    this.cells.push({ x: 0, y: 0, distance: 0, spawnTime: 0 });
+    var dirs2 = [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }];
+    dirs2.forEach(function(dir) {
+      for (var d = 1; d <= 2; d++) {
+        var gx = dir.dx * d;
+        var gy = dir.dy * d;
+        if (gx < this.minX || gx > this.maxX || gy < this.minY || gy > this.maxY) continue;
         this.cells.push({
-          x: dx, y: dy,
-          distance: distance,
-          spawnTime: distance * ExplosionConfig.spreadInterval
+          x: gx, y: gy,
+          distance: d,
+          spawnTime: d * ExplosionConfig.spreadInterval
         });
       }
-    }
-  } else if (this.power === 3) {
-    // 3级（紫牛）：十字形，中心+上下左右各2格 = 9格
+    }.bind(this));
+  } else if (evo === 3) {
+    // Lv3 紫色：左右 2 格（横向方向）
     this.cells.push({ x: 0, y: 0, distance: 0, spawnTime: 0 });
-    
-    var dirs3 = [
-      { dx: 0, dy: -1 }, { dx: 0, dy: 1 },
-      { dx: -1, dy: 0 }, { dx: 1, dy: 0 }
-    ];
-    
+    var dirs3 = [{ dx: -1, dy: 0 }, { dx: 1, dy: 0 }];
     dirs3.forEach(function(dir) {
       for (var d = 1; d <= 2; d++) {
         var gx = dir.dx * d;
@@ -105,53 +104,47 @@ function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerG
         });
       }
     }.bind(this));
-  } else if (this.power === 4) {
-    // 4级（红牛）：8方向各2格（类似炸弹人）
-    var dirs4 = [
-      { dx: 0, dy: -1 }, { dx: 0, dy: 1 },
-      { dx: -1, dy: 0 }, { dx: 1, dy: 0 },
-      { dx: -1, dy: -1 }, { dx: 1, dy: -1 },
-      { dx: -1, dy: 1 }, { dx: 1, dy: 1 }
-    ];
-    
-    // 中心
+  } else if (evo === 5) {
+    // Lv4 红色：十字 1 格 + 对角 1 格
     this.cells.push({ x: 0, y: 0, distance: 0, spawnTime: 0 });
-    
-    // 8方向各2格
-    dirs4.forEach(function(dir) {
-      for (var d = 1; d <= 2; d++) {
-        var gx = dir.dx * d;
-        var gy = dir.dy * d;
-        if (gx < this.minX || gx > this.maxX || gy < this.minY || gy > this.maxY) continue;
-        this.cells.push({
-          x: gx, y: gy,
-          distance: d,
-          spawnTime: d * ExplosionConfig.spreadInterval
-        });
-      }
+    // 十字方向
+    var crossDirs = [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 }];
+    crossDirs.forEach(function(dir) {
+      var gx = dir.dx;
+      var gy = dir.dy;
+      if (gx < this.minX || gx > this.maxX || gy < this.minY || gy > this.maxY) return;
+      this.cells.push({
+        x: gx, y: gy,
+        distance: 1,
+        spawnTime: ExplosionConfig.spreadInterval
+      });
+    }.bind(this));
+    // 对角方向
+    var diagDirs = [{ dx: -1, dy: -1 }, { dx: 1, dy: -1 }, { dx: -1, dy: 1 }, { dx: 1, dy: 1 }];
+    diagDirs.forEach(function(dir) {
+      var gx = dir.dx;
+      var gy = dir.dy;
+      if (gx < this.minX || gx > this.maxX || gy < this.minY || gy > this.maxY) return;
+      this.cells.push({
+        x: gx, y: gy,
+        distance: 1,
+        spawnTime: ExplosionConfig.spreadInterval
+      });
     }.bind(this));
   } else {
-    // 1级（白牛）：十字5格
+    // Lv1 白色：十字 1 格（默认）
     this.cells.push({ x: 0, y: 0, distance: 0, spawnTime: 0 });
-    
-    var dirs = [
-      { dx: 0, dy: -1 }, { dx: 0, dy: 1 },
-      { dx: -1, dy: 0 }, { dx: 1, dy: 0 }
-    ];
-    
-    var self = this;
+    var dirs = [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 }];
     dirs.forEach(function(dir) {
-      for (var d = 1; d <= self.power; d++) {
-        var gx = dir.dx * d;
-        var gy = dir.dy * d;
-        if (gx < self.minX || gx > self.maxX || gy < self.minY || gy > self.maxY) continue;
-        self.cells.push({
-          x: gx, y: gy,
-          distance: d,
-          spawnTime: d * ExplosionConfig.spreadInterval
-        });
-      }
-    });
+      var gx = dir.dx;
+      var gy = dir.dy;
+      if (gx < this.minX || gx > this.maxX || gy < this.minY || gy > this.maxY) return;
+      this.cells.push({
+        x: gx, y: gy,
+        distance: 1,
+        spawnTime: ExplosionConfig.spreadInterval
+      });
+    }.bind(this));
   }
 }
 
@@ -323,14 +316,20 @@ class Animator {
 
   // ========== 爆炸创建 ==========
   
-  createCrossExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerGridY) {
+  // 创建十字蔓延爆炸
+  // [v0.7.9] 根据 evolution 值创建正确的爆炸形状
+  createCrossExplosion(cx, cy, cellSize, evo, gridSize, centerGridX, centerGridY) {
     // 限制同屏数量
     if (this.explosions.length >= 3) {
       this.explosions.shift(); // 移除最旧的
     }
     
-    // 创建新爆炸对象
-    var explosion = new SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerGridY);
+    // 根据 evo 映射到 power（用于特效颜色）
+    var powerMap = { 0: 1, 2: 2, 3: 3, 5: 4 };
+    var power = powerMap[evo] || 1;
+    
+    // 创建新爆炸对象，传入 evo 用于形状计算
+    var explosion = new SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerGridY, evo);
     
     this.explosions.push(explosion);
     return explosion;
