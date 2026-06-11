@@ -148,8 +148,8 @@ class GameLogic {
       this.emitEvent('action_rejected', { reason: 'bomb_exists', x, y });
       return false;
     }
-    if (this.staticBombs.has(key) && this.staticBombs.get(key).active) {
-      this.emitEvent('action_rejected', { reason: 'static_bomb_active', x, y });
+    if (this.staticBombs.has(key)) {
+      this.emitEvent('action_rejected', { reason: 'static_bomb_exists', x, y });
       return false;
     }
     if (this.bombsLeft <= 0) {
