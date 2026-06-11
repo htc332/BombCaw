@@ -23,7 +23,7 @@ class UIManager {
   // ========== 购买栏（Shop Bar）==========
 
   /**
-   * 绘制底部购买栏 - 4个炸弹牛图标
+   * 绘制底部购买栏 - 4个炸弹牛图标（匹配原型样式）
    * @param {Object} gameState - 游戏状态
    * @param {number} w - 画布宽度
    * @param {number} h - 画布高度
@@ -51,20 +51,19 @@ class UIManager {
     const score = gameState.score || 0;
     const selected = gameState.selectedBombType !== undefined ? gameState.selectedBombType : 0;
     
-    // 购买栏尺寸
-    const barHeight = 70 * s * pr;
+    // 购买栏尺寸（原型风格）
+    const barHeight = 90 * s * pr;
     const barY = h - bottomSafe - barHeight;
-    const itemWidth = Math.min(w / 4, 90 * s * pr);
-    const itemHeight = barHeight - 10 * s * pr;
+    const itemWidth = Math.min(w / 4, 85 * s * pr);
+    const itemHeight = barHeight - 15 * s * pr;
     const startX = (w - itemWidth * 4) / 2;
-    const itemY = barY + 5 * s * pr;
+    const itemY = barY + 8 * s * pr;
     
-    // 绘制背景
+    // 绘制背景（半透明深色 + 顶部边框）
     ctx.fillStyle = 'rgba(13, 13, 21, 0.95)';
     ctx.fillRect(0, barY, w, barHeight);
-    ctx.strokeStyle = 'rgba(42, 42, 62, 0.8)';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(0, barY, w, barHeight);
+    ctx.fillStyle = 'rgba(42, 42, 62, 0.8)';
+    ctx.fillRect(0, barY, w, 1 * s * pr); // 顶部细线
     
     // 保存购买栏按钮区域（用于点击检测）
     this.shopBarButtons = [];
@@ -80,7 +79,7 @@ class UIManager {
         index: index,
         x: x,
         y: itemY,
-        width: itemWidth - 4 * s * pr,
+        width: itemWidth - 6 * s * pr,
         height: itemHeight,
         bombType: type,
         onClick: () => {
@@ -90,61 +89,99 @@ class UIManager {
         }
       });
       
-      // 绘制外框（选中高亮）
-      const padding = 2 * s * pr;
+      // 绘制外框（原型风格：圆角矩形）
+      const padding = 3 * s * pr;
       const boxX = x + padding;
       const boxY = itemY + padding;
-      const boxW = itemWidth - 4 * s * pr - padding * 2;
+      const boxW = itemWidth - 6 * s * pr - padding * 2;
       const boxH = itemHeight - padding * 2;
+      const cornerRadius = 8 * s * pr;
       
       if (isSelected) {
-        // 选中状态：金色边框 + 发光效果
-        ctx.fillStyle = 'rgba(255, 215, 0, 0.15)';
-        ctx.fillRect(boxX, boxY, boxW, boxH);
+        // 选中状态：金色边框 + 发光效果（原型风格）
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.2)';
+        this.roundRect(ctx, boxX, boxY, boxW, boxH, cornerRadius);
+        ctx.fill();
+        
         ctx.strokeStyle = '#FFD700';
         ctx.lineWidth = 2 * s * pr;
-        ctx.strokeRect(boxX, boxY, boxW, boxH);
+        this.roundRect(ctx, boxX, boxY, boxW, boxH, cornerRadius);
+        ctx.stroke();
+        
+        // 顶部小三角指示器（确保在框内可见）
+        ctx.fillStyle = '#FFD700';
+        ctx.beginPath();
+        const arrowY = boxY + 6 * s * pr; // 放在框内顶部
+        ctx.moveTo(boxX + boxW / 2 - 6 * s * pr, arrowY);
+        ctx.lineTo(boxX + boxW / 2, arrowY + 6 * s * pr);
+        ctx.lineTo(boxX + boxW / 2 + 6 * s * pr, arrowY);
+        ctx.fill();
       } else if (!canAfford) {
-        // 不可购买：灰色边框
-        ctx.strokeStyle = 'rgba(100, 100, 100, 0.5)';
+        // 不可购买：灰色边框 + 半透明
+        ctx.fillStyle = 'rgba(100, 100, 100, 0.1)';
+        this.roundRect(ctx, boxX, boxY, boxW, boxH, cornerRadius);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(100, 100, 100, 0.3)';
         ctx.lineWidth = 1;
-        ctx.strokeRect(boxX, boxY, boxW, boxH);
+        this.roundRect(ctx, boxX, boxY, boxW, boxH, cornerRadius);
+        ctx.stroke();
       } else {
         // 可购买：默认边框
+        ctx.fillStyle = 'rgba(42, 42, 62, 0.3)';
+        this.roundRect(ctx, boxX, boxY, boxW, boxH, cornerRadius);
+        ctx.fill();
         ctx.strokeStyle = 'rgba(74, 74, 90, 0.6)';
         ctx.lineWidth = 1;
-        ctx.strokeRect(boxX, boxY, boxW, boxH);
+        this.roundRect(ctx, boxX, boxY, boxW, boxH, cornerRadius);
+        ctx.stroke();
       }
       
-      // 绘制炸弹牛图标（复用静态炸弹精灵图）
-      const iconSize = Math.min(boxW * 0.5, boxH * 0.5);
+      // 绘制炸弹牛图标（原型风格：大图标）
+      const iconSize = Math.min(boxW * 0.6, boxH * 0.55);
       const iconX = boxX + boxW / 2;
-      const iconY = boxY + boxH * 0.35;
+      const iconY = boxY + boxH * 0.4;
       
       this.drawShopBombIcon(ctx, type.level, iconX, iconY, iconSize, canAfford, r);
       
-      // 绘制等级文字
+      // 绘制等级文字（原型风格：底部）
       ctx.fillStyle = isSelected ? '#FFD700' : (canAfford ? '#FFF' : '#666');
-      ctx.font = `bold ${10 * s * pr}px sans-serif`;
+      ctx.font = `bold ${11 * s * pr}px sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      ctx.fillText(`Lv.${type.level}`, boxX + boxW / 2, boxY + 2 * s * pr);
+      ctx.fillText(`Lv${type.level}`, boxX + boxW / 2, boxY + boxH - 18 * s * pr);
       
-      // 绘制消耗得分
+      // 绘制消耗得分（原型风格：底部小字）
       ctx.fillStyle = canAfford ? '#4CAF50' : '#FF4444';
-      ctx.font = `${9 * s * pr}px sans-serif`;
+      ctx.font = `${10 * s * pr}px sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
-      const costText = type.cost === 0 ? '免费' : `-${type.cost}`;
-      ctx.fillText(costText, boxX + boxW / 2, boxY + boxH - 2 * s * pr);
+      const costText = type.cost === 0 ? '免费' : `${type.cost}`;
+      ctx.fillText(costText, boxX + boxW / 2, boxY + boxH - 4 * s * pr);
     });
     
-    // 绘制标题
+    // 绘制标题（原型风格）
     ctx.fillStyle = '#8888A0';
     ctx.font = `${10 * s * pr}px sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText('选择炸弹', 8 * s * pr, barY - 8 * s * pr);
+    ctx.fillText('选择炸弹牛', 8 * s * pr, barY - 6 * s * pr);
+  }
+  
+  /**
+   * 绘制圆角矩形辅助函数
+   */
+  roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
   }
   
   /**

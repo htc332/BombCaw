@@ -157,7 +157,7 @@ class GameLogic {
     }
 
   // 放置炸弹得分扣除（根据炸弹类型）
-  const bombCosts = [0, 5, 10, 15]; // 1-4级炸弹消耗得分
+  const bombCosts = [0, 20, 50, 100]; // 1-4级炸弹消耗得分（匹配配置）
   const cost = bombCosts[this.selectedBombType] || 0;
   
   if (this.score < cost) {
@@ -650,6 +650,7 @@ class GameLogic {
       level: this.level,
       bombsLeft: this.bombsLeft,
       score: this.score,
+      selectedBombType: this.selectedBombType, // 添加选中炸弹类型
       gameActive: this.gameActive,
       gridSize: this.gridSize,
       wallCount,

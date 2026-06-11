@@ -431,39 +431,108 @@ class Renderer {
   
   drawFuncButtons(state, w, funcBtnH) {
     const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
-    ctx.fillStyle = 'rgba(30,42,74,0.6)';
-    ctx.fillRect(0, 0, w, funcBtnH);
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = `bold ${14 * s * pr}px sans-serif`;
+    
+    // 原型风格：深色半透明背景 + 圆角
+    ctx.fillStyle = 'rgba(13, 13, 21, 0.85)';
+    const cornerR = 12 * s * pr;
+    const barH = funcBtnH - 8 * s * pr;
+    const barY = 4 * s * pr;
+    
+    // 绘制圆角背景
+    ctx.beginPath();
+    ctx.moveTo(cornerR, barY);
+    ctx.lineTo(w - cornerR, barY);
+    ctx.quadraticCurveTo(w, barY, w, barY + cornerR);
+    ctx.lineTo(w, barY + barH - cornerR);
+    ctx.quadraticCurveTo(w, barY + barH, w - cornerR, barY + barH);
+    ctx.lineTo(cornerR, barY + barH);
+    ctx.quadraticCurveTo(0, barY + barH, 0, barY + barH - cornerR);
+    ctx.lineTo(0, barY + cornerR);
+    ctx.quadraticCurveTo(0, barY, cornerR, barY);
+    ctx.closePath();
+    ctx.fill();
+    
+    // 左侧：关卡（原型风格：金色星星 + 文字）
+    ctx.fillStyle = '#FFD700';
+    ctx.font = `bold ${16 * s * pr}px sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`第 ${state.level || 1} 关`, 15 * s * pr, funcBtnH / 2);
+    ctx.fillText('关卡:', 15 * s * pr, funcBtnH / 2);
+    
+    ctx.fillStyle = '#FFF';
+    ctx.font = `bold ${18 * s * pr}px sans-serif`;
+    ctx.fillText(`${state.level || 1}`, 55 * s * pr, funcBtnH / 2);
+    
+    // 星星图标（简化）
+    ctx.fillStyle = '#FFD700';
+    ctx.font = `${14 * s * pr}px sans-serif`;
+    ctx.fillText('⭐', 75 * s * pr, funcBtnH / 2);
+    
+    // 右侧：剩余老鼠（原型风格：图标 + 数字）
+    ctx.fillStyle = '#FFF';
+    ctx.font = `bold ${16 * s * pr}px sans-serif`;
     ctx.textAlign = 'right';
-    ctx.fillText(`剩余老鼠: ${state.wallCount || 0}`, w - 15 * s * pr, funcBtnH / 2);
+    ctx.textBaseline = 'middle';
+    ctx.fillText('剩余鼠鼠:', w - 80 * s * pr, funcBtnH / 2);
+    
+    ctx.fillStyle = '#FFD700';
+    ctx.font = `bold ${20 * s * pr}px sans-serif`;
+    ctx.fillText(`${state.wallCount || 0}`, w - 35 * s * pr, funcBtnH / 2);
+    
+    // 老鼠图标（简化）
+    ctx.fillStyle = '#FF9F5E';
+    ctx.font = `${16 * s * pr}px sans-serif`;
+    ctx.fillText('🐭', w - 15 * s * pr, funcBtnH / 2);
   }
   
   drawScorePanel(state, w, funcBtnH, scoreH) {
     const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
     const y = funcBtnH;
-    ctx.fillStyle = 'rgba(20,30,50,0.5)';
-    ctx.fillRect(0, y, w, scoreH);
     
-    // 分数显示
-    ctx.fillStyle = this.colors.text;
-    ctx.font = `bold ${24 * s * pr}px sans-serif`;
+    // 原型风格：得分标签居中，圆角矩形背景
+    const labelW = 140 * s * pr;
+    const labelH = 36 * s * pr;
+    const labelX = (w - labelW) / 2;
+    const labelY = y + (scoreH - labelH) / 2;
+    const cornerR = 18 * s * pr;
+    
+    // 绘制圆角背景（深色半透明）
+    ctx.fillStyle = 'rgba(30, 30, 50, 0.7)';
+    ctx.beginPath();
+    ctx.moveTo(labelX + cornerR, labelY);
+    ctx.lineTo(labelX + labelW - cornerR, labelY);
+    ctx.quadraticCurveTo(labelX + labelW, labelY, labelX + labelW, labelY + cornerR);
+    ctx.lineTo(labelX + labelW, labelY + labelH - cornerR);
+    ctx.quadraticCurveTo(labelX + labelW, labelY + labelH, labelX + labelW - cornerR, labelY + labelH);
+    ctx.lineTo(labelX + cornerR, labelY + labelH);
+    ctx.quadraticCurveTo(labelX, labelY + labelH, labelX, labelY + labelH - cornerR);
+    ctx.lineTo(labelX, labelY + cornerR);
+    ctx.quadraticCurveTo(labelX, labelY, labelX + cornerR, labelY);
+    ctx.closePath();
+    ctx.fill();
+    
+    // 边框（金色细线）
+    ctx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    
+    // 得分文字（原型风格：大字体，金色）
+    ctx.fillStyle = '#FFD700';
+    ctx.font = `bold ${22 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`得分: ${state.score || 0}`, w / 2, y + scoreH * 0.4);
+    ctx.fillText(`得分: ${state.score || 0}`, w / 2, y + scoreH / 2);
     
-    // 最近加分事件（显示2秒）
+    // 最近加分事件（显示2秒）- 原型风格：飘字动画
     if (state.lastScoreEvent) {
       const elapsed = Date.now() - state.lastScoreEvent.time;
       if (elapsed < 2000) {
         const alpha = 1 - (elapsed / 2000);  // 淡出
+        const offsetY = -elapsed / 100; // 向上飘
         ctx.globalAlpha = alpha;
         ctx.fillStyle = '#4CAF50';
-        ctx.font = `${14 * s * pr}px sans-serif`;
-        ctx.fillText(state.lastScoreEvent.text, w / 2, y + scoreH * 0.75);
+        ctx.font = `bold ${16 * s * pr}px sans-serif`;
+        ctx.fillText(state.lastScoreEvent.text, w / 2, y + scoreH * 0.75 + offsetY);
         ctx.globalAlpha = 1;
       }
     }
@@ -1010,14 +1079,18 @@ class Renderer {
   drawInfoPanel(state, w, h, infoH, bottomSafe) {
     const ctx = this.ctx, pr = this.pixelRatio || 2, s = this.scale || 1;
     const y = h - infoH - bottomSafe;
-    ctx.fillStyle = 'rgba(22,33,62,0.6)';
-    ctx.fillRect(0, y, w, infoH);
-    ctx.fillStyle = '#8888A0';
-    ctx.font = `${12 * s * pr}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    const hint = state.hint || '点击空白格放置炸弹';
-    ctx.fillText(hint, w / 2, y + infoH / 2);
+    
+    // [v0.7.0] 购买栏已取代信息区，此处仅保留小提示或留空
+    // 如果需要提示，绘制在棋盘上方而非底部
+    if (state.hint && state.hint !== '点击空白格放置炸弹') {
+      ctx.fillStyle = 'rgba(22,33,62,0.6)';
+      ctx.fillRect(0, y, w, 20 * s * pr);
+      ctx.fillStyle = '#8888A0';
+      ctx.font = `${10 * s * pr}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(state.hint, w / 2, y + 10 * s * pr);
+    }
   }
   
   screenToGrid(screenX, screenY, gridSize) {
