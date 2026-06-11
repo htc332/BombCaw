@@ -918,7 +918,7 @@ class Renderer {
     }
   }
   
-  // 激活后：绘制牛牛炸弹
+  // 激活后：绘制对应等级的动态炸弹动画（使用倒计时进度，非循环）
   drawStaticBombActive(ctx, sb, cx, cy, cs, pr, level) {
     // 获取对应牛牛炸弹精灵图
     const bombSprites = [
@@ -931,24 +931,24 @@ class Renderer {
     const sprite = bombSprites[level];
     
     if (sprite && sprite.loaded && sprite.sheet) {
-      // 使用牛牛炸弹动画
       const frames = sprite.index.frames;
-      const totalDuration = sprite.animDuration || 1;
-      const loopedTime = this.animTime % totalDuration;
+      const totalFrames = frames.length;
       
-      // 找到当前帧
-      let frameIdx = 0;
-      for (let i = frames.length - 1; i >= 0; i--) {
-        if (loopedTime >= frames[i].t) {
-          frameIdx = i;
-          break;
-        }
+      // 使用倒计时进度映射帧（与动态炸弹一致）
+      const progress = 1 - (sb.countdown || 0) / 3; // 3秒倒计时
+      
+      let frameIdx;
+      if (level === 0) {
+        // LV1: 前50%时间播完动画
+        const animProgress = Math.min(progress / 0.5, 1.0);
+        frameIdx = Math.min(Math.floor(animProgress * totalFrames), totalFrames - 1);
+      } else {
+        frameIdx = Math.min(Math.floor(progress * totalFrames), totalFrames - 1);
       }
       
       const frame = frames[frameIdx];
       const sheet = sprite.sheet;
       
-      // 计算绘制大小（激活后使用spriteComp统一缩放）
       const frameW = frame.w;
       const frameH = frame.h;
       const maxDim = Math.max(frameW, frameH);
