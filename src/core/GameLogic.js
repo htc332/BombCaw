@@ -275,9 +275,27 @@ class GameLogic {
 
   getExplosionRange(bomb) {
     const evo = bomb.evolution || 0;
-    // 4级炸弹(evo=3)特殊处理：确保对角方向正确计算
-    const power = 1 + Math.floor(evo / 2); // 十字方向: Lv0/1->1, Lv2/3->2
-    const diagPower = (evo % 2 === 1) ? power : 0; // 对角: 奇数等级有
+    let power, diagPower;
+
+    // v0.7.0 炸弹类型映射
+    // evo=0: 十字1格 (Lv1 白色)
+    // evo=2: 十字2格 (Lv2 蓝色)
+    // evo=3: 十字2格+对角1格 (Lv3 紫色)
+    // evo=5: 十字3格+对角2格 (Lv4 红色)
+    if (evo === 5) {
+      power = 3;      // 十字3格
+      diagPower = 2;  // 对角2格
+    } else if (evo === 3) {
+      power = 2;      // 十字2格
+      diagPower = 1;  // 对角1格
+    } else if (evo === 2) {
+      power = 2;      // 十字2格
+      diagPower = 0;  // 无对角
+    } else {
+      // evo=0 或 1 (默认/兼容)
+      power = 1 + Math.floor(evo / 2);
+      diagPower = (evo % 2 === 1) ? power : 0;
+    }
 
     const range = [{ x: bomb.x, y: bomb.y, distance: 0 }];
 
@@ -289,7 +307,7 @@ class GameLogic {
       }
     });
 
-    // 对角方向 - 4级(evo=3)应该有diagPower=2
+    // 对角方向
     if (diagPower > 0) {
       const diags = [[-1,-1], [1,-1], [-1,1], [1,1]];
       diags.forEach(([dx, dy]) => {
@@ -298,12 +316,6 @@ class GameLogic {
         }
       });
     }
-    
-    // 生产环境关闭详细爆炸范围日志
-    // console.log('[ExplosionRange] evo:', evo, 'power:', power, 'diagPower:', diagPower, 'total:', range.length);
-    // if (evo >= 2) {
-    //   console.log('[ExplosionRange] Lv' + (evo+1) + ' range:', JSON.stringify(range));
-    // }
 
     return range;
   }

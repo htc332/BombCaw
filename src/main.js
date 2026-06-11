@@ -352,10 +352,17 @@ class BombWallGame {
   
   /**
    * 获取进化等级对应颜色
+   * v0.7.0: 支持新的 evolution 映射 (0,2,3,5)
    */
   getEvolutionColor(evolution) {
-    var colors = ['#FF6B35', '#5BA3F5', '#C084FC', '#FF4444'];
-    return colors[evolution] || colors[0];
+    // 根据 BOMB_TYPES 配置映射颜色
+    var colorMap = {
+      0: '#FFFFFF',   // Lv1 白色炸弹牛
+      2: '#5BA3F5',   // Lv2 蓝色炸弹牛
+      3: '#C084FC',   // Lv3 紫色炸弹牛
+      5: '#FF4444'    // Lv4 红色炸弹牛
+    };
+    return colorMap[evolution] || '#FF6B35';
   }
 
   // ========== 特效事件处理 ==========

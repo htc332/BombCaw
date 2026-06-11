@@ -51,6 +51,14 @@ class Config {
         strongWallChance: 0.2    // 加固墙出现概率
       },
 
+      // 炸弹类型定义（v0.7.0）
+      bombTypes: [
+        { level: 1, name: '白色炸弹牛', cost: 0, evolution: 0, color: '#FFFFFF' },
+        { level: 2, name: '蓝色炸弹牛', cost: 20, evolution: 2, color: '#5BA3F5' },
+        { level: 3, name: '紫色炸弹牛', cost: 50, evolution: 3, color: '#C084FC' },
+        { level: 4, name: '红色炸弹牛', cost: 100, evolution: 5, color: '#FF4444' }
+      ],
+
       // 分数系统
       scoring: {
         destroyWall: 10,         // 炸毁墙壁基础分
