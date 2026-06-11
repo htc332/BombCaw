@@ -388,6 +388,11 @@ class Renderer {
     // 4. 游戏信息区（底部）
     this.drawInfoPanel(gameState, w, h, layout.infoH, layout.bottomSafe);
     
+    // 5. 购买栏（Shop Bar）- 在信息区下方
+    if (this.uiManager && this.uiManager.renderShopBar) {
+      this.uiManager.renderShopBar(gameState, w, h, layout.bottomSafe);
+    }
+    
     // 保存布局信息供遮罩层使用
     this.lastLayout = layout;
   }

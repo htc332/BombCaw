@@ -101,6 +101,15 @@ class BombWallGame {
     this.particles = new ParticleSystem();
     this.uiManager = new UIManager(this.canvas, this.renderer);
     
+    // 设置购买栏点击回调
+    this.uiManager.onShopItemClick = (index) => {
+      this.gameLogic.selectedBombType = index;
+      this.showHint('已选择 ' + (['白色','蓝色','紫色','红色'][index]) + '炸弹牛');
+    };
+    
+    // 将 uiManager 引用传递给 renderer，用于绘制购买栏
+    this.renderer.uiManager = this.uiManager;
+    
     this.audio = audioManager;
     this.audio.init();
     
@@ -257,6 +266,11 @@ class BombWallGame {
     
     if (this.gameState !== 'playing') {
       // console.log('[Touch] rejected: not playing', this.gameState);
+      return;
+    }
+    
+    // 优先检测购买栏点击
+    if (this.uiManager.onShopBarClick(x, y)) {
       return;
     }
     

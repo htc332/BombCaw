@@ -20,6 +20,205 @@ class UIManager {
     this.onSettingChange = null;
   }
 
+  // ========== 购买栏（Shop Bar）==========
+
+  /**
+   * 绘制底部购买栏 - 4个炸弹牛图标
+   * @param {Object} gameState - 游戏状态
+   * @param {number} w - 画布宽度
+   * @param {number} h - 画布高度
+   * @param {number} bottomSafe - 底部安全区高度
+   */
+  renderShopBar(gameState, w, h, bottomSafe) {
+    const ctx = this.ctx;
+    const r = this.renderer;
+    const s = r.scale || 1;
+    const pr = r.pixelRatio || 2;
+    
+    // 获取炸弹类型配置
+    const bombTypes = GameGlobal.config ? GameGlobal.config.get('bombTypes', [
+      { level: 1, name: '白色炸弹牛', cost: 0, evolution: 0, color: '#FFFFFF' },
+      { level: 2, name: '蓝色炸弹牛', cost: 20, evolution: 2, color: '#5BA3F5' },
+      { level: 3, name: '紫色炸弹牛', cost: 50, evolution: 3, color: '#C084FC' },
+      { level: 4, name: '红色炸弹牛', cost: 100, evolution: 5, color: '#FF4444' }
+    ]) : [
+      { level: 1, name: '白色炸弹牛', cost: 0, evolution: 0, color: '#FFFFFF' },
+      { level: 2, name: '蓝色炸弹牛', cost: 20, evolution: 2, color: '#5BA3F5' },
+      { level: 3, name: '紫色炸弹牛', cost: 50, evolution: 3, color: '#C084FC' },
+      { level: 4, name: '红色炸弹牛', cost: 100, evolution: 5, color: '#FF4444' }
+    ];
+    
+    const score = gameState.score || 0;
+    const selected = gameState.selectedBombType !== undefined ? gameState.selectedBombType : 0;
+    
+    // 购买栏尺寸
+    const barHeight = 70 * s * pr;
+    const barY = h - bottomSafe - barHeight;
+    const itemWidth = Math.min(w / 4, 90 * s * pr);
+    const itemHeight = barHeight - 10 * s * pr;
+    const startX = (w - itemWidth * 4) / 2;
+    const itemY = barY + 5 * s * pr;
+    
+    // 绘制背景
+    ctx.fillStyle = 'rgba(13, 13, 21, 0.95)';
+    ctx.fillRect(0, barY, w, barHeight);
+    ctx.strokeStyle = 'rgba(42, 42, 62, 0.8)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, barY, w, barHeight);
+    
+    // 保存购买栏按钮区域（用于点击检测）
+    this.shopBarButtons = [];
+    
+    bombTypes.forEach((type, index) => {
+      const x = startX + index * itemWidth;
+      const canAfford = score >= type.cost;
+      const isSelected = selected === index;
+      
+      // 保存按钮区域
+      this.shopBarButtons.push({
+        type: 'shop_item',
+        index: index,
+        x: x,
+        y: itemY,
+        width: itemWidth - 4 * s * pr,
+        height: itemHeight,
+        bombType: type,
+        onClick: () => {
+          if (canAfford && this.onShopItemClick) {
+            this.onShopItemClick(index);
+          }
+        }
+      });
+      
+      // 绘制外框（选中高亮）
+      const padding = 2 * s * pr;
+      const boxX = x + padding;
+      const boxY = itemY + padding;
+      const boxW = itemWidth - 4 * s * pr - padding * 2;
+      const boxH = itemHeight - padding * 2;
+      
+      if (isSelected) {
+        // 选中状态：金色边框 + 发光效果
+        ctx.fillStyle = 'rgba(255, 215, 0, 0.15)';
+        ctx.fillRect(boxX, boxY, boxW, boxH);
+        ctx.strokeStyle = '#FFD700';
+        ctx.lineWidth = 2 * s * pr;
+        ctx.strokeRect(boxX, boxY, boxW, boxH);
+      } else if (!canAfford) {
+        // 不可购买：灰色边框
+        ctx.strokeStyle = 'rgba(100, 100, 100, 0.5)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(boxX, boxY, boxW, boxH);
+      } else {
+        // 可购买：默认边框
+        ctx.strokeStyle = 'rgba(74, 74, 90, 0.6)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(boxX, boxY, boxW, boxH);
+      }
+      
+      // 绘制炸弹牛图标（复用静态炸弹精灵图）
+      const iconSize = Math.min(boxW * 0.5, boxH * 0.5);
+      const iconX = boxX + boxW / 2;
+      const iconY = boxY + boxH * 0.35;
+      
+      this.drawShopBombIcon(ctx, type.level, iconX, iconY, iconSize, canAfford, r);
+      
+      // 绘制等级文字
+      ctx.fillStyle = isSelected ? '#FFD700' : (canAfford ? '#FFF' : '#666');
+      ctx.font = `bold ${10 * s * pr}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(`Lv.${type.level}`, boxX + boxW / 2, boxY + 2 * s * pr);
+      
+      // 绘制消耗得分
+      ctx.fillStyle = canAfford ? '#4CAF50' : '#FF4444';
+      ctx.font = `${9 * s * pr}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      const costText = type.cost === 0 ? '免费' : `-${type.cost}`;
+      ctx.fillText(costText, boxX + boxW / 2, boxY + boxH - 2 * s * pr);
+    });
+    
+    // 绘制标题
+    ctx.fillStyle = '#8888A0';
+    ctx.font = `${10 * s * pr}px sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('选择炸弹', 8 * s * pr, barY - 8 * s * pr);
+  }
+  
+  /**
+   * 绘制购买栏中的炸弹图标
+   * 复用静态炸弹精灵图或绘制回退图形
+   */
+  drawShopBombIcon(ctx, level, cx, cy, size, canAfford, renderer) {
+    // 尝试使用静态炸弹精灵图
+    const spriteKey = 'level' + level;
+    const sprite = renderer.staticBombSprites ? renderer.staticBombSprites[spriteKey] : null;
+    
+    if (sprite && sprite.loaded && sprite.sheet) {
+      // 使用精灵图第一帧
+      const frames = sprite.index.frames;
+      if (frames && frames.length > 0) {
+        const frame = frames[0];
+        const sheet = sprite.sheet;
+        const frameW = frame.w;
+        const frameH = frame.h;
+        const maxDim = Math.max(frameW, frameH);
+        const scale = (size * 1.2) / maxDim;
+        
+        const drawW = frameW * scale;
+        const drawH = frameH * scale;
+        const drawX = cx - drawW / 2;
+        const drawY = cy - drawH / 2;
+        
+        if (!canAfford) {
+          ctx.globalAlpha = 0.4;
+        }
+        ctx.drawImage(sheet, frame.x, frame.y, frame.w, frame.h, drawX, drawY, drawW, drawH);
+        if (!canAfford) {
+          ctx.globalAlpha = 1.0;
+        }
+        return;
+      }
+    }
+    
+    // 回退：绘制简单图形
+    const colors = ['#FFFFFF', '#5BA3F5', '#C084FC', '#FF4444'];
+    const color = colors[level - 1] || '#FFFFFF';
+    
+    ctx.fillStyle = canAfford ? color : '#555';
+    ctx.beginPath();
+    ctx.arc(cx, cy, size * 0.35, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // 绘制等级数字
+    ctx.fillStyle = canAfford ? '#1A1A2E' : '#333';
+    ctx.font = `bold ${size * 0.4}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(String(level), cx, cy);
+  }
+  
+  /**
+   * 购买栏点击检测
+   * @param {number} x - 触摸X坐标
+   * @param {number} y - 触摸Y坐标
+   * @returns {boolean} - 是否处理了点击
+   */
+  onShopBarClick(x, y) {
+    if (!this.shopBarButtons || this.shopBarButtons.length === 0) return false;
+    
+    for (const btn of this.shopBarButtons) {
+      if (x >= btn.x && x <= btn.x + btn.width &&
+          y >= btn.y && y <= btn.y + btn.height) {
+        btn.onClick && btn.onClick();
+        return true;
+      }
+    }
+    return false;
+  }
+  
   // ========== 场景切换 ==========
 
   switchScene(sceneName, data = {}) {
@@ -275,6 +474,11 @@ class UIManager {
   // ========== 输入处理 ==========
 
   handleTouch(x, y) {
+    // 优先检测购买栏点击（如果在游戏场景）
+    if (this.currentScene === 'game' && this.onShopBarClick(x, y)) {
+      return true;
+    }
+    
     for (const btn of this.buttons) {
       if (x >= btn.x && x <= btn.x + btn.width &&
           y >= btn.y && y <= btn.y + btn.height) {
@@ -287,13 +491,16 @@ class UIManager {
 
   // ========== 主绘制 ==========
 
-  draw() {
+  draw(gameState) {
     switch (this.currentScene) {
       case 'level_select':
         this.drawLevelSelect();
         break;
       case 'settings':
         this.drawSettings();
+        break;
+      case 'game':
+        // 游戏场景不在这里绘制，由 Renderer 调用 renderShopBar
         break;
     }
   }
