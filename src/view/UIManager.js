@@ -143,14 +143,7 @@ class UIManager {
       
       this.drawShopBombIcon(ctx, type.level, iconX, iconY, iconSize, canAfford, r);
       
-      // 绘制等级文字（原型风格：底部）
-      ctx.fillStyle = isSelected ? '#FFD700' : (canAfford ? '#FFF' : '#666');
-      ctx.font = `bold ${11 * s * pr}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
-      ctx.fillText(`Lv${type.level}`, boxX + boxW / 2, boxY + boxH - 18 * s * pr);
-      
-      // 绘制消耗得分（原型风格：底部小字）
+      // 绘制消耗得分（原型风格：底部）
       ctx.fillStyle = canAfford ? '#4CAF50' : '#FF4444';
       ctx.font = `${10 * s * pr}px sans-serif`;
       ctx.textAlign = 'center';
