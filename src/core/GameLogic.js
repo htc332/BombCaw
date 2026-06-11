@@ -248,8 +248,8 @@ class GameLogic {
     // 处理静态炸弹被引爆（这可能会触发连锁爆炸）
     this.triggerStaticBombs(bomb, range);
 
-    // 升级相邻炸弹
-    this.upgradeAdjacentBombs(bomb);
+    // [v0.6.0] 移除：升级相邻炸弹
+    // this.upgradeAdjacentBombs(bomb);
 
     this.processingExplosion = false;
 
@@ -424,32 +424,24 @@ class GameLogic {
       // 检查是否在爆炸范围内
       const inRange = range.some(r => r.x === staticBomb.x && r.y === staticBomb.y);
       if (!inRange) return;
+      // [v0.6.0] 已激活则忽略，不再升级
+      if (staticBomb.active) return;
 
-      if (!staticBomb.active) {
-        // 首次被激活（不升级，保持原等级）
-        staticBomb.active = true;
-        staticBomb.countdown = 3;
-        
-        // 静态炸弹激活计分
-        this.addScore(5, '静态炸弹激活');
-        
-        this.emitEvent('static_bomb_activated', {
-          x: staticBomb.x,
-          y: staticBomb.y,
-          evolution: staticBomb.evolution
-        });
-        // 启动倒计时
-        this.startStaticBombCountdown(staticBomb);
-      } else {
-        // 已激活，升级并重置倒计时
-        staticBomb.evolution++;
-        staticBomb.countdown = 3;
-        this.emitEvent('static_bomb_upgraded', {
-          x: staticBomb.x,
-          y: staticBomb.y,
-          evolution: staticBomb.evolution
-        });
-      }
+      // 首次被激活（不升级，保持原等级）
+      // [v0.7.9] 静态炸弹被爆炸激活时，只激活，不升级
+      staticBomb.active = true;
+      staticBomb.countdown = 3;
+      
+      // 静态炸弹激活计分
+      this.addScore(5, '静态炸弹激活');
+      
+      this.emitEvent('static_bomb_activated', {
+        x: staticBomb.x,
+        y: staticBomb.y,
+        evolution: staticBomb.evolution
+      });
+      // 启动倒计时
+      this.startStaticBombCountdown(staticBomb);
     });
   }
 
@@ -498,9 +490,10 @@ class GameLogic {
       this.processExplosionHit(pos.x, pos.y, staticBomb.evolution);
     });
 
-    // 静态炸弹爆炸也能触发其他静态炸弹和升级相邻炸弹
+    // 静态炸弹爆炸也能触发其他静态炸弹
     this.triggerStaticBombs(staticBomb, range);
-    this.upgradeAdjacentBombs(staticBomb);
+    // [v0.6.0] 移除：升级相邻炸弹
+    // this.upgradeAdjacentBombs(staticBomb);
 
     this.processingExplosion = false;
 
@@ -508,36 +501,9 @@ class GameLogic {
     this.checkGameState();
   }
 
+  // [v0.6.0] 已废弃 - 移除炸弹升级机制
   upgradeAdjacentBombs(explodedBomb) {
-    // 爆炸后升级周围炸弹（8方向相邻）
-    const dirs = [[0,1], [0,-1], [1,0], [-1,0], [1,1], [1,-1], [-1,1], [-1,-1]];
-    
-    dirs.forEach(([dx, dy]) => {
-      const nx = explodedBomb.x + dx;
-      const ny = explodedBomb.y + dy;
-      const neighborKey = `${nx},${ny}`;
-      const neighbor = this.bombs.get(neighborKey);
-      
-      if (neighbor && neighbor.key !== explodedBomb.key) {
-        // 升级：爆炸范围+1
-        if (neighbor.evolution < 3) {
-          const oldLevel = neighbor.evolution;
-          neighbor.evolution++;
-          // 重置倒计时为1.5秒（90帧）
-          neighbor.countdown = 90;
-          
-          // 升级计分
-          const upgradePoints = 5 * (neighbor.evolution + 1);
-          this.addScore(upgradePoints, '炸弹升级Lv' + oldLevel + '->Lv' + neighbor.evolution);
-          
-          this.emitEvent('bomb_upgraded', { 
-            x: neighbor.x, y: neighbor.y, 
-            evolution: neighbor.evolution,
-            reason: 'explosion_adjacent'
-          });
-        }
-      }
-    });
+    // 空实现，保留方法避免外部调用报错
   }
 
   // ========== 游戏状态 ==========
