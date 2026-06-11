@@ -936,7 +936,11 @@ class Renderer {
       const totalFrames = frames.length;
       
       // 使用倒计时进度映射帧（与动态炸弹一致）
-      const progress = 1 - (sb.countdown || 0) / 3; // 3秒倒计时
+      // sb.countdown 是 3→0 的整数，需要平滑插值
+      const rawCountdown = sb.countdown || 0;
+      // 添加小数部分让动画更平滑（假设约60fps，每帧减少1/60）
+      const smoothCountdown = Math.max(0, rawCountdown - 0.5); // 偏移0.5让过渡更自然
+      const progress = 1 - smoothCountdown / 3; // 3秒倒计时
       
       let frameIdx;
       if (level === 0) {
