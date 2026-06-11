@@ -502,7 +502,8 @@ class BombWallGame {
       'wall_exists': '此处有墙壁',
       'bomb_exists': '此处已有炸弹',
       'static_bomb_active': '静态炸弹已激活',
-      'no_bombs': '炸弹不足!'
+      'no_bombs': '炸弹不足!',
+      'all_bombs_unaffordable': '得分不足，无法释放任何炸弹！'
     };
     
     this.showHint(messages[event.reason] || '无法放置');

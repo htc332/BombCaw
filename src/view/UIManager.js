@@ -107,15 +107,6 @@ class UIManager {
         ctx.lineWidth = 2 * s * pr;
         this.roundRect(ctx, boxX, boxY, boxW, boxH, cornerRadius);
         ctx.stroke();
-        
-        // 顶部小三角指示器（确保在框内可见）
-        ctx.fillStyle = '#FFD700';
-        ctx.beginPath();
-        const arrowY = boxY + 6 * s * pr; // 放在框内顶部
-        ctx.moveTo(boxX + boxW / 2 - 6 * s * pr, arrowY);
-        ctx.lineTo(boxX + boxW / 2, arrowY + 6 * s * pr);
-        ctx.lineTo(boxX + boxW / 2 + 6 * s * pr, arrowY);
-        ctx.fill();
       } else if (!canAfford) {
         // 不可购买：灰色边框 + 半透明
         ctx.fillStyle = 'rgba(100, 100, 100, 0.1)';

@@ -161,9 +161,22 @@ class GameLogic {
   const cost = bombCosts[this.selectedBombType] || 0;
   
   if (this.score < cost) {
-    this.emitEvent('action_rejected', { reason: 'score_insufficient', x, y, required: cost, current: this.score });
-    this.selectedBombType = 0; // 切回1级炸弹
-    return false;
+    // [v0.7.9] 得分不足时，自动退到可以释放的那一档
+    let newType = this.selectedBombType;
+    while (newType > 0 && this.score < bombCosts[newType]) {
+      newType--;
+    }
+    
+    if (this.score < bombCosts[newType]) {
+      // 全都不能释放，弹出失败提示
+      this.emitEvent('action_rejected', { reason: 'all_bombs_unaffordable', x, y, current: this.score });
+      return false;
+    }
+    
+    // 退到可以释放的那一档
+    this.selectedBombType = newType;
+    this.emitEvent('bomb_type_changed', { newType: newType, reason: 'auto_downgrade' });
+    return this.tryPlaceBomb(x, y); // 递归调用，使用新的类型
   }
   
   // 扣除得分
