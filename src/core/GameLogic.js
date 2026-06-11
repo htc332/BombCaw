@@ -19,7 +19,8 @@ class GameLogic {
   reset() {
     this.level = 1;
     this.bombsLeft = 0;
-    this.score = 0;
+    this.score = 100;
+    this.selectedBombType = 0;
     this.gameActive = false;
     this.walls = new Map();      // key: "x,y"
     this.bombs = new Map();      // key: "x,y" (玩家放置的)
@@ -37,17 +38,18 @@ class GameLogic {
   }
   
   // 添加分数
-  addScore(basePoints, reason) {
-    this.score += basePoints;
+  addScore(points, reason) {
+    this.score += points;
+    if (this.score < 0) this.score = 0;
     
     // 记录加分事件
     this.lastScoreEvent = {
-      text: reason + ' +' + basePoints,
+      text: reason + ' +' + points,
       time: Date.now()
     };
     
     // 生产环境关闭日志输出
-    // console.log('[Score]', reason, '+', basePoints, '=', this.score);
+    // console.log('[Score]', reason, '+', points, '=', this.score);
   }
 
   // ========== 关卡初始化 ==========
@@ -156,6 +158,20 @@ class GameLogic {
       this.emitEvent('action_rejected', { reason: 'no_bombs', x, y });
       return false;
     }
+
+  // 放置炸弹得分扣除（根据炸弹类型）
+  const bombCosts = [0, 5, 10, 15]; // 1-4级炸弹消耗得分
+  const cost = bombCosts[this.selectedBombType] || 0;
+  
+  if (this.score < cost) {
+    this.emitEvent('action_rejected', { reason: 'score_insufficient', x, y, required: cost, current: this.score });
+    this.selectedBombType = 0; // 切回1级炸弹
+    return false;
+  }
+  
+  // 扣除得分
+  this.score -= cost;
+  if (this.score < 0) this.score = 0;
 
     // 放置炸弹
     this.bombsLeft--;
@@ -312,28 +328,9 @@ class GameLogic {
     }
   }
 
-  // 连击计分
+  // 连击计分（已废弃，保留方法避免外部调用报错）
   addComboScore(basePoints, reason) {
-    if (!this.isInCombo) {
-      // 不在连击中，直接加分
-      this.addScore(basePoints, reason);
-      return;
-    }
-    
-    this.comboCount++;
-    
-    // 计算倍数: 2^(n-1), 上限 8 (即 2^3)
-    const multiplier = Math.min(Math.pow(2, this.comboCount - 1), 8);
-    
-    // 最终得分
-    const finalScore = basePoints * multiplier;
-    this.score += finalScore;
-    
-    console.log('[Combo] x' + this.comboCount, 
-                '基础' + basePoints, 
-                '倍数x' + multiplier, 
-                '最终+' + finalScore,
-                '总分=' + this.score);
+    this.addScore(basePoints, reason);
   }
 
   // ========== 敌人状态处理（配置驱动） ==========
@@ -348,9 +345,9 @@ class GameLogic {
 
     wall.dying = true;
     
-    // 连击计分
+    // 根据敌人类型获得得分
     const points = config.score || 5;
-    this.addComboScore(points, wall.type + '摧毁');
+    this.addScore(points, wall.type + '摧毁');
 
     // 发送死亡事件
     this.emitEvent('enemy_death', {
