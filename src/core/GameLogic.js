@@ -37,7 +37,7 @@ class GameLogic {
     this.lastScoreEvent = null;  // { text: '普通鼠摧毁 +5', time: Date.now() }
   }
   
-  // 添加分数
+  // 添加分数（v0.7.0 得分系统）
   addScore(points, reason) {
     this.score += points;
     if (this.score < 0) this.score = 0;
@@ -47,9 +47,6 @@ class GameLogic {
       text: reason + ' +' + points,
       time: Date.now()
     };
-    
-    // 生产环境关闭日志输出
-    // console.log('[Score]', reason, '+', points, '=', this.score);
   }
 
   // ========== 关卡初始化 ==========
@@ -173,12 +170,22 @@ class GameLogic {
   this.score -= cost;
   if (this.score < 0) this.score = 0;
 
-    // 放置炸弹
+  // 放置炸弹
     this.bombsLeft--;
+    
+    // 根据选中的炸弹类型获取 evolution
+    const bombTypes = [
+      { evolution: 0 },  // Lv1 白色
+      { evolution: 2 },  // Lv2 蓝色
+      { evolution: 3 },  // Lv3 紫色
+      { evolution: 5 }   // Lv4 红色
+    ];
+    const selectedType = bombTypes[this.selectedBombType] || bombTypes[0];
+    
     const bomb = {
       x, y,
       countdown: 3, // 倒计时秒数，由外部根据动画帧数控制
-      evolution: 0,
+      evolution: selectedType.evolution, // 根据选中类型设置 evolution
       key,
       animTime: 0, // 独立动画时间（秒）
       animSpeed: 0.8 + Math.random() * 0.4 // 动画速度系数 (0.8~1.2)
@@ -357,8 +364,8 @@ class GameLogic {
 
     wall.dying = true;
     
-    // 根据敌人类型获得得分
-    const points = config.score || 5;
+    // 根据敌人类型获得得分（v0.7.0 得分系统）
+    const points = config.score || 0;
     this.addScore(points, wall.type + '摧毁');
 
     // 发送死亡事件
