@@ -275,45 +275,45 @@ class GameLogic {
 
   getExplosionRange(bomb) {
     const evo = bomb.evolution || 0;
-    let power, diagPower;
-
-    // v0.7.0 炸弹类型映射
-    // evo=0: 十字1格 (Lv1 白色)
-    // evo=2: 十字2格 (Lv2 蓝色)
-    // evo=3: 十字2格+对角1格 (Lv3 紫色)
-    // evo=5: 十字3格+对角2格 (Lv4 红色)
-    if (evo === 5) {
-      power = 3;      // 十字3格
-      diagPower = 2;  // 对角2格
-    } else if (evo === 3) {
-      power = 2;      // 十字2格
-      diagPower = 1;  // 对角1格
-    } else if (evo === 2) {
-      power = 2;      // 十字2格
-      diagPower = 0;  // 无对角
-    } else {
-      // evo=0 或 1 (默认/兼容)
-      power = 1 + Math.floor(evo / 2);
-      diagPower = (evo % 2 === 1) ? power : 0;
-    }
-
     const range = [{ x: bomb.x, y: bomb.y, distance: 0 }];
 
-    // 十字方向
-    const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
-    dirs.forEach(([dx, dy]) => {
-      for (let d = 1; d <= power; d++) {
-        range.push({ x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d });
-      }
-    });
-
-    // 对角方向
-    if (diagPower > 0) {
-      const diags = [[-1,-1], [1,-1], [-1,1], [1,1]];
-      diags.forEach(([dx, dy]) => {
-        for (let d = 1; d <= diagPower; d++) {
+    if (evo === 0) {
+      // Lv1: 十字 1 格（上下左右各1格）
+      const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
+      dirs.forEach(([dx, dy]) => {
+        range.push({ x: bomb.x + dx, y: bomb.y + dy, distance: 1 });
+      });
+    } else if (evo === 2) {
+      // Lv2: 上下单方向 2 格（竖直方向）
+      const dirs = [[0,1], [0,-1]];
+      dirs.forEach(([dx, dy]) => {
+        for (let d = 1; d <= 2; d++) {
           range.push({ x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d });
         }
+      });
+    } else if (evo === 3) {
+      // Lv3: 左右单方向 2 格（横向方向）
+      const dirs = [[1,0], [-1,0]];
+      dirs.forEach(([dx, dy]) => {
+        for (let d = 1; d <= 2; d++) {
+          range.push({ x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d });
+        }
+      });
+    } else if (evo === 5) {
+      // Lv4: 十字 1 格 + 对角 1 格
+      const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
+      dirs.forEach(([dx, dy]) => {
+        range.push({ x: bomb.x + dx, y: bomb.y + dy, distance: 1 });
+      });
+      const diags = [[-1,-1], [1,-1], [-1,1], [1,1]];
+      diags.forEach(([dx, dy]) => {
+        range.push({ x: bomb.x + dx, y: bomb.y + dy, distance: 1 });
+      });
+    } else {
+      // 兼容旧逻辑：默认十字 1 格
+      const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
+      dirs.forEach(([dx, dy]) => {
+        range.push({ x: bomb.x + dx, y: bomb.y + dy, distance: 1 });
       });
     }
 
