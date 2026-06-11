@@ -29,9 +29,9 @@ const LEVELS = {
     ],
     staticBombs: [
       { x: 0, y: 0, evolution: 0 },   // 1级静态炸弹
-      { x: 2, y: 0, evolution: 1 },  // 2级静态炸弹
-      { x: -2, y: 0, evolution: 2 }, // 3级静态炸弹
-      { x: 0, y: 2, evolution: 3 }    // 4级静态炸弹
+      { x: 2, y: 0, evolution: 2 },  // 2级静态炸弹
+      { x: -2, y: 0, evolution: 3 }, // 3级静态炸弹
+      { x: 0, y: 2, evolution: 5 }    // 4级静态炸弹
     ]
   },
 
@@ -139,7 +139,7 @@ const LEVELS = {
       { x: 2, y: 0, type: 'bomb', color: 'yellow' }
     ],
     staticBombs: [
-      { x: 0, y: 0, evolution: 1 }  // 初始1级，范围2格
+      { x: 0, y: 0, evolution: 2 }  // 初始1级，范围2格
     ]
   },
 
@@ -154,7 +154,7 @@ const LEVELS = {
       { x: 0, y: -2, type: 'strong' }
     ],
     staticBombs: [
-      { x: 0, y: 0, evolution: 1 }  // 1级=范围2，刚好够到
+      { x: 0, y: 0, evolution: 2 }  // 1级=范围2，刚好够到
     ]
   },
 
@@ -392,7 +392,7 @@ const LEVELS = {
       if (x === 0 && y === 0) continue;
       const key = `${x},${y}`;
       if (!used.has(key)) {
-        level18.staticBombs.push({ x, y, evolution: Math.random() > 0.5 ? 0 : 1 });
+        level18.staticBombs.push({ x, y, evolution: Math.random() > 0.5 ? 0 : 2 });
       }
     }
   }
