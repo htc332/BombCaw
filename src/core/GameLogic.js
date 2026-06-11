@@ -455,6 +455,9 @@ class GameLogic {
   }
 
   startStaticBombCountdown(staticBomb) {
+    // [v0.7.9-fix] 使用基于帧的倒计时，与动态炸弹一致，确保动画流畅
+    staticBomb.countdown = 90; // 1.5秒 = 90帧（与动态炸弹一致）
+    
     const tick = () => {
       if (!this.staticBombs.has(staticBomb.key)) return;
       if (!staticBomb.active) return;
@@ -467,12 +470,21 @@ class GameLogic {
         this.emitEvent('static_bomb_tick', {
           x: staticBomb.x,
           y: staticBomb.y,
-          countdown: staticBomb.countdown
+          countdown: Math.ceil(staticBomb.countdown / 60) // 显示秒数
         });
-        setTimeout(tick, 1000);
+        if (typeof requestAnimationFrame !== 'undefined') {
+          requestAnimationFrame(tick);
+        } else {
+          setTimeout(tick, 16);
+        }
       }
     };
-    setTimeout(tick, 1000);
+    
+    if (typeof requestAnimationFrame !== 'undefined') {
+      requestAnimationFrame(tick);
+    } else {
+      setTimeout(tick, 16);
+    }
   }
 
   explodeStaticBomb(staticBomb) {
