@@ -798,7 +798,10 @@ class Renderer {
       const size = cs;
       
       let drawn = false;
-      const sprite = this.bombSprites['level' + (bomb.evolution + 1)];
+      // [v0.7.9-fix] 根据 evolution 映射到正确的 level 键
+      const levelMap = { 0: 'level1', 2: 'level2', 3: 'level3', 5: 'level4' };
+      const levelKey = levelMap[bomb.evolution] || 'level1';
+      const sprite = this.bombSprites[levelKey];
       if (sprite && sprite.loaded) {
         const result = this.drawAnimatedBomb(ctx, bomb, cx, cy, size);
         drawn = result.drawn;
@@ -812,9 +815,11 @@ class Renderer {
   
   drawAnimatedBomb(ctx, bomb, cx, cy, size) {
     const evo = bomb.evolution || 0;
-    const level = 'level' + (evo + 1);
+    // [v0.7.9-fix] 根据 evolution 映射到正确的 level 键
+    const levelMap = { 0: 'level1', 2: 'level2', 3: 'level3', 5: 'level4' };
+    const levelKey = levelMap[evo] || 'level1';
     
-    const sprite = this.bombSprites[level];
+    const sprite = this.bombSprites[levelKey];
     if (!sprite || !sprite.loaded) return { drawn: false };
     
     const frames = sprite.index.frames;
@@ -844,7 +849,7 @@ class Renderer {
     const frame = frames[frameIdx];
     const sheet = sprite.sheet;
     
-    const comp = this.spriteComp[level] || { scale: 1.2, yOff: 0 };
+    const comp = this.spriteComp[levelKey] || { scale: 1.2, yOff: 0 };
     const frameW = frame.w;
     const frameH = frame.h;
     const maxDim = Math.max(frameW, frameH);
