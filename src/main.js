@@ -315,6 +315,21 @@ class BombWallGame {
     if (success) {
       this.lastShopAction = { type: 'placed', time: Date.now() };
       this.audio.play('place');
+      
+      // 放置后检查分数是否还够当前选中的档位，不够则自动降级
+      const bombCosts = [0, 20, 50, 100];
+      const currentScore = this.gameLogic.score || 0;
+      const currentSelected = this.gameLogic.selectedBombType || 0;
+      if (currentScore < bombCosts[currentSelected]) {
+        let newType = currentSelected;
+        while (newType > 0 && currentScore < bombCosts[newType]) {
+          newType--;
+        }
+        if (currentScore >= bombCosts[newType]) {
+          this.gameLogic.selectedBombType = newType;
+          this.showHint('自动切换为 ' + (['白色','蓝色','紫色','红色'][newType]) + '炸弹牛');
+        }
+      }
     } else {
       this.lastShopAction = { type: 'rejected', time: Date.now() };
     }
