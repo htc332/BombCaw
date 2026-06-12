@@ -25,7 +25,11 @@ const LEVELS = {
       // 二级头盔鼠（精英鼠）- 需要两次爆炸才能消灭
       { x: 1, y: 2, type: 'strong' },
       { x: -1, y: -2, type: 'strong' },
-      { x: 2, y: -1, type: 'strong' }
+      { x: 2, y: -1, type: 'strong' },
+      // 幽灵鼠 - 新敌人类型
+      { x: -3, y: 3, type: 'ghost' },
+      { x: 3, y: -3, type: 'ghost' },
+      { x: 0, y: -2, type: 'ghost' }
     ],
     staticBombs: [
       { x: 0, y: 0, evolution: 0 },   // 1级静态炸弹

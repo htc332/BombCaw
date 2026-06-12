@@ -39,6 +39,20 @@ const ENEMY_TYPES = {
     onDeath: 'standard'
   },
 
+  ghost: {
+    name: '幽灵鼠',
+    hp: 1,
+    score: 8,
+    sprites: {
+      idle: 'enemy_ghost'
+    },
+    deathSprite: 'enemy_ghost_death',
+    deathDuration: 2000,
+    states: ['idle'],
+    onDamaged: null,
+    onDeath: 'standard'
+  },
+
   bomb: {
     name: '炸弹墙',
     hp: 1,

@@ -492,9 +492,9 @@ class BombWallGame {
   }
 
   onEnemyDeath(event) {
-    // console.log('[Main] onEnemyDeath called', event.x, event.y, 'isElite:', event.isElite);
-    // 播放死亡动画（精英鼠使用专用动画）
-    this.renderer.addDeathAnimation(event.x, event.y, event.isElite);
+    // console.log('[Main] onEnemyDeath called', event.x, event.y, 'wallType:', event.wallType);
+    // 播放死亡动画（根据墙壁类型选择专用动画）
+    this.renderer.addDeathAnimation(event.x, event.y, event.wallType || 'normal');
     this.audio.play('break');
   }
 

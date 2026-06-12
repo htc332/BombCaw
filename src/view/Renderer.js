@@ -29,6 +29,8 @@ class Renderer {
     enemy_elite_break: { scale: 0.9, yOff: -1.6 },
     enemy_elite_break_idle: { scale: 1.0, yOff: -1.6 },
     enemy_elite_death: { scale: 1.0, yOff: -0.5 },
+    enemy_ghost: { scale: 1.0, yOff: -1.0 },
+    enemy_ghost_death: { scale: 1.0, yOff: -0.5 },
     };
     
     this.colors = {
@@ -158,6 +160,12 @@ class Renderer {
       // 精英鼠死亡动画
       loadImg(`${bp}/sprites/enemy_elite_death/sprite.png`),
       loadJson(`${bp}/sprites/enemy_elite_death/index.json`),
+      // Ghost老鼠精灵图
+      loadImg(`${bp}/sprites/enemy_ghost/sprite.png`),
+      loadJson(`${bp}/sprites/enemy_ghost/index.json`),
+      // Ghost老鼠死亡动画
+      loadImg(`${bp}/sprites/enemy_ghost_death/sprite.png`),
+      loadJson(`${bp}/sprites/enemy_ghost_death/index.json`),
       // 静态炸弹精灵图（使用子包路径）
       loadImg(`${bp}/sprites/static_bombs/Sleep/Sleep_lv1.png`),
       loadJson(`${bp}/sprites/static_bombs/Sleep/Sleep_lv1.json`),
@@ -202,6 +210,10 @@ class Renderer {
       this.wallSprites.enemy_elite_break_idle = makeSprite(results[19], results[20]);
       // 精英鼠死亡动画
       this.wallSprites.enemy_elite_death = makeSprite(results[21], results[22]);
+      // Ghost老鼠精灵图
+      this.wallSprites.enemy_ghost = makeSprite(results[23], results[24]);
+      // Ghost老鼠死亡动画
+      this.wallSprites.enemy_ghost_death = makeSprite(results[25], results[26]);
       
       // 静态炸弹精灵图（帧动画）
       const makeStaticSprite = (sheet, index) => ({
@@ -212,10 +224,10 @@ class Renderer {
           ? index.frames[index.frames.length - 1].t + 0.033
           : 1
       });
-      this.staticBombSprites.level1 = makeStaticSprite(results[23], results[24]);
-      this.staticBombSprites.level2 = makeStaticSprite(results[25], results[26]);
-      this.staticBombSprites.level3 = makeStaticSprite(results[27], results[28]);
-      this.staticBombSprites.level4 = makeStaticSprite(results[29], results[30]);
+      this.staticBombSprites.level1 = makeStaticSprite(results[27], results[28]);
+      this.staticBombSprites.level2 = makeStaticSprite(results[29], results[30]);
+      this.staticBombSprites.level3 = makeStaticSprite(results[31], results[32]);
+      this.staticBombSprites.level4 = makeStaticSprite(results[33], results[34]);
       
       // 生产环境关闭静态炸弹精灵加载日志
       // console.log('[Renderer] Static bomb sprites loaded:', {
@@ -644,21 +656,33 @@ class Renderer {
     this.drawDeathAnimations(ctx, offsetX, offsetY, gridSize, cs, g, half);
   }
   
-  // 添加死亡动画（支持精英鼠专用死亡动画）
-  addDeathAnimation(x, y, isElite) {
-    const spriteName = isElite ? 'enemy_elite_death' : 'enemy_n_death';
+  // 添加死亡动画（支持多种类型死亡动画）
+  addDeathAnimation(x, y, wallType) {
+    // 根据墙壁类型选择死亡动画
+    let spriteName;
+    switch(wallType) {
+      case 'strong':
+        spriteName = 'enemy_elite_death';
+        break;
+      case 'ghost':
+        spriteName = 'enemy_ghost_death';
+        break;
+      default:
+        spriteName = 'enemy_n_death';
+    }
+    
     const sprite = this.wallSprites[spriteName];
     if (!sprite || !sprite.loaded) {
-      // 如果精英鼠死亡动画未加载，回退到通用死亡动画
-      if (isElite) {
-        return this.addDeathAnimation(x, y, false);
+      // 如果特定类型死亡动画未加载，回退到通用死亡动画
+      if (wallType !== 'normal') {
+        return this.addDeathAnimation(x, y, 'normal');
       }
       return;
     }
     
     // 计算实际动画时长（到最后一帧结束）
     const frames = sprite.index.frames;
-    const lastFrameIdx = Math.min(frames.length - 1, isElite ? 9 : 11);
+    const lastFrameIdx = frames.length - 1;
     const realDuration = frames[lastFrameIdx].t + 0.033;
     
     this.deathAnimations.push({
