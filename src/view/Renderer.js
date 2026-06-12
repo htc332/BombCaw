@@ -385,8 +385,8 @@ class Renderer {
     this.drawStaticBombs(gameState.staticBombs || [], layout.offsetX, layout.offsetY, gameState.gridSize || 5);
     this.drawBombs(gameState.bombs || [], layout.offsetX, layout.offsetY, gameState.gridSize || 5, dt);
     
-    // 4. 游戏信息区（底部）
-    this.drawInfoPanel(gameState, w, h, layout.infoH, layout.bottomSafe);
+    // 4. 游戏信息区（已废弃，购买栏取代提示功能）
+    // this.drawInfoPanel(gameState, w, h, layout.infoH, layout.bottomSafe);
     
     // 5. 购买栏（Shop Bar）- 在信息区下方
     if (this.uiManager && this.uiManager.renderShopBar) {
@@ -1083,20 +1083,8 @@ class Renderer {
   }
   
   drawInfoPanel(state, w, h, infoH, bottomSafe) {
-    const ctx = this.ctx, pr = this.pixelRatio || 2, s = this.scale || 1;
-    const y = h - infoH - bottomSafe;
-    
-    // [v0.7.0] 购买栏已取代信息区，此处仅保留小提示或留空
-    // 如果需要提示，绘制在棋盘上方而非底部
-    if (state.hint && state.hint !== '点击空白格放置炸弹') {
-      ctx.fillStyle = 'rgba(22,33,62,0.6)';
-      ctx.fillRect(0, y, w, 20 * s * pr);
-      ctx.fillStyle = '#8888A0';
-      ctx.font = `${10 * s * pr}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(state.hint, w / 2, y + 10 * s * pr);
-    }
+    // [v0.7.9] 购买栏已取代信息区，所有提示在购买栏上方显示
+    // 此方法保留为空，避免破坏调用链
   }
   
   screenToGrid(screenX, screenY, gridSize) {

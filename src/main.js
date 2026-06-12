@@ -228,7 +228,10 @@ class BombWallGame {
     var config = this.levelSystem.getLevelConfig(level);
     this.gameLogic.initLevel(config);
     
-    this.hint = config.hint || '点击空白格放置炸弹';
+    // [v0.7.9] 旧提示系统已废弃，使用购买栏动态提示
+    // this.hint = config.hint || '点击空白格放置炸弹';
+    this.hint = '';
+    
     this.animator.clear();
     this.particles.clear();
     
