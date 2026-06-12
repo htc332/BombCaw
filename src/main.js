@@ -116,7 +116,7 @@ class BombWallGame {
         if (score < bombCosts[newType]) {
           // 全都不能释放
           this.lastShopAction = { type: 'cannot_afford', cost: bombCosts[index], score: score, time: Date.now() };
-          this.showHint('牛奶不足!');
+          this.showHint('牛奶数不足');
           return;
         }
         
