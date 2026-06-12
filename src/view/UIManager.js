@@ -18,10 +18,6 @@ class UIManager {
     // 回调
     this.onLevelSelect = null;
     this.onSettingChange = null;
-    
-    // 购买栏提示文字计时器
-    this.shopHintTimer = null;
-    this.shopHintText = null;
   }
 
   // ========== 购买栏（Shop Bar）==========
@@ -150,7 +146,10 @@ class UIManager {
     // 绘制动态提示文字（根据玩家行为变化，1.2秒后回到默认）
     let hintText = '点击上方格子盘放置选中的牛牛';
     const lastAction = gameState.lastShopAction;
-    if (lastAction) {
+    const now = Date.now();
+    const HINT_DURATION = 1200; // 1.2秒
+    
+    if (lastAction && lastAction.time && (now - lastAction.time) < HINT_DURATION) {
       if (lastAction.type === 'placed') {
         const bombCosts = [0, 20, 50, 100];
         const cost = bombCosts[selected] || 0;
@@ -158,20 +157,6 @@ class UIManager {
       } else if (lastAction.type === 'cannot_afford') {
         hintText = '牛奶不足';
       }
-      
-      // 设置1.2秒后回到默认文字
-      if (this.shopHintTimer) {
-        clearTimeout(this.shopHintTimer);
-      }
-      this.shopHintText = hintText;
-      this.shopHintTimer = setTimeout(() => {
-        this.shopHintText = null;
-      }, 1200);
-    }
-    
-    // 如果有计时中的提示文字，优先显示；否则显示默认
-    if (this.shopHintText) {
-      hintText = this.shopHintText;
     }
     
     ctx.fillStyle = '#FFFFFF';
