@@ -147,7 +147,7 @@ class UIManager {
     let hintText = '点击上方格子盘放置选中的牛牛';
     const lastAction = gameState.lastShopAction;
     const now = Date.now();
-    const HINT_DURATION = 1200; // 1.2秒
+    const HINT_DURATION = 2500; // 2.5秒
     
     if (lastAction && lastAction.time && (now - lastAction.time) < HINT_DURATION) {
       if (lastAction.type === 'placed') {
