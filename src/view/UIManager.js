@@ -194,8 +194,15 @@ class UIManager {
       // 使用第15帧（索引14）作为购买栏图标
       const frames = sprite.index.frames;
       if (frames && frames.length > 0) {
-        // 4级炸弹显示第20帧(索引19)，其他显示第15帧(索引14)
-        const frameIdx = level === 4 ? Math.min(19, frames.length - 1) : Math.min(14, frames.length - 1);
+        // 帧选择：1级第10帧(索引9)，4级第20帧(索引19)，其他第15帧(索引14)
+        let frameIdx;
+        if (level === 1) {
+          frameIdx = Math.min(9, frames.length - 1);
+        } else if (level === 4) {
+          frameIdx = Math.min(19, frames.length - 1);
+        } else {
+          frameIdx = Math.min(14, frames.length - 1);
+        }
         const frame = frames[frameIdx];
         console.log('[ShopIcon] level:', level, 'frames:', frames.length, 'using frame:', frameIdx, 'frame:', JSON.stringify(frame));
         const sheet = sprite.sheet;
