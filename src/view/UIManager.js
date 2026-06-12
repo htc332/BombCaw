@@ -59,8 +59,8 @@ class UIManager {
     const startX = (w - itemWidth * 4) / 2;
     const itemY = barY + 8 * s * pr;
     
-    // 绘制背景（透明 + 顶部细线）
-    ctx.fillStyle = 'rgba(13, 13, 21, 0.6)';
+    // 绘制背景（完全透明，仅保留顶部细线）
+    ctx.fillStyle = 'rgba(13, 13, 21, 0)';
     ctx.fillRect(0, barY, w, barHeight);
     ctx.fillStyle = 'rgba(42, 42, 62, 0.4)';
     ctx.fillRect(0, barY, w, 1 * s * pr); // 顶部细线
