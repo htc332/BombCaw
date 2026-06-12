@@ -682,8 +682,19 @@ class Renderer {
     
     // 计算实际动画时长（到最后一帧结束）
     const frames = sprite.index.frames;
-    const lastFrameIdx = frames.length - 1;
-    const realDuration = frames[lastFrameIdx].t + 0.033;
+    // 限制帧数：精英鼠最多10帧，普通鼠最多12帧，幽灵鼠使用全部帧
+    let maxFrameIdx;
+    switch(wallType) {
+      case 'strong':
+        maxFrameIdx = Math.min(frames.length - 1, 9);
+        break;
+      case 'ghost':
+        maxFrameIdx = frames.length - 1;
+        break;
+      default:
+        maxFrameIdx = Math.min(frames.length - 1, 11);
+    }
+    const realDuration = frames[maxFrameIdx].t + 0.033;
     
     this.deathAnimations.push({
       x, y,
