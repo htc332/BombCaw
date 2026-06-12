@@ -197,6 +197,8 @@ class UIManager {
         // 使用第15帧（索引14）作为购买栏图标
         const frameIdx = Math.min(14, frames.length - 1);
         const frame = frames[frameIdx];
+        console.log('[ShopIcon] level:', level, 'frames:', frames.length, 'using frame:', frameIdx, 'frame:', JSON.stringify(frame));
+        console.log('[ShopIcon] level:', level, 'frames:', frames.length, 'using frame:', frameIdx, 'frame:', JSON.stringify(frame));
         const sheet = sprite.sheet;
         const frameW = frame.w;
         const frameH = frame.h;
