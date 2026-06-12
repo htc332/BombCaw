@@ -53,7 +53,7 @@ class UIManager {
     
     // 购买栏尺寸（原型风格）
     const barHeight = 90 * s * pr;
-    const barY = h - bottomSafe - barHeight;
+    const barY = h - bottomSafe - barHeight - 20 * s * pr;  // 整体往上移动20像素
     const itemWidth = Math.min(w / 4, 85 * s * pr);
     const itemHeight = barHeight - 15 * s * pr;
     const startX = (w - itemWidth * 4) / 2;
@@ -143,12 +143,12 @@ class UIManager {
       ctx.fillText(costText, boxX + boxW / 2, boxY + boxH - 4 * s * pr);
     });
     
-    // 绘制标题（原型风格）
-    ctx.fillStyle = '#8888A0';
+    // 绘制标题（居中、白色）
+    ctx.fillStyle = '#FFFFFF';
     ctx.font = `${10 * s * pr}px sans-serif`;
-    ctx.textAlign = 'left';
+    ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('选择炸弹牛', 8 * s * pr, barY - 6 * s * pr);
+    ctx.fillText('选择炸弹牛', w / 2, barY - 6 * s * pr);
   }
   
   /**
