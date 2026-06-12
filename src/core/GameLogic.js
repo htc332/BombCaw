@@ -299,12 +299,16 @@ class GameLogic {
 
     if (evo === 0) {
       // Lv1: 十字 1 格（上下左右各1格）
+      // [DEBUG] 确认进入Lv1分支
+      console.log('[Main] Static bomb exploded, evo:', evo, '-> Lv1 cross');
       const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
       dirs.forEach(([dx, dy]) => {
         range.push({ x: bomb.x + dx, y: bomb.y + dy, distance: 1 });
       });
     } else if (evo === 2) {
       // Lv2: 上下单方向 2 格（竖直方向）
+      // [DEBUG] 确认进入Lv2分支
+      console.log('[Main] Static bomb exploded, evo:', evo, '-> Lv2 vertical');
       const dirs = [[0,1], [0,-1]];
       dirs.forEach(([dx, dy]) => {
         for (let d = 1; d <= 2; d++) {
@@ -313,6 +317,8 @@ class GameLogic {
       });
     } else if (evo === 3) {
       // Lv3: 左右单方向 2 格（横向方向）
+      // [DEBUG] 确认进入Lv3分支
+      console.log('[Main] Static bomb exploded, evo:', evo, '-> Lv3 horizontal');
       const dirs = [[1,0], [-1,0]];
       dirs.forEach(([dx, dy]) => {
         for (let d = 1; d <= 2; d++) {
@@ -321,6 +327,8 @@ class GameLogic {
       });
     } else if (evo === 5) {
       // Lv4: 十字 1 格 + 对角 1 格
+      // [DEBUG] 确认进入Lv4分支
+      console.log('[Main] Static bomb exploded, evo:', evo, '-> Lv4 cross+diag');
       const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
       dirs.forEach(([dx, dy]) => {
         range.push({ x: bomb.x + dx, y: bomb.y + dy, distance: 1 });
