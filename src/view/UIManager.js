@@ -19,9 +19,11 @@ class UIManager {
     this.onLevelSelect = null;
     this.onSettingChange = null;
     
-    // 加载牛奶瓶图标
-    this.milkIcon = new Image();
-    this.milkIcon.src = 'images/ui_grid.png';
+    // 加载牛奶瓶图标（微信小游戏环境）
+    this.milkIcon = wx.createImage ? wx.createImage() : (typeof Image !== 'undefined' ? new Image() : null);
+    if (this.milkIcon) {
+      this.milkIcon.src = 'images/ui_grid.png';
+    }
   }
 
   // ========== 购买栏（Shop Bar）==========
