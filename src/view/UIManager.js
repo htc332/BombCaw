@@ -59,10 +59,10 @@ class UIManager {
     const startX = (w - itemWidth * 4) / 2;
     const itemY = barY + 8 * s * pr;
     
-    // 绘制背景（半透明深色 + 顶部边框）
-    ctx.fillStyle = 'rgba(13, 13, 21, 0.95)';
+    // 绘制背景（透明 + 顶部细线）
+    ctx.fillStyle = 'rgba(13, 13, 21, 0.6)';
     ctx.fillRect(0, barY, w, barHeight);
-    ctx.fillStyle = 'rgba(42, 42, 62, 0.8)';
+    ctx.fillStyle = 'rgba(42, 42, 62, 0.4)';
     ctx.fillRect(0, barY, w, 1 * s * pr); // 顶部细线
     
     // 保存购买栏按钮区域（用于点击检测）
