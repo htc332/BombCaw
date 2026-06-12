@@ -186,18 +186,16 @@ class UIManager {
    * 复用静态炸弹精灵图或绘制回退图形
    */
   drawShopBombIcon(ctx, level, cx, cy, size, canAfford, renderer) {
-    // 尝试使用静态炸弹精灵图
+    // 使用动态炸弹精灵图（静态炸弹精灵图可能不存在）
     const spriteKey = 'level' + level;
-    const sprite = renderer.staticBombSprites ? renderer.staticBombSprites[spriteKey] : null;
+    const sprite = renderer.bombSprites ? renderer.bombSprites[spriteKey] : null;
     
     if (sprite && sprite.loaded && sprite.sheet) {
-      // 使用精灵图第一帧
+      // 使用第15帧（索引14）作为购买栏图标
       const frames = sprite.index.frames;
       if (frames && frames.length > 0) {
-        // 使用第15帧（索引14）作为购买栏图标
         const frameIdx = Math.min(14, frames.length - 1);
         const frame = frames[frameIdx];
-        console.log('[ShopIcon] level:', level, 'frames:', frames.length, 'using frame:', frameIdx, 'frame:', JSON.stringify(frame));
         console.log('[ShopIcon] level:', level, 'frames:', frames.length, 'using frame:', frameIdx, 'frame:', JSON.stringify(frame));
         const sheet = sprite.sheet;
         const frameW = frame.w;
