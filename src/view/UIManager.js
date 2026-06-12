@@ -143,12 +143,12 @@ class UIManager {
       ctx.fillText(costText, boxX + boxW / 2, boxY + boxH - 4 * s * pr);
     });
     
-    // 绘制标题（居中、白色、放大字号）
+    // 绘制标题（居中、白色、12px）
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = `${20 * s * pr}px sans-serif`;
+    ctx.font = `${12 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('请在上方格子盘放置牛牛', w / 2, barY - 11 * s * pr);
+    ctx.fillText('点击上方格子盘放置选中的牛牛', w / 2, barY - 11 * s * pr);
   }
   
   /**
