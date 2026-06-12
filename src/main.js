@@ -105,12 +105,28 @@ class BombWallGame {
     this.uiManager.onShopItemClick = (index) => {
       const bombCosts = [0, 20, 50, 100];
       const score = this.gameLogic.score || 0;
+      
       if (score < bombCosts[index]) {
-        // 点击了买不起的牛牛
-        this.lastShopAction = { type: 'cannot_afford', cost: bombCosts[index], score: score, time: Date.now() };
-        this.showHint('牛奶不足!');
+        // 点击了买不起的档位，自动降级到能释放的最高档位
+        let newType = index;
+        while (newType > 0 && score < bombCosts[newType]) {
+          newType--;
+        }
+        
+        if (score < bombCosts[newType]) {
+          // 全都不能释放
+          this.lastShopAction = { type: 'cannot_afford', cost: bombCosts[index], score: score, time: Date.now() };
+          this.showHint('牛奶不足!');
+          return;
+        }
+        
+        // 自动切换到能释放的档位
+        this.gameLogic.selectedBombType = newType;
+        this.lastShopAction = { type: 'selected', level: newType, time: Date.now() };
+        this.showHint('已选择 ' + (['白色','蓝色','紫色','红色'][newType]) + '炸弹牛');
         return;
       }
+      
       this.gameLogic.selectedBombType = index;
       this.lastShopAction = { type: 'selected', level: index, time: Date.now() };
       this.showHint('已选择 ' + (['白色','蓝色','紫色','红色'][index]) + '炸弹牛');
