@@ -104,6 +104,8 @@ function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerG
         });
       }
     }.bind(this));
+    // [DEBUG] Lv3 横向爆炸
+    console.log('[Animator] Lv3 cells:', JSON.stringify(this.cells));
   } else if (evo === 5) {
     // Lv4 红色：十字 1 格 + 对角 1 格
     this.cells.push({ x: 0, y: 0, distance: 0, spawnTime: 0 });

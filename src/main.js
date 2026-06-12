@@ -433,6 +433,8 @@ class BombWallGame {
     var evo = event.evolution || 0;
     var gridSize = this.gameLogic.gridSize;
     
+    console.log('[Main] Static bomb exploded, evo:', evo, 'at', event.x, event.y);
+    
     // 传入 evo 让 Animator 根据新的爆炸范围绘制
     this.animator.createCrossExplosion(
       pos.cx, pos.cy, cellSize, evo,
