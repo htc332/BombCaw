@@ -194,7 +194,9 @@ class UIManager {
       // 使用精灵图第一帧
       const frames = sprite.index.frames;
       if (frames && frames.length > 0) {
-        const frame = frames[0];
+        // 使用第15帧（索引14）作为购买栏图标
+        const frameIdx = Math.min(14, frames.length - 1);
+        const frame = frames[frameIdx];
         const sheet = sprite.sheet;
         const frameW = frame.w;
         const frameH = frame.h;
