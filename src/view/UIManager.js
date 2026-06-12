@@ -148,12 +148,12 @@ class UIManager {
       // 绘制牛奶瓶图标（50%大小）
       if (this.milkIcon && this.milkIcon.complete) {
         const iconSize = 10 * s * pr; // 50% of 20px
-        const iconX = boxX + boxW / 2 - ctx.measureText(costText).width / 2 - iconSize - 2 * s * pr;
+        const iconX = boxX + boxW / 2 - ctx.measureText(costText).width / 2 - iconSize - 2 * s * pr + 4 * s * pr; // 向右偏移4像素
         const iconY = boxY + boxH - 4 * s * pr - iconSize;
         ctx.drawImage(this.milkIcon, iconX, iconY, iconSize, iconSize);
       }
       
-      ctx.fillText(costText, boxX + boxW / 2, boxY + boxH - 4 * s * pr);
+      ctx.fillText(costText, boxX + boxW / 2 + 4 * s * pr, boxY + boxH - 4 * s * pr); // 向右偏移4像素
     });
     
     // 绘制动态提示文字（根据玩家行为变化，1.2秒后回到默认）
