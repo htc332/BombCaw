@@ -18,6 +18,10 @@ class UIManager {
     // 回调
     this.onLevelSelect = null;
     this.onSettingChange = null;
+    
+    // 加载牛奶瓶图标
+    this.milkIcon = new Image();
+    this.milkIcon.src = 'images/ui_grid.png';
   }
 
   // ========== 购买栏（Shop Bar）==========
@@ -138,6 +142,15 @@ class UIManager {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
       const costText = type.cost === 0 ? '免费' : `${type.cost}`;
+      
+      // 绘制牛奶瓶图标（50%大小）
+      if (this.milkIcon && this.milkIcon.complete) {
+        const iconSize = 10 * s * pr; // 50% of 20px
+        const iconX = boxX + boxW / 2 - ctx.measureText(costText).width / 2 - iconSize - 2 * s * pr;
+        const iconY = boxY + boxH - 4 * s * pr - iconSize;
+        ctx.drawImage(this.milkIcon, iconX, iconY, iconSize, iconSize);
+      }
+      
       ctx.fillText(costText, boxX + boxW / 2, boxY + boxH - 4 * s * pr);
     });
     
