@@ -143,12 +143,12 @@ class UIManager {
       ctx.fillText(costText, boxX + boxW / 2, boxY + boxH - 4 * s * pr);
     });
     
-    // 绘制标题（居中、白色）
+    // 绘制标题（居中、白色、放大字号）
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = `${10 * s * pr}px sans-serif`;
+    ctx.font = `${20 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('选择炸弹牛', w / 2, barY - 6 * s * pr);
+    ctx.fillText('请在上方格子盘放置牛牛', w / 2, barY - 11 * s * pr);
   }
   
   /**
