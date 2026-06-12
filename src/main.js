@@ -103,7 +103,16 @@ class BombWallGame {
     
     // 设置购买栏点击回调
     this.uiManager.onShopItemClick = (index) => {
+      const bombCosts = [0, 20, 50, 100];
+      const score = this.gameLogic.score || 0;
+      if (score < bombCosts[index]) {
+        // 点击了买不起的牛牛
+        this.lastShopAction = { type: 'cannot_afford', cost: bombCosts[index], score: score };
+        this.showHint('牛奶不足!');
+        return;
+      }
       this.gameLogic.selectedBombType = index;
+      this.lastShopAction = { type: 'selected', level: index };
       this.showHint('已选择 ' + (['白色','蓝色','紫色','红色'][index]) + '炸弹牛');
     };
     
@@ -285,7 +294,10 @@ class BombWallGame {
     // console.log('[Touch] tryPlaceBomb result:', success);
     
     if (success) {
+      this.lastShopAction = { type: 'placed' };
       this.audio.play('place');
+    } else {
+      this.lastShopAction = { type: 'rejected' };
     }
   }
 
@@ -590,6 +602,7 @@ class BombWallGame {
       var state = this.gameLogic.getState();
       state.hint = this.hint;
       state.gameState = this.gameState;
+      state.lastShopAction = this.lastShopAction;
       
       this.lastRenderTime = Date.now();
       

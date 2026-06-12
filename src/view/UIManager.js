@@ -143,12 +143,24 @@ class UIManager {
       ctx.fillText(costText, boxX + boxW / 2, boxY + boxH - 4 * s * pr);
     });
     
-    // 绘制标题（居中、白色、12px）
+    // 绘制动态提示文字（根据玩家行为变化）
+    let hintText = '点击上方格子盘放置选中的牛牛';
+    const lastAction = gameState.lastShopAction;
+    if (lastAction) {
+      if (lastAction.type === 'placed') {
+        const bombCosts = [0, 20, 50, 100];
+        const cost = bombCosts[selected] || 0;
+        hintText = `消耗${cost}瓶牛奶放置牛牛`;
+      } else if (lastAction.type === 'cannot_afford') {
+        hintText = '牛奶不足';
+      }
+    }
+    
     ctx.fillStyle = '#FFFFFF';
     ctx.font = `${12 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('点击上方格子盘放置选中的牛牛', w / 2, barY - 11 * s * pr);
+    ctx.fillText(hintText, w / 2, barY - 11 * s * pr);
   }
   
   /**
