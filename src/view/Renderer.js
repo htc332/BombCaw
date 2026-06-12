@@ -907,8 +907,9 @@ class Renderer {
       const cx = offsetX + col * (cs + g) + cs / 2;
       const cy = offsetY + row * (cs + g) + cs / 2;
       
-      // 获取静态炸弹等级：0=1级, 1=2级, 2=3级, 3=4级
-      const level = sb.evolution || 0;
+      // 获取静态炸弹等级：evo=0→1级, evo=2→2级, evo=3→3级, evo=5→4级
+      const levelMap = { 0: 0, 2: 1, 3: 2, 5: 3 };
+      const level = levelMap[sb.evolution] !== undefined ? levelMap[sb.evolution] : 0;
       
       // 生产环境关闭静态炸弹绘制日志（高频触发）
       // console.log('[StaticBomb] Draw:', sb.active ? 'ACTIVE' : 'SLEEP', 'evolution:', sb.evolution, 'level:', level, 'pos:', sb.x, sb.y);
