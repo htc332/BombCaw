@@ -434,8 +434,10 @@ class BombWallGame {
     
     // console.log('[Main] Bomb explode at', event.x, event.y, 'evo', evo);
     
-    // [Ghost] 任何炸弹爆炸时，显示所有幽灵鼠1.2秒
-    this.renderer.ghostRevealTimer = this.renderer.ghostRevealDuration;
+    // [Ghost] 任何炸弹爆炸时，显示所有幽灵鼠1.2秒（仅非永久显示时）
+    if (!this.renderer.ghostPermanentReveal) {
+      this.renderer.ghostRevealTimer = this.renderer.ghostRevealDuration;
+    }
     
     // 音效即时触发
     this.audio.play('explosion');
@@ -472,8 +474,10 @@ class BombWallGame {
     
     console.log('[Main] Static bomb exploded, evo:', evo, 'at', event.x, event.y);
     
-    // [Ghost] 静态炸弹爆炸时，也显示所有幽灵鼠1.2秒
-    this.renderer.ghostRevealTimer = this.renderer.ghostRevealDuration;
+    // [Ghost] 静态炸弹爆炸时，也显示所有幽灵鼠1.2秒（仅非永久显示时）
+    if (!this.renderer.ghostPermanentReveal) {
+      this.renderer.ghostRevealTimer = this.renderer.ghostRevealDuration;
+    }
     
     // 传入 evo 让 Animator 根据新的爆炸范围绘制
     this.animator.createCrossExplosion(
