@@ -29,8 +29,8 @@ class Renderer {
     enemy_elite_break: { scale: 0.9, yOff: -1.6 },
     enemy_elite_break_idle: { scale: 1.0, yOff: -1.6 },
     enemy_elite_death: { scale: 1.0, yOff: -0.5 },
-    enemy_ghost: { scale: 1.6, yOff: -1.0 },
-    enemy_ghost_death: { scale: 1.6, yOff: -0.5 },
+    enemy_ghost: { scale: 1.8, yOff: -1.0 },
+    enemy_ghost_death: { scale: 1.8, yOff: -0.5 },
     };
     
     this.colors = {
