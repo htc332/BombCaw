@@ -727,8 +727,13 @@ class Renderer {
     });
     
     this.deathAnimations.forEach(anim => {
-      // [Ghost] 幽灵鼠死亡动画播放期间，确保幽灵鼠可见（仅非永久显示时）
+      // [Ghost] 幽灵鼠死亡动画：只有显隐计时器运行时或永久显示时才绘制
       const isGhostDeath = anim.spriteName === 'enemy_ghost_death';
+      if (isGhostDeath && !this.ghostPermanentReveal && this.ghostRevealTimer <= 0) {
+        return; // 跳过，不绘制
+      }
+      
+      // 幽灵鼠死亡动画播放期间，确保显隐计时器足够（仅非永久显示时）
       if (isGhostDeath && !this.ghostPermanentReveal) {
         this.ghostRevealTimer = Math.max(this.ghostRevealTimer, anim.duration - (this.animTime - anim.startTime));
       }
