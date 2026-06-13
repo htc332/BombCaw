@@ -630,7 +630,9 @@ class Renderer {
       if (wall.dying) return;
       
       // 幽灵鼠：默认隐藏，除非显隐计时器正在运行或永久显示
-      if (wall.type === 'ghost' && !this.ghostPermanentReveal && this.ghostRevealTimer <= 0) return;
+      if (wall.type === 'ghost' && !this.ghostPermanentReveal && this.ghostRevealTimer <= 0) {
+        return;
+      }
       
       const gx = wall.x;
       const gy = wall.y;
