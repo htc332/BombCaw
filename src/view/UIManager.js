@@ -139,8 +139,11 @@ class UIManager {
       this.drawShopBombIcon(ctx, type.level, iconX, iconY, iconSize, canAfford, r);
       
       // 绘制消耗得分（原型风格：底部）
-      ctx.fillStyle = canAfford ? '#4CAF50' : '#FF4444';
-      ctx.font = `${10 * s * pr}px sans-serif`;
+      // [v0.7.10] 能买时用黄色+加粗+字号放大1号，不足时用红色
+      ctx.fillStyle = canAfford ? '#FFD700' : '#FF4444'; // 黄色 : 红色
+      const fontSize = canAfford ? (11 * s * pr) : (10 * s * pr); // 能买时放大1号
+      const fontWeight = canAfford ? 'bold' : 'normal'; // 能买时加粗
+      ctx.font = `${fontWeight} ${fontSize}px sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
       const costText = type.cost === 0 ? '免费' : `${type.cost}`;
