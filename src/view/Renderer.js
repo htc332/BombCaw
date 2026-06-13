@@ -82,6 +82,10 @@ class Renderer {
       enemy_elite_break_idle: { loaded: false },
       enemy_elite_death: { loaded: false }
     };
+    // 幽灵鼠显隐控制（秒）
+    this.ghostRevealTimer = 0; // >0 表示幽灵鼠可见
+    this.ghostRevealDuration = 1.2; // 1.2秒
+
     // 死亡动画实例列表 {x, y, startTime, duration}
     this.deathAnimations = [];
     this.uiImages = {};
@@ -287,6 +291,11 @@ class Renderer {
   
   updateBombAnimation(dt) {
     this.animTime += dt;
+    // 幽灵鼠显隐计时器递减
+    if (this.ghostRevealTimer > 0) {
+      this.ghostRevealTimer -= dt;
+      if (this.ghostRevealTimer < 0) this.ghostRevealTimer = 0;
+    }
   }
   
   getSpriteFrame(index, time) {
@@ -618,6 +627,9 @@ class Renderer {
       // 跳过正在播放死亡动画的老鼠（由 drawDeathAnimations 绘制）
       if (wall.dying) return;
       
+      // 幽灵鼠：默认隐藏，除非显隐计时器正在运行
+      if (wall.type === 'ghost' && this.ghostRevealTimer <= 0) return;
+      
       const gx = wall.x;
       const gy = wall.y;
       const col = gx + half;
@@ -702,6 +714,11 @@ class Renderer {
       startTime: this.animTime,
       duration: realDuration
     });
+    
+    // 幽灵鼠死亡时，永久显示（不再隐藏）
+    if (wallType === 'ghost') {
+      this.ghostRevealTimer = Infinity;
+    }
   }
   
   // 绘制死亡动画
