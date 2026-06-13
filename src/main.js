@@ -507,8 +507,9 @@ class BombWallGame {
     this.renderer.addDeathAnimation(event.x, event.y, event.wallType || 'normal');
     this.audio.play('break');
     
-    // [Ghost] 幽灵鼠被炸死时，触发永久显示（在addDeathAnimation中设置）
+    // [Ghost] 幽灵鼠被炸死时，设置永久显示
     if (event.wallType === 'ghost') {
+      this.renderer.ghostPermanentReveal = true;
       this.showHint('幽灵鼠被消灭!');
     }
   }
