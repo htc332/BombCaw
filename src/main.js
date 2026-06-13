@@ -611,7 +611,7 @@ class BombWallGame {
       this.animator.update(dt);
       this.particles.update();
       // 更新全局动画时间（用于墙壁动画）
-      this.renderer.animTime += dt;
+      this.renderer.updateBombAnimation(dt);
       
       if (this.gameLogic.pendingVictory) {
         if (this.animator.getActiveCount() === 0 && this.particles.getActiveCount() === 0) {
