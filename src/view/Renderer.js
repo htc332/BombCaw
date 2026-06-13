@@ -708,17 +708,17 @@ class Renderer {
     }
     const realDuration = frames[maxFrameIdx].t + 0.033;
     
+    // 幽灵鼠死亡时，先立即显示（解决卡顿问题）
+    if (wallType === 'ghost') {
+      this.ghostRevealTimer = Infinity;
+    }
+    
     this.deathAnimations.push({
       x, y,
       spriteName: spriteName,
       startTime: this.animTime,
       duration: realDuration
     });
-    
-    // 幽灵鼠死亡时，永久显示（不再隐藏）
-    if (wallType === 'ghost') {
-      this.ghostRevealTimer = Infinity;
-    }
   }
   
   // 绘制死亡动画
