@@ -87,46 +87,6 @@ class Renderer {
     this.ghostRevealDuration = 1.2; // 1.2秒
     // 幽灵鼠是否永久显示（死亡时设为true）
     this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
 
     // 死亡动画实例列表 {x, y, startTime, duration}
     this.deathAnimations = [];
