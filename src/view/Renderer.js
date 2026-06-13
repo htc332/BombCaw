@@ -711,6 +711,7 @@ class Renderer {
     const realDuration = frames[maxFrameIdx].t + 0.033;
     
     // 幽灵鼠死亡时，设置永久显示标志（解决卡顿问题）
+    // [Ghost] 死亡动画播放期间，确保幽灵鼠可见
     if (wallType === 'ghost') {
       this.ghostPermanentReveal = true;
     }
@@ -732,6 +733,13 @@ class Renderer {
     });
     
     this.deathAnimations.forEach(anim => {
+      // [Ghost] 幽灵鼠死亡动画：永久显示，不检查显隐状态
+      const isGhostDeath = anim.spriteName === 'enemy_ghost_death';
+      if (isGhostDeath && !this.ghostPermanentReveal) {
+        // 幽灵鼠死亡动画播放期间也强制显示
+        this.ghostRevealTimer = Math.max(this.ghostRevealTimer, anim.duration - (this.animTime - anim.startTime));
+      }
+      
       const col = anim.x + half;
       const row = anim.y + half;
       const x = offsetX + col * (cs + g);
