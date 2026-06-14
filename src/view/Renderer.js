@@ -702,8 +702,8 @@ class Renderer {
         this.drawWallLegacy(ctx, wall, x, y, cs, pr);
       }
       
-      // 显示HP（如果大于1）
-      if (wall.hp > 1) {
+      // 显示HP（如果大于1，且不是精英鼠/头盔鼠）
+      if (wall.hp > 1 && wall.type !== 'strong') {
         this.drawNumber(ctx, wall.hp, x + cs / 2, y + cs / 2, cs * 0.35, 'center');
       }
       
