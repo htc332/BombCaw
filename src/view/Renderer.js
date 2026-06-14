@@ -82,11 +82,13 @@ class Renderer {
       enemy_elite_break_idle: { loaded: false },
       enemy_elite_death: { loaded: false }
     };
-    // 幽灵鼠显隐控制（秒）
-    this.ghostRevealTimer = 0; // >0 表示幽灵鼠可见
-    this.ghostRevealDuration = 1.2; // 1.2秒
-    // 幽灵鼠是否永久显示（死亡时设为true）
-    this.ghostPermanentReveal = false;
+  // 幽灵鼠显隐控制（秒）
+  // [v0.7.10] 改为每只幽灵鼠独立控制，不再使用全局计时器
+  // 保留以下属性仅用于兼容旧代码，实际逻辑已迁移到 wall 对象
+  this.ghostRevealTimer = 0; // >0 表示幽灵鼠可见
+  this.ghostRevealDuration = 1.2; // 1.2秒
+  // 幽灵鼠是否永久显示（死亡时设为true）
+  this.ghostPermanentReveal = false;
 
     // 死亡动画实例列表 {x, y, startTime, duration}
     this.deathAnimations = [];
@@ -293,11 +295,8 @@ class Renderer {
   
   updateBombAnimation(dt) {
     this.animTime += dt;
-    // 幽灵鼠显隐计时器递减（仅非永久显示时）
-    if (!this.ghostPermanentReveal && this.ghostRevealTimer > 0) {
-      this.ghostRevealTimer -= dt;
-      if (this.ghostRevealTimer < 0) this.ghostRevealTimer = 0;
-    }
+    // [v0.7.10] 幽灵鼠显隐逻辑已迁移到 drawWalls 中按每只独立计算
+    // 保留此方法仅用于更新全局动画时间
   }
   
   getSpriteFrame(index, time) {
@@ -404,7 +403,7 @@ class Renderer {
     
     // 3. 游戏棋盘（中心区域，保持原有逻辑不变）
     this.drawGrid(gameState.gridSize || 5, layout.offsetX, layout.offsetY);
-    this.drawWalls(gameState.walls || [], layout.offsetX, layout.offsetY, gameState.gridSize || 5);
+    this.drawWalls(gameState.walls || [], layout.offsetX, layout.offsetY, gameState.gridSize || 5, dt);
     this.drawStaticBombs(gameState.staticBombs || [], layout.offsetX, layout.offsetY, gameState.gridSize || 5);
     this.drawBombs(gameState.bombs || [], layout.offsetX, layout.offsetY, gameState.gridSize || 5, dt);
     
@@ -621,7 +620,7 @@ class Renderer {
     ctx.fillRect(offsetX + totalW, offsetY, ctx.canvas.width, totalH);
   }
   
-  drawWalls(walls, offsetX, offsetY, gridSize) {
+  drawWalls(walls, offsetX, offsetY, gridSize, dt) {
     const ctx = this.ctx, pr = this.pixelRatio || 2, half = Math.floor(gridSize / 2);
     const cs = this.cellSize, g = this.gap || 0;
     
@@ -629,9 +628,36 @@ class Renderer {
       // 跳过正在播放死亡动画的老鼠（由 drawDeathAnimations 绘制）
       if (wall.dying) return;
       
-      // 幽灵鼠：默认隐藏，除非显隐计时器正在运行或永久显示
-      if (wall.type === 'ghost' && !this.ghostPermanentReveal && this.ghostRevealTimer <= 0) {
-        return;
+      // [v0.7.10] 幽灵鼠：每只独立计算显隐
+      if (wall.type === 'ghost') {
+        // 初始化（兼容旧存档）
+        if (wall.ghostTimer === undefined) {
+          wall.ghostTimer = 0;
+          wall.ghostVisible = true;
+          wall.ghostInterval = 2.0 + Math.random() * 1.0;
+          wall.ghostPhase = Math.random() * Math.PI * 2;
+        }
+        
+        // 死亡时永久显示
+        if (wall.dying) {
+          wall.ghostVisible = true;
+        } else if (wall.ghostTimer > 0) {
+          // 被爆炸触发显示中：递减计时器
+          wall.ghostTimer -= dt;
+          if (wall.ghostTimer <= 0) {
+            wall.ghostTimer = 0;
+          }
+          wall.ghostVisible = true;
+        } else {
+          // 正常状态：使用正弦波控制显隐
+          const interval = wall.ghostInterval || 2.5;
+          const phase = wall.ghostPhase || 0;
+          const time = this.animTime + phase;
+          wall.ghostVisible = Math.sin(time * Math.PI * 2 / interval) > 0;
+        }
+        
+        // 如果不可见，跳过绘制
+        if (!wall.ghostVisible) return;
       }
       
       const gx = wall.x;

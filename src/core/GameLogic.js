@@ -87,7 +87,7 @@ class GameLogic {
   spawnWall(x, y, type, color) {
     const config = ENEMY_TYPES[type || 'normal'];
     const key = `${x},${y}`;
-    this.walls.set(key, {
+    const wall = {
       x, y,
       type: type || 'normal',
       hp: config ? config.hp : 1,
@@ -95,7 +95,17 @@ class GameLogic {
       color: color || null,
       shake: 0,
       state: 'idle'  // 由配置定义的状态机控制
-    });
+    };
+    
+    // 幽灵鼠：独立显隐计时器
+    if (wall.type === 'ghost') {
+      wall.ghostVisible = true;      // 当前是否可见
+      wall.ghostTimer = 0;           // 显隐计时器（秒），>0表示可见
+      wall.ghostInterval = 2.0 + Math.random() * 1.0; // 每个幽灵鼠独立的显隐周期（2~3秒）
+      wall.ghostPhase = Math.random() * Math.PI * 2; // 随机相位，避免同步闪烁
+    }
+    
+    this.walls.set(key, wall);
   }
 
   spawnStaticBomb(x, y, evolution = 0) {
@@ -276,6 +286,8 @@ class GameLogic {
     
     // 处理爆炸范围内的所有格子
     range.forEach(pos => {
+      // [v0.7.10] 幽灵鼠被爆炸命中时强制显示一段时间
+      this.revealGhostIfHit(pos.x, pos.y);
       // 生产环境关闭详细命中日志
       // console.log('[Explosion] Hit pos:', pos.x, pos.y, 'type:', pos.distance === 0 ? 'center' : (Math.abs(pos.x - bomb.x) === Math.abs(pos.y - bomb.y) ? 'diag' : 'cross'));
       this.processExplosionHit(pos.x, pos.y, bomb.evolution);
@@ -346,6 +358,17 @@ class GameLogic {
     }
 
     return range;
+  }
+
+  // [v0.7.10] 幽灵鼠被爆炸命中时强制显示
+  revealGhostIfHit(x, y) {
+    const key = `${x},${y}`;
+    const wall = this.walls.get(key);
+    if (wall && wall.type === 'ghost' && !wall.dying) {
+      // 被爆炸波及，强制显示 1.5 秒
+      wall.ghostTimer = 1.5;
+      wall.ghostVisible = true;
+    }
   }
 
   processExplosionHit(x, y, bombEvo) {
