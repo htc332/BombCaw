@@ -617,9 +617,6 @@ class Renderer {
     const cs = this.cellSize, g = this.gap || 0;
     
     walls.forEach(wall => {
-      // 跳过正在播放死亡动画的老鼠（由 drawDeathAnimations 绘制）
-      if (wall.dying) return;
-      
       // [v0.7.10] 幽灵鼠：平时隐藏，被爆炸触发后显示1.5秒再渐变消失
       if (wall.type === 'ghost') {
         // 初始化（兼容旧存档）
@@ -628,10 +625,13 @@ class Renderer {
           wall.ghostAlpha = 0;  // 默认完全透明
         }
         
-        // 死亡时永久显示
+        // 死亡时：由 drawDeathAnimations 绘制死亡动画，此处不绘制 idle
         if (wall.dying) {
-          wall.ghostAlpha = 1.0;
-        } else if (wall.ghostTimer > 0) {
+          // 不绘制 idle，让死亡动画在 drawDeathAnimations 中处理
+          return;
+        }
+        
+        if (wall.ghostTimer > 0) {
           // 被爆炸触发显示中：递减计时器
           wall.ghostTimer -= dt;
           if (wall.ghostTimer <= 0) {
@@ -656,6 +656,9 @@ class Renderer {
         // 如果完全透明，跳过绘制
         if (wall.ghostAlpha <= 0.01) return;
       }
+      
+      // 跳过正在播放死亡动画的老鼠（由 drawDeathAnimations 绘制）
+      if (wall.dying) return;
       
       const gx = wall.x;
       const gy = wall.y;
@@ -739,7 +742,7 @@ class Renderer {
       x, y,
       spriteName: spriteName,
       startTime: this.animTime,
-      duration: realDuration
+      duration: Math.max(realDuration, 1.5) // [v0.7.10] 确保至少播放1.5秒，避免过早结束
     });
   }
   
