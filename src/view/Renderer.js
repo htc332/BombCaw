@@ -783,7 +783,11 @@ class Renderer {
       const drawX = x + (cs - drawW) / 2;
       const drawY = y + (cs - drawH) / 2 + comp.yOff;
       
-      ctx.drawImage(sheet, frame.x, frame.y, frame.w, frame.h, drawX, drawY, drawW, drawH);
+      // [v0.7.10] 确保绘制位置在格子内
+      const clampedX = Math.max(x, Math.min(drawX, x + cs - drawW));
+      const clampedY = Math.max(y, Math.min(drawY, y + cs - drawH));
+      
+      ctx.drawImage(sheet, frame.x, frame.y, frame.w, frame.h, clampedX, clampedY, drawW, drawH);
     });
   }
   
@@ -837,15 +841,19 @@ class Renderer {
     const drawX = x + (size - drawW) / 2;
     const drawY = y + (size - drawH) / 2 + comp.yOff;
     
+    // [v0.7.10] 确保绘制位置在格子内
+    const clampedX = Math.max(x, Math.min(drawX, x + size - drawW));
+    const clampedY = Math.max(y, Math.min(drawY, y + size - drawH));
+    
     // [v0.7.10] 幽灵鼠：应用透明度
     const isGhost = wall.type === 'ghost';
     if (isGhost && wall.ghostAlpha !== undefined && wall.ghostAlpha < 1.0) {
       ctx.save();
       ctx.globalAlpha = wall.ghostAlpha;
-      ctx.drawImage(sheet, frame.x, frame.y, frame.w, frame.h, drawX, drawY, drawW, drawH);
+      ctx.drawImage(sheet, frame.x, frame.y, frame.w, frame.h, clampedX, clampedY, drawW, drawH);
       ctx.restore();
     } else {
-      ctx.drawImage(sheet, frame.x, frame.y, frame.w, frame.h, drawX, drawY, drawW, drawH);
+      ctx.drawImage(sheet, frame.x, frame.y, frame.w, frame.h, clampedX, clampedY, drawW, drawH);
     }
     return true;
   }

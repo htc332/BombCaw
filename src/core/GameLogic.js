@@ -439,7 +439,7 @@ class GameLogic {
     }
 
     // 延迟移除（幽灵鼠死亡动画时长由精灵图决定，但保留最小显示时间）
-    const duration = config.deathDuration || 2000;
+    const duration = Math.max(config.deathDuration || 2000, 2000); // [v0.7.10] 确保至少2秒，让死亡动画播放完
     setTimeout(() => {
       this.walls.delete(key);
       this.emitEvent('wall_destroyed', { 
