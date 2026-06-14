@@ -82,14 +82,6 @@ class Renderer {
       enemy_elite_break_idle: { loaded: false },
       enemy_elite_death: { loaded: false }
     };
-  // 幽灵鼠显隐控制（秒）
-  // [v0.7.10] 改为每只幽灵鼠独立控制，不再使用全局计时器
-  // 保留以下属性仅用于兼容旧代码，实际逻辑已迁移到 wall 对象
-  this.ghostRevealTimer = 0; // >0 表示幽灵鼠可见
-  this.ghostRevealDuration = 1.2; // 1.2秒
-  // 幽灵鼠是否永久显示（死亡时设为true）
-  this.ghostPermanentReveal = false;
-
     // 死亡动画实例列表 {x, y, startTime, duration}
     this.deathAnimations = [];
     this.uiImages = {};
