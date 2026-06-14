@@ -365,9 +365,9 @@ class GameLogic {
     const key = `${x},${y}`;
     const wall = this.walls.get(key);
     if (wall && wall.type === 'ghost' && !wall.dying) {
-      // 被爆炸波及，强制显示 1.5 秒
+      // 被爆炸波及，强制显示 1.5 秒（与死亡动画时长一致）
       wall.ghostTimer = 1.5;
-      wall.ghostVisible = true;
+      wall.ghostAlpha = 0; // 重置为透明，让淡入效果从头开始
     }
   }
 

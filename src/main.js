@@ -502,14 +502,12 @@ class BombWallGame {
   }
 
   onEnemyDeath(event) {
-    // console.log('[Main] onEnemyDeath called', event.x, event.y, 'wallType:', event.wallType);
     // 播放死亡动画（根据墙壁类型选择专用动画）
     this.renderer.addDeathAnimation(event.x, event.y, event.wallType || 'normal');
     this.audio.play('break');
     
-    // [Ghost] 幽灵鼠被炸死时，设置永久显示
+    // [Ghost] 幽灵鼠被炸死时，显示提示
     if (event.wallType === 'ghost') {
-      this.renderer.ghostPermanentReveal = true;
       this.showHint('幽灵鼠被消灭!');
     }
   }
