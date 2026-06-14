@@ -628,58 +628,41 @@ class Renderer {
       // 跳过正在播放死亡动画的老鼠（由 drawDeathAnimations 绘制）
       if (wall.dying) return;
       
-      // [v0.7.10] 幽灵鼠：每只独立计算显隐，带透明度渐变
+      // [v0.7.10] 幽灵鼠：平时隐藏，被爆炸触发后显示1.5秒再渐变消失
       if (wall.type === 'ghost') {
         // 初始化（兼容旧存档）
         if (wall.ghostTimer === undefined) {
           wall.ghostTimer = 0;
-          wall.ghostVisible = true;
-          wall.ghostInterval = 2.0 + Math.random() * 1.0;
-          wall.ghostPhase = Math.random() * Math.PI * 2;
-          wall.ghostAlpha = 1.0;  // 透明度 0~1
+          wall.ghostAlpha = 0;  // 默认完全透明
         }
         
         // 死亡时永久显示
         if (wall.dying) {
-          wall.ghostVisible = true;
           wall.ghostAlpha = 1.0;
         } else if (wall.ghostTimer > 0) {
           // 被爆炸触发显示中：递减计时器
           wall.ghostTimer -= dt;
           if (wall.ghostTimer <= 0) {
             wall.ghostTimer = 0;
-          }
-          wall.ghostVisible = true;
-          // 淡入：前0.3秒从0到1，之后保持1
-          const fadeIn = 0.3;
-          wall.ghostAlpha = Math.min(1.0, (1.5 - wall.ghostTimer) / fadeIn);
-        } else {
-          // 正常状态：使用正弦波控制显隐
-          const interval = wall.ghostInterval || 2.5;
-          const phase = wall.ghostPhase || 0;
-          const time = this.animTime + phase;
-          const sineVal = Math.sin(time * Math.PI * 2 / interval);
-          
-          // 正弦波：>0 显示，<=0 隐藏
-          wall.ghostVisible = sineVal > 0;
-          
-          // 透明度渐变：在临界点附近0.2秒内过渡
-          const transitionWidth = 0.2; // 过渡区间（正弦值范围）
-          if (sineVal > 0 && sineVal < transitionWidth) {
-            // 淡入阶段
-            wall.ghostAlpha = sineVal / transitionWidth;
-          } else if (sineVal <= 0 && sineVal > -transitionWidth) {
-            // 淡出阶段
-            wall.ghostAlpha = (transitionWidth + sineVal) / transitionWidth;
-          } else if (sineVal >= transitionWidth) {
-            wall.ghostAlpha = 1.0;
+            wall.ghostAlpha = 0;
           } else {
-            wall.ghostAlpha = 0.0;
+            // 前0.3秒淡入，最后0.5秒淡出，中间保持1.0
+            const elapsed = 1.5 - wall.ghostTimer;
+            if (elapsed < 0.3) {
+              wall.ghostAlpha = elapsed / 0.3;  // 淡入
+            } else if (wall.ghostTimer < 0.5) {
+              wall.ghostAlpha = wall.ghostTimer / 0.5;  // 淡出
+            } else {
+              wall.ghostAlpha = 1.0;  // 保持
+            }
           }
+        } else {
+          // 平时完全隐藏
+          wall.ghostAlpha = 0;
         }
         
         // 如果完全透明，跳过绘制
-        if (!wall.ghostVisible || wall.ghostAlpha <= 0.01) return;
+        if (wall.ghostAlpha <= 0.01) return;
       }
       
       const gx = wall.x;
