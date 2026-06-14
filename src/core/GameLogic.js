@@ -286,12 +286,13 @@ class GameLogic {
     
     // 处理爆炸范围内的所有格子
     range.forEach(pos => {
-      // [v0.7.10] 幽灵鼠被爆炸命中时强制显示一段时间
-      this.revealGhostIfHit(pos.x, pos.y);
       // 生产环境关闭详细命中日志
       // console.log('[Explosion] Hit pos:', pos.x, pos.y, 'type:', pos.distance === 0 ? 'center' : (Math.abs(pos.x - bomb.x) === Math.abs(pos.y - bomb.y) ? 'diag' : 'cross'));
       this.processExplosionHit(pos.x, pos.y, bomb.evolution);
     });
+
+    // [v0.7.10] 任何炸弹爆炸时，所有幽灵鼠都显示（无论是否被炸到）
+    this.revealAllGhosts();
 
     // 处理静态炸弹被引爆（这可能会触发连锁爆炸）
     this.triggerStaticBombs(bomb, range);
@@ -360,15 +361,14 @@ class GameLogic {
     return range;
   }
 
-  // [v0.7.10] 幽灵鼠被爆炸命中时强制显示
-  revealGhostIfHit(x, y) {
-    const key = `${x},${y}`;
-    const wall = this.walls.get(key);
-    if (wall && wall.type === 'ghost' && !wall.dying) {
-      // 被爆炸波及，强制显示 1.5 秒（与死亡动画时长一致）
-      wall.ghostTimer = 1.5;
-      wall.ghostAlpha = 0; // 重置为透明，让淡入效果从头开始
-    }
+  // [v0.7.10] 任何炸弹爆炸时，所有幽灵鼠都显示出来（无论是否被炸到）
+  revealAllGhosts() {
+    this.walls.forEach(wall => {
+      if (wall.type === 'ghost' && !wall.dying) {
+        wall.ghostTimer = 1.5; // 显示1.5秒
+        wall.ghostAlpha = 0;   // 从透明开始淡入
+      }
+    });
   }
 
   processExplosionHit(x, y, bombEvo) {
@@ -566,6 +566,9 @@ class GameLogic {
     this.triggerStaticBombs(staticBomb, range);
     // [v0.6.0] 移除：升级相邻炸弹
     // this.upgradeAdjacentBombs(staticBomb);
+
+    // [v0.7.10] 任何炸弹爆炸时，所有幽灵鼠都显示
+    this.revealAllGhosts();
 
     this.processingExplosion = false;
 
