@@ -168,12 +168,12 @@ class Renderer {
       // 精英鼠死亡动画
       loadImg(`${bp}/sprites/enemy_elite_death/sprite.png`),
       loadJson(`${bp}/sprites/enemy_elite_death/index.json`),
-      // Ghost老鼠精灵图
-      loadImg(`${bp}/sprites/enemy_ghost/sprite.png`),
-      loadJson(`${bp}/sprites/enemy_ghost/index.json`),
-      // Ghost老鼠死亡动画
-      loadImg(`${bp}/sprites/enemy_ghost_death/sprite.png`),
-      loadJson(`${bp}/sprites/enemy_ghost_death/index.json`),
+      // Ghost老鼠精灵图（使用res路径）
+      loadImg(`res/sprites/enemy_ghost/sprite.png`),
+      loadJson(`res/sprites/enemy_ghost/index.json`),
+      // Ghost老鼠死亡动画（使用res路径）
+      loadImg(`res/sprites/enemy_ghost_death/sprite.png`),
+      loadJson(`res/sprites/enemy_ghost_death/index.json`),
       // 静态炸弹精灵图（使用子包路径）
       loadImg(`${bp}/sprites/static_bombs/Sleep/Sleep_lv1.png`),
       loadJson(`${bp}/sprites/static_bombs/Sleep/Sleep_lv1.json`),
