@@ -134,14 +134,23 @@ class UIManager {
       this.drawShopBombIcon(ctx, type.level, iconX, iconY, iconSize, canAfford, r);
       
       // 绘制消耗积分（原型风格：底部）
-      // [v0.8.0] 显示消耗积分而非牛奶
+      // [v0.8.0] 牛奶=积分，显示牛奶图标+数字
       ctx.fillStyle = canAfford ? '#FFD700' : '#FF4444'; // 黄色 : 红色
       const fontSize = canAfford ? (11 * s * pr) : (10 * s * pr); // 能买时放大1号
       const fontWeight = canAfford ? 'bold' : 'normal'; // 能买时加粗
       ctx.font = `${fontWeight} ${fontSize}px sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
-      const costText = type.cost === 0 ? '免费' : `-${type.cost}分`;
+      const costText = type.cost === 0 ? '免费' : `${type.cost}`;
+      const textWidth = ctx.measureText(costText).width;
+      
+      // 绘制牛奶瓶图标（50%大小）
+      const milkSize = 10 * s * pr;
+      const milkX = boxX + boxW / 2 - textWidth / 2 - milkSize - 2 * s * pr + 4 * s * pr;
+      const milkY = boxY + boxH - 4 * s * pr - milkSize;
+      if (this.milkIcon && this.milkIcon.complete && this.milkIcon.width > 0) {
+        ctx.drawImage(this.milkIcon, milkX, milkY, milkSize, milkSize);
+      }
       
       ctx.fillText(costText, boxX + boxW / 2 + 4 * s * pr, boxY + boxH - 4 * s * pr); // 向右偏移4像素
     });
@@ -156,9 +165,9 @@ class UIManager {
       if (lastAction.type === 'placed') {
         const bombCosts = [2, 3, 4, 5];
         const cost = bombCosts[selected] || 0;
-        hintText = `消耗${cost}分放置牛牛`;
+        hintText = `消耗${cost}牛奶放置牛牛`;
       } else if (lastAction.type === 'cannot_afford') {
-        hintText = '积分不足';
+        hintText = '牛奶不足';
       }
     }
     
