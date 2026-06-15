@@ -101,9 +101,9 @@ class BombWallGame {
     this.particles = new ParticleSystem();
     this.uiManager = new UIManager(this.canvas, this.renderer);
     
-    // 设置购买栏点击回调
+    // [v0.8.0] 设置购买栏点击回调 - 新计分系统
     this.uiManager.onShopItemClick = (index) => {
-      const bombCosts = [0, 20, 50, 100];
+      const bombCosts = [2, 3, 4, 5]; // LV1-4 消耗
       const score = this.gameLogic.score || 0;
       
       if (score < bombCosts[index]) {
@@ -116,20 +116,20 @@ class BombWallGame {
         if (score < bombCosts[newType]) {
           // 全都不能释放
           this.lastShopAction = { type: 'cannot_afford', cost: bombCosts[index], score: score, time: Date.now() };
-          this.showHint('牛奶数不足');
+          this.showHint('积分不足');
           return;
         }
         
         // 自动切换到能释放的档位
         this.gameLogic.selectedBombType = newType;
         this.lastShopAction = { type: 'selected', level: newType, time: Date.now() };
-        this.showHint('已选择 ' + (['白色','蓝色','紫色','红色'][newType]) + '炸弹牛');
+        this.showHint('已选择 ' + (['白色','蓝色','紫色','红色'][newType]) + '炸弹牛 (消耗' + bombCosts[newType] + '分)');
         return;
       }
       
       this.gameLogic.selectedBombType = index;
       this.lastShopAction = { type: 'selected', level: index, time: Date.now() };
-      this.showHint('已选择 ' + (['白色','蓝色','紫色','红色'][index]) + '炸弹牛');
+      this.showHint('已选择 ' + (['白色','蓝色','紫色','红色'][index]) + '炸弹牛 (消耗' + bombCosts[index] + '分)');
     };
     
     // 将 uiManager 引用传递给 renderer，用于绘制购买栏
@@ -316,8 +316,8 @@ class BombWallGame {
       this.lastShopAction = { type: 'placed', time: Date.now() };
       this.audio.play('place');
       
-      // 放置后检查分数是否还够当前选中的档位，不够则自动降级
-      const bombCosts = [0, 20, 50, 100];
+      // [v0.8.0] 放置后检查分数是否还够当前选中的档位，不够则自动降级
+      const bombCosts = [2, 3, 4, 5];
       const currentScore = this.gameLogic.score || 0;
       const currentSelected = this.gameLogic.selectedBombType || 0;
       if (currentScore < bombCosts[currentSelected]) {
@@ -395,7 +395,7 @@ class BombWallGame {
         break;
         
       case 'revived':
-        this.showHint('获得' + event.bombsAdded + '个炸弹!');
+        this.showHint('获得' + event.scoreAdded + '分!');
         break;
     }
   }
@@ -533,6 +533,18 @@ class BombWallGame {
     this.gameState = 'victory';
     this.audio.play('victory');
     
+    // [v0.8.0] 新计分系统：通关保留分数，不再重置
+    // 保存分数到总分
+    var totalScore = this.storage.get('total_score') || 0;
+    this.storage.set('total_score', totalScore + event.score);
+    
+    // 记录关卡最高分
+    var bestKey = 'level_' + event.level + '_best';
+    var currentBest = this.storage.get(bestKey) || 0;
+    if (event.score > currentBest) {
+      this.storage.set(bestKey, event.score);
+    }
+    
     var nextLevel = event.level + 1;
     this.levelSystem.unlockNext(event.level);
     
@@ -546,6 +558,9 @@ class BombWallGame {
     this.gameState = 'failed';
     this.audio.play('defeat');
     
+    // [v0.8.0] 新计分系统：失败重置分数为10分
+    this.gameLogic.score = 10;
+    
     this.transitionTimer = setTimeout(() => {
       this.startLevel(this.gameLogic.level);
     }, 3000);
@@ -558,7 +573,7 @@ class BombWallGame {
       'wall_exists': '此处有墙壁',
       'bomb_exists': '此处已有炸弹',
       'static_bomb_active': '静态炸弹已激活',
-      'no_bombs': '炸弹不足!',
+      'insufficient_score': '积分不足!',
       'all_bombs_unaffordable': '得分不足，无法释放任何炸弹！'
     };
     
@@ -798,14 +813,15 @@ class BombWallGame {
       ctx.font = 'bold ' + (36 * pr) + 'px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('关卡完成!', w / 2, h / 2 - 30 * pr);
+      ctx.fillText('关卡完成!', w / 2, h / 2 - 60 * pr);
       
       var state = this.gameLogic.getState();
-      var bonus = state.bombsLeft * 50;
       ctx.fillStyle = '#FFF';
       ctx.font = (18 * pr) + 'px sans-serif';
-      ctx.fillText('剩余炸弹奖励: +' + bonus + '分', w / 2, h / 2 + 15 * pr);
-      ctx.fillText('3秒后进入下一关...', w / 2, h / 2 + 45 * pr);
+      ctx.fillText('最终积分: ' + state.score, w / 2, h / 2 - 15 * pr);
+      ctx.fillText('放置炸弹: ' + state.bombsPlaced + '颗', w / 2, h / 2 + 15 * pr);
+      ctx.fillText('消灭老鼠: ' + state.wallsDestroyed + '只', w / 2, h / 2 + 45 * pr);
+      ctx.fillText('3秒后进入下一关...', w / 2, h / 2 + 85 * pr);
     }
     
     if (this.gameState === 'failed') {
@@ -816,11 +832,14 @@ class BombWallGame {
       ctx.font = 'bold ' + (32 * pr) + 'px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('游戏结束', w / 2, h / 2 - 20 * pr);
+      ctx.fillText('游戏结束', w / 2, h / 2 - 40 * pr);
       
+      var state = this.gameLogic.getState();
       ctx.fillStyle = '#888';
       ctx.font = (16 * pr) + 'px sans-serif';
-      ctx.fillText('3秒后重新开始...', w / 2, h / 2 + 20 * pr);
+      ctx.fillText('积分耗尽，无法继续放置炸弹', w / 2, h / 2 - 5 * pr);
+      ctx.fillText('积分已重置为10分', w / 2, h / 2 + 25 * pr);
+      ctx.fillText('3秒后重新开始...', w / 2, h / 2 + 55 * pr);
     }
   }
 }

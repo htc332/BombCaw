@@ -503,41 +503,32 @@ class Renderer {
     const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
     const y = funcBtnH;
     
-    // 原型风格：得分标签居中，圆角矩形背景
-    const labelW = 140 * s * pr;
-    const labelH = 36 * s * pr;
-    const labelX = (w - labelW) / 2;
-    const labelY = y + (scoreH - labelH) / 2;
-    const cornerR = 18 * s * pr;
+    // [v0.8.0] 新计分系统：显示当前积分、已放炸弹、已消灭老鼠
+    const panelH = scoreH;
     
-    // 绘制圆角背景（深色半透明）
-    ctx.fillStyle = 'rgba(30, 30, 50, 0.7)';
-    ctx.beginPath();
-    ctx.moveTo(labelX + cornerR, labelY);
-    ctx.lineTo(labelX + labelW - cornerR, labelY);
-    ctx.quadraticCurveTo(labelX + labelW, labelY, labelX + labelW, labelY + cornerR);
-    ctx.lineTo(labelX + labelW, labelY + labelH - cornerR);
-    ctx.quadraticCurveTo(labelX + labelW, labelY + labelH, labelX + labelW - cornerR, labelY + labelH);
-    ctx.lineTo(labelX + cornerR, labelY + labelH);
-    ctx.quadraticCurveTo(labelX, labelY + labelH, labelX, labelY + labelH - cornerR);
-    ctx.lineTo(labelX, labelY + cornerR);
-    ctx.quadraticCurveTo(labelX, labelY, labelX + cornerR, labelY);
-    ctx.closePath();
-    ctx.fill();
+    // 背景
+    ctx.fillStyle = 'rgba(13, 13, 21, 0.6)';
+    ctx.fillRect(0, y, w, panelH);
     
-    // 边框（金色细线）
-    ctx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    
-    // 得分文字（原型风格：大字体，金色）
+    // 左侧：当前积分（大字体）
     ctx.fillStyle = '#FFD700';
-    ctx.font = `bold ${22 * s * pr}px sans-serif`;
-    ctx.textAlign = 'center';
+    ctx.font = `bold ${24 * s * pr}px sans-serif`;
+    ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`得分: ${state.score || 0}`, w / 2, y + scoreH / 2);
+    ctx.fillText('积分:', 15 * s * pr, y + panelH * 0.35);
     
-    // 最近加分事件（显示2秒）- 原型风格：飘字动画
+    ctx.fillStyle = '#FFF';
+    ctx.font = `bold ${28 * s * pr}px sans-serif`;
+    ctx.fillText(`${state.score || 0}`, 75 * s * pr, y + panelH * 0.35);
+    
+    // 右侧：本局统计
+    ctx.fillStyle = '#E8D5C0';
+    ctx.font = `${14 * s * pr}px sans-serif`;
+    ctx.textAlign = 'right';
+    ctx.fillText(`已放炸弹: ${state.bombsPlaced || 0}颗`, w - 15 * s * pr, y + panelH * 0.3);
+    ctx.fillText(`消灭老鼠: ${state.wallsDestroyed || 0}只`, w - 15 * s * pr, y + panelH * 0.7);
+    
+    // 最近加分事件（显示2秒）- 飘字动画
     if (state.lastScoreEvent) {
       const elapsed = Date.now() - state.lastScoreEvent.time;
       if (elapsed < 2000) {
@@ -546,7 +537,8 @@ class Renderer {
         ctx.globalAlpha = alpha;
         ctx.fillStyle = '#4CAF50';
         ctx.font = `bold ${16 * s * pr}px sans-serif`;
-        ctx.fillText(state.lastScoreEvent.text, w / 2, y + scoreH * 0.75 + offsetY);
+        ctx.textAlign = 'center';
+        ctx.fillText(state.lastScoreEvent.text, w / 2, y + panelH * 0.8 + offsetY);
         ctx.globalAlpha = 1;
       }
     }

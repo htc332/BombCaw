@@ -41,17 +41,12 @@ class UIManager {
     const s = r.scale || 1;
     const pr = r.pixelRatio || 2;
     
-    // 获取炸弹类型配置
-    const bombTypes = GameGlobal.config ? GameGlobal.config.get('bombTypes', [
-      { level: 1, name: '白色炸弹牛', cost: 0, evolution: 0, color: '#FFFFFF' },
-      { level: 2, name: '蓝色炸弹牛', cost: 20, evolution: 2, color: '#5BA3F5' },
-      { level: 3, name: '紫色炸弹牛', cost: 50, evolution: 3, color: '#C084FC' },
-      { level: 4, name: '红色炸弹牛', cost: 100, evolution: 5, color: '#FF4444' }
-    ]) : [
-      { level: 1, name: '白色炸弹牛', cost: 0, evolution: 0, color: '#FFFFFF' },
-      { level: 2, name: '蓝色炸弹牛', cost: 20, evolution: 2, color: '#5BA3F5' },
-      { level: 3, name: '紫色炸弹牛', cost: 50, evolution: 3, color: '#C084FC' },
-      { level: 4, name: '红色炸弹牛', cost: 100, evolution: 5, color: '#FF4444' }
+    // [v0.8.0] 新计分系统：炸弹消耗积分
+    const bombTypes = [
+      { level: 1, name: '白色炸弹牛', cost: 2, evolution: 0, color: '#FFFFFF' },
+      { level: 2, name: '蓝色炸弹牛', cost: 3, evolution: 2, color: '#5BA3F5' },
+      { level: 3, name: '紫色炸弹牛', cost: 4, evolution: 3, color: '#C084FC' },
+      { level: 4, name: '红色炸弹牛', cost: 5, evolution: 5, color: '#FF4444' }
     ];
     
     const score = gameState.score || 0;
@@ -138,23 +133,15 @@ class UIManager {
       
       this.drawShopBombIcon(ctx, type.level, iconX, iconY, iconSize, canAfford, r);
       
-      // 绘制消耗得分（原型风格：底部）
-      // [v0.7.10] 能买时用黄色+加粗+字号放大1号，不足时用红色
+      // 绘制消耗积分（原型风格：底部）
+      // [v0.8.0] 显示消耗积分而非牛奶
       ctx.fillStyle = canAfford ? '#FFD700' : '#FF4444'; // 黄色 : 红色
       const fontSize = canAfford ? (11 * s * pr) : (10 * s * pr); // 能买时放大1号
       const fontWeight = canAfford ? 'bold' : 'normal'; // 能买时加粗
       ctx.font = `${fontWeight} ${fontSize}px sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
-      const costText = type.cost === 0 ? '免费' : `${type.cost}`;
-      
-      // 绘制牛奶瓶图标（50%大小）
-      if (this.milkIcon && this.milkIcon.complete) {
-        const iconSize = 10 * s * pr; // 50% of 20px
-        const iconX = boxX + boxW / 2 - ctx.measureText(costText).width / 2 - iconSize - 2 * s * pr + 4 * s * pr; // 向右偏移4像素
-        const iconY = boxY + boxH - 4 * s * pr - iconSize;
-        ctx.drawImage(this.milkIcon, iconX, iconY, iconSize, iconSize);
-      }
+      const costText = type.cost === 0 ? '免费' : `-${type.cost}分`;
       
       ctx.fillText(costText, boxX + boxW / 2 + 4 * s * pr, boxY + boxH - 4 * s * pr); // 向右偏移4像素
     });
@@ -167,11 +154,11 @@ class UIManager {
     
     if (lastAction && lastAction.time && (now - lastAction.time) < HINT_DURATION) {
       if (lastAction.type === 'placed') {
-        const bombCosts = [0, 20, 50, 100];
+        const bombCosts = [2, 3, 4, 5];
         const cost = bombCosts[selected] || 0;
-        hintText = `消耗${cost}瓶牛奶放置牛牛`;
+        hintText = `消耗${cost}分放置牛牛`;
       } else if (lastAction.type === 'cannot_afford') {
-        hintText = '牛奶不足';
+        hintText = '积分不足';
       }
     }
     

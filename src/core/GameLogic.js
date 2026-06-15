@@ -18,8 +18,7 @@ class GameLogic {
 
   reset() {
     this.level = 1;
-    this.bombsLeft = 0;
-    this.score = 100;
+    this.score = 10;          // [v0.8.0] 每局初始10分
     this.selectedBombType = 0;
     this.gameActive = false;
     this.walls = new Map();      // key: "x,y"
@@ -29,15 +28,15 @@ class GameLogic {
     this.processingExplosion = false; // 防止递归爆炸死锁
     this.pendingVictory = false;      // 延迟胜利，等动画播完
     
-    // 连击系统
-    this.comboCount = 0;
-    this.isInCombo = false;
+    // 本局统计
+    this.bombsPlaced = 0;       // 已放置炸弹数
+    this.wallsDestroyed = 0;    // 已消灭老鼠数
     
     // 加分事件记录（用于UI显示）
-    this.lastScoreEvent = null;  // { text: '普通鼠摧毁 +5', time: Date.now() }
+    this.lastScoreEvent = null;  // { text: '普通鼠摧毁 +1', time: Date.now() }
   }
   
-  // 添加分数（v0.7.0 得分系统）
+  // 添加分数（v0.8.0 新计分系统）
   addScore(points, reason) {
     this.score += points;
     if (this.score < 0) this.score = 0;
@@ -53,13 +52,16 @@ class GameLogic {
   
   initLevel(levelConfig) {
     this.gridSize = levelConfig.gridSize || 5;
-    this.bombsLeft = levelConfig.bombs || 0;
     this.gameActive = true;
     this.processingExplosion = false;
     this.pendingVictory = false;
     this.walls.clear();
     this.bombs.clear();
     this.staticBombs.clear();
+    
+    // [v0.8.0] 本局统计重置
+    this.bombsPlaced = 0;
+    this.wallsDestroyed = 0;
 
     // 初始化墙壁
     if (levelConfig.walls) {
@@ -77,7 +79,7 @@ class GameLogic {
 
     this.emitEvent('level_started', {
       gridSize: this.gridSize,
-      bombsLeft: this.bombsLeft,
+      score: this.score,
       wallCount: this.walls.size
     });
 
@@ -130,14 +132,6 @@ class GameLogic {
   // ========== 核心玩法 ==========
 
   tryPlaceBomb(x, y) {
-    // 清除连击（玩家新操作）
-    if (this.isInCombo) {
-      // 生产环境关闭连击结束日志
-      // console.log('[Combo] 连击结束! 最高x' + this.comboCount, '总分=' + this.score);
-      this.isInCombo = false;
-      this.comboCount = 0;
-    }
-    
     const key = `${x},${y}`;
 
     // 校验
@@ -161,41 +155,21 @@ class GameLogic {
       this.emitEvent('action_rejected', { reason: 'static_bomb_exists', x, y });
       return false;
     }
-    if (this.bombsLeft <= 0) {
-      this.emitEvent('action_rejected', { reason: 'no_bombs', x, y });
-      return false;
-    }
 
-  // 放置炸弹得分扣除（根据炸弹类型）
-  const bombCosts = [0, 20, 50, 100]; // 1-4级炸弹消耗得分（匹配配置）
-  const cost = bombCosts[this.selectedBombType] || 0;
-  
-  if (this.score < cost) {
-    // [v0.7.9] 得分不足时，自动退到可以释放的那一档
-    let newType = this.selectedBombType;
-    while (newType > 0 && this.score < bombCosts[newType]) {
-      newType--;
-    }
+    // [v0.8.0] 新计分系统：检查分数是否足够
+    const bombCosts = [2, 3, 4, 5]; // LV1-4 消耗
+    const cost = bombCosts[this.selectedBombType] || 2;
     
-    if (this.score < bombCosts[newType]) {
-      // 全都不能释放，弹出失败提示
-      this.emitEvent('action_rejected', { reason: 'all_bombs_unaffordable', x, y, current: this.score });
+    if (this.score < cost) {
+      this.emitEvent('action_rejected', { reason: 'insufficient_score', x, y, current: this.score, cost: cost });
       return false;
     }
     
-    // 退到可以释放的那一档
-    this.selectedBombType = newType;
-    this.emitEvent('bomb_type_changed', { newType: newType, reason: 'auto_downgrade' });
-    return this.tryPlaceBomb(x, y); // 递归调用，使用新的类型
-  }
-  
-  // 扣除得分
-  this.score -= cost;
-  if (this.score < 0) this.score = 0;
+    // 扣除分数
+    this.score -= cost;
+    this.bombsPlaced++; // 统计
 
-  // 放置炸弹
-    this.bombsLeft--;
-    
+    // 放置炸弹
     // 根据选中的炸弹类型获取 evolution
     const bombTypes = [
       { evolution: 0 },  // Lv1 白色
@@ -218,7 +192,8 @@ class GameLogic {
     this.emitEvent('bomb_placed', { 
       x, y, 
       bomb: { ...bomb },
-      bombsLeft: this.bombsLeft 
+      score: this.score,
+      cost: cost
     });
 
     // 启动倒计时
@@ -311,37 +286,32 @@ class GameLogic {
     const range = [{ x: bomb.x, y: bomb.y, distance: 0 }];
 
     if (evo === 0) {
-      // Lv1: 十字 1 格（上下左右各1格）
-      // [DEBUG] 确认进入Lv1分支
-      console.log('[Main] Static bomb exploded, evo:', evo, '-> Lv1 cross');
+      // [v0.8.0] LV1: 爆炸范围不变 - 十字1格
       const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
       dirs.forEach(([dx, dy]) => {
         range.push({ x: bomb.x + dx, y: bomb.y + dy, distance: 1 });
       });
     } else if (evo === 2) {
-      // Lv2: 上下单方向 2 格（竖直方向）
-      // [DEBUG] 确认进入Lv2分支
-      console.log('[Main] Static bomb exploded, evo:', evo, '-> Lv2 vertical');
+      // [v0.8.0] LV2: 竖直方向上下各3格
       const dirs = [[0,1], [0,-1]];
       dirs.forEach(([dx, dy]) => {
-        for (let d = 1; d <= 2; d++) {
+        for (let d = 1; d <= 3; d++) {
           range.push({ x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d });
         }
       });
     } else if (evo === 3) {
-      // Lv3: 左右单方向 2 格（横向方向）
-      // [DEBUG] 确认进入Lv3分支
-      console.log('[Main] Static bomb exploded, evo:', evo, '-> Lv3 horizontal');
-      const dirs = [[1,0], [-1,0]];
-      dirs.forEach(([dx, dy]) => {
-        for (let d = 1; d <= 2; d++) {
+      // [v0.8.0] LV3: 横向左右各3格，上方1格
+      // 横向左右各3格
+      const hDirs = [[1,0], [-1,0]];
+      hDirs.forEach(([dx, dy]) => {
+        for (let d = 1; d <= 3; d++) {
           range.push({ x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d });
         }
       });
+      // 上方1格
+      range.push({ x: bomb.x, y: bomb.y - 1, distance: 1 });
     } else if (evo === 5) {
-      // Lv4: 十字 1 格 + 对角 1 格
-      // [DEBUG] 确认进入Lv4分支
-      console.log('[Main] Static bomb exploded, evo:', evo, '-> Lv4 cross+diag');
+      // [v0.8.0] LV4: 爆炸范围不变 - 十字1格 + 对角1格
       const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
       dirs.forEach(([dx, dy]) => {
         range.push({ x: bomb.x + dx, y: bomb.y + dy, distance: 1 });
@@ -375,11 +345,6 @@ class GameLogic {
     const key = `${x},${y}`;
     const wall = this.walls.get(key);
     
-    // 4级炸弹调试日志（生产环境关闭）
-    // if (bombEvo >= 3) {
-    //   console.log('[Explosion] Lv4 Check wall at', x, y, 'key:', key, 'found:', !!wall, 'hp:', wall ? wall.hp : 'N/A');
-    // }
-    
     if (!wall) return;
 
     wall.hp--;
@@ -398,34 +363,32 @@ class GameLogic {
 
   // ========== 敌人状态处理（配置驱动） ==========
 
+  // [v0.8.0] 所有老鼠墙破坏后都+1分
   handleEnemyDeath(wall, key) {
     const config = ENEMY_TYPES[wall.type];
     if (!config) {
-      // 未知类型，直接删除
       this.walls.delete(key);
       return;
     }
 
     wall.dying = true;
     
-    // 根据敌人类型获得得分（v0.7.0 得分系统）
-    const points = config.score || 0;
-    this.addScore(points, wall.type + '摧毁');
+    // [v0.8.0] 统一+1分，不再区分类型
+    this.addScore(1, '消灭老鼠');
+    this.wallsDestroyed++; // 统计
 
-    // 发送死亡事件
     this.emitEvent('enemy_death', {
       x: wall.x, y: wall.y,
       wallType: wall.type,
-      isElite: wall.type === 'strong',
       score: this.score,
-      gained: points
+      gained: 1
     });
 
     // 根据配置处理特殊死亡逻辑
     if (config.onDeath === 'bombWall') {
-      // 炸弹墙：返还炸弹并连锁爆炸
-      this.bombsLeft++;
-      this.emitEvent('bomb_refilled', { x: wall.x, y: wall.y, bombsLeft: this.bombsLeft });
+      // [v0.8.0] 炸弹墙：不再返还炸弹，改为+1分奖励
+      this.addScore(1, '炸弹墙奖励');
+      this.emitEvent('bomb_refilled', { x: wall.x, y: wall.y, score: this.score });
       
       setTimeout(() => {
         const chainBomb = {
@@ -479,21 +442,18 @@ class GameLogic {
     this.emitEvent('wall_damaged', { x: wall.x, y: wall.y, hp: wall.hp, maxHp: wall.maxHp });
   }
 
+  // [v0.8.0] 静态炸弹激活不再额外加分，只触发爆炸
   triggerStaticBombs(explodedBomb, range) {
     this.staticBombs.forEach(staticBomb => {
       // 检查是否在爆炸范围内
       const inRange = range.some(r => r.x === staticBomb.x && r.y === staticBomb.y);
       if (!inRange) return;
-      // [v0.6.0] 已激活则忽略，不再升级
+      // 已激活则忽略，不再升级
       if (staticBomb.active) return;
 
       // 首次被激活（不升级，保持原等级）
-      // [v0.7.9] 静态炸弹被爆炸激活时，只激活，不升级
       staticBomb.active = true;
       staticBomb.countdown = 3;
-      
-      // 静态炸弹激活计分
-      this.addScore(5, '静态炸弹激活');
       
       this.emitEvent('static_bomb_activated', {
         x: staticBomb.x,
@@ -589,14 +549,11 @@ class GameLogic {
     // 计算剩余墙壁（包括所有类型）
     const remaining = this.walls.size;
 
-    // 生产环境关闭详细状态日志
-    // console.log('[GameLogic] Check state - remaining walls:', remaining, 'bombsLeft:', this.bombsLeft, 'activeBombs:', this.bombs.size, 'staticBombs:', this.staticBombs.size);
-
     if (remaining === 0) {
       // 胜利
       this.handleVictory();
     } else {
-      // 检查是否失败
+      // [v0.8.0] 检查是否失败：分数<=0 且 没有待爆炸的炸弹
       this.checkFailure();
     }
   }
@@ -605,11 +562,10 @@ class GameLogic {
     if (this.pendingVictory) return;
     this.pendingVictory = true;
     this.gameActive = false;
-    const bonus = this.bombsLeft * 50;
-    this.score += bonus;
     
+    // [v0.8.0] 新计分系统：通关保留分数，不再加剩余炸弹奖励
     // 生产环境关闭胜利日志
-    // console.log('[GameLogic] Victory pending! Level:', this.level, 'Score:', this.score, 'Bonus:', bonus);
+    // console.log('[GameLogic] Victory pending! Level:', this.level, 'Score:', this.score);
   }
 
   confirmVictory() {
@@ -622,34 +578,17 @@ class GameLogic {
     this.emitEvent('level_complete', { 
       level: this.level,
       score: this.score,
-      bonus: this.bombsLeft * 50,
-      bombsLeft: this.bombsLeft
+      bombsPlaced: this.bombsPlaced,
+      wallsDestroyed: this.wallsDestroyed
     });
   }
 
   checkFailure() {
-    // 检查是否还有活跃的玩家炸弹（倒计时中的）
-    const hasActiveBombs = this.bombs.size > 0;
+    // [v0.8.0] 失败条件：分数 <= 0 且 没有待爆炸的炸弹（动态炸弹+静态炸弹）
+    const hasPendingBombs = this.bombs.size > 0 || 
+      Array.from(this.staticBombs.values()).some(sb => sb.active);
     
-    // 检查是否还有已激活且正在倒计时中的静态炸弹
-    const hasActiveStaticBombs = Array.from(this.staticBombs.values()).some(sb => sb.active);
-    
-    // 检查是否还有未激活的静态炸弹
-    const hasInactiveStaticBombs = Array.from(this.staticBombs.values()).some(sb => !sb.active);
-    
-    // 检查是否还有可放置的炸弹
-    const hasBombsLeft = this.bombsLeft > 0;
-
-    // 生产环境关闭详细失败检查日志
-    // console.log('[GameLogic] Check failure - hasActiveBombs:', hasActiveBombs, 'hasActiveStaticBombs:', hasActiveStaticBombs, 'hasInactiveStaticBombs:', hasInactiveStaticBombs, 'hasBombsLeft:', hasBombsLeft);
-
-    // 失败条件：没有任何可以产生爆炸的东西了
-    // - 没有活跃的玩家炸弹
-    // - 没有活跃的静态炸弹（倒计时中）
-    // - 没有未激活的静态炸弹
-    // - 没有剩余炸弹可放置
-    if (!hasActiveBombs && !hasActiveStaticBombs && !hasBombsLeft && !hasInactiveStaticBombs) {
-      // 确定失败
+    if (this.score <= 0 && !hasPendingBombs) {
       this.gameActive = false;
       
       const remainingWalls = this.walls.size;
@@ -658,9 +597,11 @@ class GameLogic {
       // console.log('[GameLogic] Game Over! Remaining walls:', remainingWalls);
       
       this.emitEvent('level_failed', { 
-        reason: 'out_of_bombs',
+        reason: 'out_of_score',
         remainingWalls: remainingWalls,
-        score: this.score
+        score: this.score,
+        bombsPlaced: this.bombsPlaced,
+        wallsDestroyed: this.wallsDestroyed
       });
     }
   }
@@ -670,10 +611,11 @@ class GameLogic {
   reviveWithAd(count = 3) {
     if (this.gameActive) return false;
     
-    this.bombsLeft += count;
+    // [v0.8.0] 复活不再给炸弹，而是给分数（让玩家能继续放置）
+    this.score += 5; // 给5分救命
     this.gameActive = true;
     
-    this.emitEvent('revived', { bombsAdded: count, bombsLeft: this.bombsLeft });
+    this.emitEvent('revived', { scoreAdded: 5, score: this.score });
     
     // 重新检查状态（以防续命后自动过关）
     this.checkGameState();
@@ -695,16 +637,17 @@ class GameLogic {
 
     return {
       level: this.level,
-      bombsLeft: this.bombsLeft,
       score: this.score,
-      selectedBombType: this.selectedBombType, // 添加选中炸弹类型
+      selectedBombType: this.selectedBombType,
       gameActive: this.gameActive,
       gridSize: this.gridSize,
       wallCount,
       walls: Array.from(this.walls.values()),
       bombs: Array.from(this.bombs.values()).map(b => ({ ...b })),
       staticBombs: Array.from(this.staticBombs.values()).map(sb => ({ ...sb })),
-      lastScoreEvent: this.lastScoreEvent
+      lastScoreEvent: this.lastScoreEvent,
+      bombsPlaced: this.bombsPlaced,
+      wallsDestroyed: this.wallsDestroyed
     };
   }
 }

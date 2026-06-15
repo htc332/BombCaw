@@ -51,22 +51,19 @@ class Config {
         strongWallChance: 0.2    // 加固墙出现概率
       },
 
-      // 炸弹类型定义（v0.7.0）
+      // 炸弹类型定义（v0.8.0 新计分系统）
       bombTypes: [
-        { level: 1, name: '白色炸弹牛', cost: 0, evolution: 0, color: '#FFFFFF' },
-        { level: 2, name: '蓝色炸弹牛', cost: 20, evolution: 2, color: '#5BA3F5' },
-        { level: 3, name: '紫色炸弹牛', cost: 50, evolution: 3, color: '#C084FC' },
-        { level: 4, name: '红色炸弹牛', cost: 100, evolution: 5, color: '#FF4444' }
+        { level: 1, name: '白色炸弹牛', cost: 2, evolution: 0, color: '#FFFFFF' },
+        { level: 2, name: '蓝色炸弹牛', cost: 3, evolution: 2, color: '#5BA3F5' },
+        { level: 3, name: '紫色炸弹牛', cost: 4, evolution: 3, color: '#C084FC' },
+        { level: 4, name: '红色炸弹牛', cost: 5, evolution: 5, color: '#FF4444' }
       ],
 
-      // 分数系统
+      // 分数系统（v0.8.0 新计分系统）
       scoring: {
-        destroyWall: 10,         // 炸毁墙壁基础分
-        destroyStrongWall: 20,   // 炸毁加固墙
-        bombUpgrade: 5,          // 炸弹升级
-        chainBonus: 2,           // 连锁倍率
-        bombLeftBonus: 50,       // 剩余炸弹奖励
-        timeBonus: 1             // 时间奖励（预留）
+        destroyWall: 1,         // 炸毁任何老鼠墙 +1分
+        startScore: 10,         // 每局初始分数
+        staticBombActivate: 0   // 静态炸弹激活不再额外加分
       }
     };
   }
