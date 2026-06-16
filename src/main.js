@@ -738,11 +738,14 @@ class BombWallGame {
     if (loginImg) {
       var imgW = loginImg.width;
       var imgH = loginImg.height;
-      var scale = h / imgH;
+      var scaleX = w / imgW;
+      var scaleY = h / imgH;
+      var scale = Math.max(scaleX, scaleY);
       var drawW = imgW * scale;
       var drawH = imgH * scale;
       var drawX = (w - drawW) / 2;
-      ctx.drawImage(loginImg, drawX, 0, drawW, drawH);
+      var drawY = (h - drawH) / 2;
+      ctx.drawImage(loginImg, drawX, drawY, drawW, drawH);
     } else {
       ctx.fillStyle = '#1A1A2E';
       ctx.fillRect(0, 0, w, h);
