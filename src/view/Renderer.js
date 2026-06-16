@@ -132,7 +132,7 @@ class Renderer {
     
     const bp = 'subpackage';
     const promises = [
-      // UI 资源
+      // 新登录画面
       loadImg(`${bp}/ui/Login.png`),
       loadImg(`${bp}/ui/Loading.png`),
       loadImg(`${bp}/ui/game_bg_small.png`),
