@@ -110,8 +110,8 @@ class LoginScene extends BaseScene {
     if (this.isLoading) {
       this.drawLoadingProgress();
     } else {
-      // 绘制点击提示
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      // 绘制点击提示 - 深紫色，在粉红背景上显眼
+      ctx.fillStyle = 'rgba(74,0,128,0.9)';
       ctx.font = `bold ${18 * (w / 375)}px sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -126,7 +126,7 @@ class LoginScene extends BaseScene {
     const barW = w * 0.6;
     const barH = 6;
     const barX = (w - barW) / 2;
-    const barY = h * 0.7;
+    const barY = h * 0.7 + 20; // 下移20像素
     
     // 背景条
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
@@ -136,8 +136,8 @@ class LoginScene extends BaseScene {
     ctx.fillStyle = '#FFD700';
     ctx.fillRect(barX, barY, barW * this.progress, barH);
     
-    // 进度文字
-    ctx.fillStyle = '#FFF';
+    // 进度文字 - 深紫色，在粉红背景上显眼
+    ctx.fillStyle = '#4A0080';
     ctx.font = `bold ${14}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.fillText(`${Math.floor(this.progress * 100)}%`, w / 2, barY + 20);
