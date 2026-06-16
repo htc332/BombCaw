@@ -766,7 +766,7 @@ class BombWallGame {
     var barW = 280 * pr;
     var barH = 12 * pr;
     var barX = (w - barW) / 2;
-    var barY = h - 130 * pr;
+    var barY = h - 110 * pr;
     
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.beginPath();
