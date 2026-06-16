@@ -734,8 +734,19 @@ class BombWallGame {
   }
 
   drawLoginScreen(ctx, w, h, pr) {
+    // 先尝试从子包加载登录图（如果还没加载）
+    if (!this.renderer.uiImages.login) {
+      // 尝试同步加载图片
+      var img = wx.createImage();
+      var self = this;
+      img.onload = function() {
+        self.renderer.uiImages.login = img;
+      };
+      img.src = 'subpackage/ui/Login.png';
+    }
+    
     var loginImg = this.renderer.uiImages.login;
-    if (loginImg) {
+    if (loginImg && loginImg.width > 0) {
       var imgW = loginImg.width;
       var imgH = loginImg.height;
       var scaleX = w / imgW;
