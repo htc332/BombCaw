@@ -742,7 +742,7 @@ class BombWallGame {
       img.onload = function() {
         self.renderer.uiImages.login = img;
       };
-      img.src = 'subpackage/ui/Login.png';
+      img.src = 'res/ui/Login.png';
     }
     
     var loginImg = this.renderer.uiImages.login;

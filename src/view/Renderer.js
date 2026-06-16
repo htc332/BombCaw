@@ -132,8 +132,8 @@ class Renderer {
     
     const bp = 'subpackage';
     const promises = [
-      // 新登录画面
-      loadImg(`${bp}/ui/Login.png`),
+      // 新登录画面（使用res路径，避免子包加载阻塞）
+      loadImg(`res/ui/Login.png`),
       loadImg(`${bp}/ui/Loading.png`),
       loadImg(`${bp}/ui/game_bg_small.png`),
       // 炸弹精灵图
