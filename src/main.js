@@ -768,7 +768,7 @@ class BombWallGame {
     var barX = (w - barW) / 2;
     var barY = h - 90 * pr;
     
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.beginPath();
     ctx.roundRect(barX - 4, barY - 4, barW + 8, barH + 8, [8 * pr]);
     ctx.fill();
@@ -778,13 +778,13 @@ class BombWallGame {
     ctx.roundRect(barX, barY, barW * progress, barH, [6 * pr]);
     ctx.fill();
     
-    ctx.fillStyle = '#FFF';
+    ctx.fillStyle = '#2A1A3E';
     ctx.font = 'bold ' + (18 * pr) + 'px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(Math.floor(progress * 100) + '%', w / 2, barY + barH / 2);
     
-    ctx.fillStyle = '#FFF';
+    ctx.fillStyle = '#2A1A3E';
     ctx.font = 'bold ' + (14 * pr) + 'px sans-serif';
     ctx.fillText(this.loadingStatus || '准备加载...', w / 2, barY - 24 * pr);
     
