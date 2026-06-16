@@ -53,6 +53,20 @@ const ENEMY_TYPES = {
     onDeath: 'standard'
   },
 
+  wall: {
+    name: '墙壁鼠',
+    hp: 1,
+    score: 5,
+    sprites: {
+      idle: 'enemy_wall'
+    },
+    deathSprite: 'enemy_wall_death',
+    deathDuration: 2000,
+    states: ['idle'],
+    onDamaged: null,
+    onDeath: 'standard'
+  },
+
   bomb: {
     name: '炸弹墙',
     hp: 1,

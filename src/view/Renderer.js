@@ -31,6 +31,8 @@ class Renderer {
     enemy_elite_death: { scale: 1.0, yOff: -0.5 },
     enemy_ghost: { scale: 1.8, yOff: -1.0 },
     enemy_ghost_death: { scale: 1.8, yOff: -0.5 },
+    enemy_wall: { scale: 1.0, yOff: -0.5 },
+    enemy_wall_death: { scale: 1.0, yOff: -0.5 },
     };
     
     this.colors = {
@@ -166,6 +168,12 @@ class Renderer {
       // Ghost老鼠死亡动画（使用res路径）
       loadImg(`res/sprites/enemy_ghost_death/sprite.png`),
       loadJson(`res/sprites/enemy_ghost_death/index.json`),
+      // 墙壁鼠精灵图（使用res路径）
+      loadImg(`res/sprites/enemy_wall/sprite.png`),
+      loadJson(`res/sprites/enemy_wall/index.json`),
+      // 墙壁鼠死亡动画（使用res路径）
+      loadImg(`res/sprites/enemy_wall_death/sprite.png`),
+      loadJson(`res/sprites/enemy_wall_death/index.json`),
       // 静态炸弹精灵图（使用子包路径）
       loadImg(`${bp}/sprites/static_bombs/Sleep/Sleep_lv1.png`),
       loadJson(`${bp}/sprites/static_bombs/Sleep/Sleep_lv1.json`),
@@ -214,6 +222,10 @@ class Renderer {
       this.wallSprites.enemy_ghost = makeSprite(results[23], results[24]);
       // Ghost老鼠死亡动画
       this.wallSprites.enemy_ghost_death = makeSprite(results[25], results[26]);
+      // 墙壁鼠精灵图
+      this.wallSprites.enemy_wall = makeSprite(results[27], results[28]);
+      // 墙壁鼠死亡动画
+      this.wallSprites.enemy_wall_death = makeSprite(results[29], results[30]);
       
       // 静态炸弹精灵图（帧动画）
       const makeStaticSprite = (sheet, index) => ({
@@ -224,10 +236,10 @@ class Renderer {
           ? index.frames[index.frames.length - 1].t + 0.033
           : 1
       });
-      this.staticBombSprites.level1 = makeStaticSprite(results[27], results[28]);
-      this.staticBombSprites.level2 = makeStaticSprite(results[29], results[30]);
-      this.staticBombSprites.level3 = makeStaticSprite(results[31], results[32]);
-      this.staticBombSprites.level4 = makeStaticSprite(results[33], results[34]);
+      this.staticBombSprites.level1 = makeStaticSprite(results[31], results[32]);
+      this.staticBombSprites.level2 = makeStaticSprite(results[33], results[34]);
+      this.staticBombSprites.level3 = makeStaticSprite(results[35], results[36]);
+      this.staticBombSprites.level4 = makeStaticSprite(results[37], results[38]);
       
       // 生产环境关闭静态炸弹精灵加载日志
       // console.log('[Renderer] Static bomb sprites loaded:', {
@@ -700,6 +712,9 @@ class Renderer {
         break;
       case 'ghost':
         spriteName = 'enemy_ghost_death';
+        break;
+      case 'wall':
+        spriteName = 'enemy_wall_death';
         break;
       default:
         spriteName = 'enemy_n_death';

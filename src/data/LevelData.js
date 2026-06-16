@@ -32,7 +32,10 @@ const LEVELS = {
       // 幽灵鼠 - 新敌人类型
       { x: -3, y: 3, type: 'ghost' },
       { x: 3, y: -3, type: 'ghost' },
-      { x: 0, y: -2, type: 'ghost' }
+      // 墙壁鼠 - 新敌人类型
+      { x: -1, y: 1, type: 'wall' },
+      { x: 1, y: 1, type: 'wall' },
+      { x: 0, y: 1, type: 'wall' },
     ],
     staticBombs: [
       { x: 0, y: 0, evolution: 0 },   // 1级静态炸弹
