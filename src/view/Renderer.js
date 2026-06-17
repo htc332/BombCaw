@@ -350,14 +350,14 @@ class Renderer {
       }
     } catch (e) {}
     
-    // 6个区域高度（从上到下）
-    const funcBtnH = Math.max(50 * s * pr, safeAreaTop + 10 * pr);  // 功能按钮区
-    const scoreH = 100 * s * pr;  // 得分区
-    const infoH = 80 * s * pr;    // 信息区
+    // 新布局：顶部信息区 + 棋盘 + 底部购买区
+    const levelH = 30 * s * pr;      // 关卡编号高度
+    const statsH = 25 * s * pr;      // 统计信息高度
+    const infoH = 0;                 // 原信息区已废弃
     const bottomSafe = Math.max(20 * s * pr, safeAreaBottom + 10 * pr); // 底部安全区
     
-    // 棋盘区域 = 剩余空间
-    const availableH = h - funcBtnH - scoreH - infoH - bottomSafe;
+    // 棋盘区域 = 剩余空间（保持原有计算逻辑）
+    const availableH = h - levelH - statsH - infoH - bottomSafe;
     const boardAreaW = w - 40 * s * pr;
     const sideMargin = 20 * s * pr;
     
@@ -379,14 +379,14 @@ class Renderer {
     }
     
     const offsetX = sideMargin + (boardAreaW - boardSize) / 2;
-    const offsetY = funcBtnH + scoreH + (availableH - boardSize) / 2;
+    const offsetY = levelH + statsH + (availableH - boardSize) / 2;
     
     this.cellSize = cellSize;
     this.gap = gap;
     
     return { 
       offsetX, offsetY, cellSize, gap,
-      funcBtnH, scoreH, infoH, bottomSafe
+      levelH, statsH, infoH, bottomSafe
     };
   }
   
@@ -399,11 +399,11 @@ class Renderer {
     
     const layout = this.calcLayout(gameState.gridSize || 5);
     
-    // 1. 功能按钮区（顶部）
-    this.drawFuncButtons(gameState, w, layout.funcBtnH);
+    // 1. 关卡编号（顶部）
+    this.drawLevel(gameState, w, layout.levelH);
     
-    // 2. 玩家得分区
-    this.drawScorePanel(gameState, w, layout.funcBtnH, layout.scoreH);
+    // 2. 统计信息（关卡下方）
+    this.drawStats(gameState, w, layout.levelH, layout.statsH);
     
     // 3. 游戏棋盘（中心区域，保持原有逻辑不变）
     this.drawGrid(gameState.gridSize || 5, layout.offsetX, layout.offsetY);
@@ -453,6 +453,31 @@ class Renderer {
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
     }
+  }
+  
+  drawLevel(state, w, levelH) {
+    const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
+    
+    // 关卡编号，独立一行，居中
+    ctx.fillStyle = '#FFD700';
+    ctx.font = `bold ${14 * s * pr}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`关卡: ${state.level || 1}`, w / 2, levelH / 2);
+  }
+  
+  drawStats(state, w, levelH, statsH) {
+    const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
+    const y = levelH;
+    
+    // 统计信息，一行显示，居中
+    ctx.fillStyle = '#E8D5C0';
+    ctx.font = `${14 * s * pr}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    const statsText = `消灭:${state.wallsDestroyed || 0}只  剩余:${state.wallCount || 0}只`;
+    ctx.fillText(statsText, w / 2, y + statsH / 2);
   }
   
   drawFuncButtons(state, w, funcBtnH) {

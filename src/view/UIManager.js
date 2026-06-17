@@ -54,7 +54,8 @@ class UIManager {
     
     // 购买栏尺寸（原型风格）
     const barHeight = 90 * s * pr;
-    const barY = h - bottomSafe - barHeight - 20 * s * pr;  // 整体往上移动20像素
+    const scoreDisplayH = 35 * s * pr; // 得分显示区域高度
+    const barY = h - bottomSafe - barHeight - scoreDisplayH - 20 * s * pr;  // 上移给得分留空间
     const itemWidth = Math.min(w / 4, 85 * s * pr);
     const itemHeight = barHeight - 15 * s * pr;
     const startX = (w - itemWidth * 4) / 2;
@@ -171,11 +172,32 @@ class UIManager {
       }
     }
     
+    // 提示文字在棋盘下方，购买栏上方
     ctx.fillStyle = '#FFFFFF';
     ctx.font = `${12 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(hintText, w / 2, barY - 11 * s * pr);
+    ctx.fillText(hintText, w / 2, barY - 35 * s * pr);
+    
+    // 绘制当前得分（牛奶图标 + 数字）
+    const scoreY = barY - 20 * s * pr;
+    const scoreText = `${score}`;
+    ctx.fillStyle = '#FFD700';
+    ctx.font = `bold ${14 * s * pr}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const scoreTextWidth = ctx.measureText(scoreText).width;
+    
+    // 绘制牛奶图标
+    const milkSize = 14 * s * pr;
+    const totalWidth = scoreTextWidth + milkSize + 4 * s * pr;
+    const startX = (w - totalWidth) / 2;
+    
+    if (this.milkIcon && this.milkIcon.complete && this.milkIcon.width > 0) {
+      ctx.drawImage(this.milkIcon, startX, scoreY - milkSize / 2, milkSize, milkSize);
+    }
+    
+    ctx.fillText(scoreText, startX + milkSize + 4 * s * pr + scoreTextWidth / 2, scoreY);
   }
   
   /**
