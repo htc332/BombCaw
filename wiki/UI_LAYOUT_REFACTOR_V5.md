@@ -93,3 +93,21 @@
 - [项目结构](PROJECT_STRUCTURE.md)
 - [技术方案](TECHNICAL_DESIGN.md)
 - [工作流程](WORKFLOW.md)
+- [UI设计需求](UI_DESIGN_REQUIREMENTS.md)
+- [计分系统v0.8.0](SCORING_SYSTEM_V080.md)
+
+## 冲突检查
+
+### 与现有文档的冲突
+1. **UI_DESIGN_REQUIREMENTS.md**：原设计需求中顶部有功能按钮区和得分区，本次重构移除这两个区域，将信息整合到棋盘上方
+2. **SCORING_SYSTEM_V080.md**：原设计在顶部显示积分和统计，本次重构将积分下移到购买栏上方，统计上移到棋盘上方
+
+### 与现有代码的冲突
+1. **Renderer.js**：`drawFuncButtons` 和 `drawScorePanel` 方法将被移除或重构
+2. **UIManager.js**：`renderShopBar` 中的提示文字位置需要调整
+
+### 无冲突项
+- 游戏核心逻辑（GameLogic.js）不受影响
+- 关卡数据（LevelData.js）不受影响
+- 爆炸特效和动画系统不受影响
+- 音频和广告系统不受影响
