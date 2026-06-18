@@ -463,18 +463,24 @@ class Renderer {
     const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
     
     // 关卡编号，在棋盘上方显示，不置顶
+    // 与棋盘保持300像素以上间隔
+    const gapToBoard = Math.max(300 * pr, 80 * s * pr);
     ctx.fillStyle = '#FFD700';
     ctx.font = `bold ${14 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`关卡: ${state.level || 1}`, w / 2, offsetY - levelH / 2 - 5 * s * pr);
+    ctx.fillText(`关卡: ${state.level || 1}`, w / 2, offsetY - gapToBoard);
   }
   
   drawStats(state, w, levelH, statsH, offsetY) {
     const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
-    const y = offsetY - statsH / 2;
     
     // 统计信息，在棋盘上方显示，不置顶
+    // 与关卡信息保持间隔，与棋盘保持300像素以上间隔
+    const gapToBoard = Math.max(300 * pr, 80 * s * pr);
+    const gapBetweenInfo = 40 * s * pr; // 关卡和统计信息之间的间隔
+    const y = offsetY - gapToBoard + gapBetweenInfo;
+    
     ctx.fillStyle = '#E8D5C0';
     ctx.font = `${14 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
