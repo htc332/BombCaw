@@ -351,8 +351,8 @@ class Renderer {
     } catch (e) {}
     
     // 新布局：顶部信息区 + 棋盘 + 底部购买区
-    const levelH = 30 * s * pr;      // 关卡编号高度
-    const statsH = 25 * s * pr;      // 统计信息高度
+    const levelH = 30 * s * pr + 200;      // 关卡编号高度 + 下移200像素
+    const statsH = 25 * s * pr + 200;      // 统计信息高度 + 下移200像素
     const infoH = 0;                 // 原信息区已废弃
     const bottomSafe = Math.max(20 * s * pr, safeAreaBottom + 10 * pr); // 底部安全区
     
@@ -379,7 +379,7 @@ class Renderer {
     }
     
     const offsetX = sideMargin + (boardAreaW - boardSize) / 2;
-    const offsetY = levelH + statsH + (availableH - boardSize) / 2;
+    const offsetY = levelH + statsH + (availableH - boardSize) / 2 - 400;
     
     this.cellSize = cellSize;
     this.gap = gap;

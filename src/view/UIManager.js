@@ -191,13 +191,13 @@ class UIManager {
     // 绘制牛奶图标
     const milkSize = 14 * s * pr;
     const totalWidth = scoreTextWidth + milkSize + 4 * s * pr;
-    const startX = (w - totalWidth) / 2;
+    const milkStartX = (w - totalWidth) / 2;
     
     if (this.milkIcon && this.milkIcon.complete && this.milkIcon.width > 0) {
-      ctx.drawImage(this.milkIcon, startX, scoreY - milkSize / 2, milkSize, milkSize);
+      ctx.drawImage(this.milkIcon, milkStartX, scoreY - milkSize / 2, milkSize, milkSize);
     }
     
-    ctx.fillText(scoreText, startX + milkSize + 4 * s * pr + scoreTextWidth / 2, scoreY);
+    ctx.fillText(scoreText, milkStartX + milkSize + 4 * s * pr + scoreTextWidth / 2, scoreY);
   }
   
   /**
