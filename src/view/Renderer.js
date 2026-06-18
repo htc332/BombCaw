@@ -351,10 +351,13 @@ class Renderer {
     } catch (e) {}
     
     // 新布局：顶部信息区 + 棋盘 + 底部购买区
-    const levelH = 30 * s * pr + 200;      // 关卡编号高度 + 下移200像素
-    const statsH = 25 * s * pr + 200;      // 统计信息高度 + 下移200像素
+    const levelH = 30 * s * pr;      // 关卡编号高度
+    const statsH = 25 * s * pr;      // 统计信息高度
     const infoH = 0;                 // 原信息区已废弃
     const bottomSafe = Math.max(20 * s * pr, safeAreaBottom + 10 * pr); // 底部安全区
+    
+    // 关卡信息下移偏移量
+    const levelInfoOffset = 200;
     
     // 棋盘区域 = 剩余空间（保持原有计算逻辑）
     const availableH = h - levelH - statsH - infoH - bottomSafe;
@@ -379,14 +382,14 @@ class Renderer {
     }
     
     const offsetX = sideMargin + (boardAreaW - boardSize) / 2;
-    const offsetY = levelH + statsH + (availableH - boardSize) / 2 - 400;
+    const offsetY = levelH + statsH + (availableH - boardSize) / 2;
     
     this.cellSize = cellSize;
     this.gap = gap;
     
     return { 
       offsetX, offsetY, cellSize, gap,
-      levelH, statsH, infoH, bottomSafe
+      levelH, statsH, infoH, bottomSafe, levelInfoOffset
     };
   }
   
@@ -400,10 +403,10 @@ class Renderer {
     const layout = this.calcLayout(gameState.gridSize || 5);
     
     // 1. 关卡编号（顶部）
-    this.drawLevel(gameState, w, layout.levelH);
+    this.drawLevel(gameState, w, layout.levelH, layout.levelInfoOffset);
     
     // 2. 统计信息（关卡下方）
-    this.drawStats(gameState, w, layout.levelH, layout.statsH);
+    this.drawStats(gameState, w, layout.levelH, layout.statsH, layout.levelInfoOffset);
     
     // 3. 游戏棋盘（中心区域，保持原有逻辑不变）
     this.drawGrid(gameState.gridSize || 5, layout.offsetX, layout.offsetY);
@@ -455,20 +458,20 @@ class Renderer {
     }
   }
   
-  drawLevel(state, w, levelH) {
+  drawLevel(state, w, levelH, levelInfoOffset) {
     const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
     
-    // 关卡编号，独立一行，居中
+    // 关卡编号，独立一行，居中，带下移偏移
     ctx.fillStyle = '#FFD700';
     ctx.font = `bold ${14 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`关卡: ${state.level || 1}`, w / 2, levelH / 2);
+    ctx.fillText(`关卡: ${state.level || 1}`, w / 2, levelH / 2 + levelInfoOffset);
   }
   
-  drawStats(state, w, levelH, statsH) {
+  drawStats(state, w, levelH, statsH, levelInfoOffset) {
     const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
-    const y = levelH;
+    const y = levelH + levelInfoOffset;
     
     // 统计信息，一行显示，居中
     ctx.fillStyle = '#E8D5C0';
