@@ -351,15 +351,16 @@ class Renderer {
     } catch (e) {}
     
     // 新布局：顶部信息区 + 棋盘 + 底部购买区
-    const levelH = 30 * s * pr;      // 关卡编号高度
-    const statsH = 25 * s * pr;      // 统计信息高度
-    const infoH = 0;                 // 原信息区已废弃
+    // 按屏幕高度百分比分配区域，保持棋盘位置不变
+    const usableH = h - safeAreaTop - safeAreaBottom;
+    
+    // 各区域高度比例
+    const levelH = Math.min(30 * s * pr, usableH * 0.06);      // 关卡编号：最大30px或6%
+    const statsH = Math.min(25 * s * pr, usableH * 0.05);      // 统计信息：最大25px或5%
+    const infoH = 0;                                           // 原信息区已废弃
     const bottomSafe = Math.max(20 * s * pr, safeAreaBottom + 10 * pr); // 底部安全区
     
-    // 关卡信息下移偏移量
-    const levelInfoOffset = 400;
-    
-    // 棋盘区域 = 剩余空间（保持原有计算逻辑）
+    // 棋盘区域 = 剩余空间（保持原有计算逻辑不变）
     const availableH = h - levelH - statsH - infoH - bottomSafe;
     const boardAreaW = w - 40 * s * pr;
     const sideMargin = 20 * s * pr;
@@ -389,7 +390,7 @@ class Renderer {
     
     return { 
       offsetX, offsetY, cellSize, gap,
-      levelH, statsH, infoH, bottomSafe, levelInfoOffset
+      levelH, statsH, infoH, bottomSafe
     };
   }
   
@@ -403,10 +404,10 @@ class Renderer {
     const layout = this.calcLayout(gameState.gridSize || 5);
     
     // 1. 关卡编号（顶部）
-    this.drawLevel(gameState, w, layout.levelH, layout.levelInfoOffset);
+    this.drawLevel(gameState, w, layout.levelH);
     
     // 2. 统计信息（关卡下方）
-    this.drawStats(gameState, w, layout.levelH, layout.statsH, layout.levelInfoOffset);
+    this.drawStats(gameState, w, layout.levelH, layout.statsH);
     
     // 3. 游戏棋盘（中心区域，保持原有逻辑不变）
     this.drawGrid(gameState.gridSize || 5, layout.offsetX, layout.offsetY);
@@ -419,7 +420,7 @@ class Renderer {
     
     // 5. 购买栏（Shop Bar）- 在信息区下方
     if (this.uiManager && this.uiManager.renderShopBar) {
-      this.uiManager.renderShopBar(gameState, w, h, layout.bottomSafe);
+      this.uiManager.renderShopBar(gameState, w, h, layout);
     }
     
     // 保存布局信息供遮罩层使用
@@ -458,20 +459,20 @@ class Renderer {
     }
   }
   
-  drawLevel(state, w, levelH, levelInfoOffset) {
+  drawLevel(state, w, levelH) {
     const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
     
-    // 关卡编号，独立一行，居中，带下移偏移
+    // 关卡编号，独立一行，居中
     ctx.fillStyle = '#FFD700';
     ctx.font = `bold ${14 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`关卡: ${state.level || 1}`, w / 2, levelH / 2 + levelInfoOffset);
+    ctx.fillText(`关卡: ${state.level || 1}`, w / 2, levelH / 2);
   }
   
-  drawStats(state, w, levelH, statsH, levelInfoOffset) {
+  drawStats(state, w, levelH, statsH) {
     const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
-    const y = levelH + levelInfoOffset;
+    const y = levelH;
     
     // 统计信息，一行显示，居中
     ctx.fillStyle = '#E8D5C0';

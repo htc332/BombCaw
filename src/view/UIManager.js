@@ -33,9 +33,9 @@ class UIManager {
    * @param {Object} gameState - 游戏状态
    * @param {number} w - 画布宽度
    * @param {number} h - 画布高度
-   * @param {number} bottomSafe - 底部安全区高度
+   * @param {Object} layout - 布局参数（来自 Renderer.calcLayout）
    */
-  renderShopBar(gameState, w, h, bottomSafe) {
+  renderShopBar(gameState, w, h, layout) {
     const ctx = this.ctx;
     const r = this.renderer;
     const s = r.scale || 1;
@@ -52,8 +52,9 @@ class UIManager {
     const score = gameState.score || 0;
     const selected = gameState.selectedBombType !== undefined ? gameState.selectedBombType : 0;
     
-    // 购买栏尺寸（原型风格）
-    const barHeight = 90 * s * pr;
+    // 使用 layout 参数，如果没有则回退到旧参数
+    const bottomSafe = layout.bottomSafe || Math.max(20 * s * pr, 0);
+    const barHeight = layout.shopBarH || Math.min(90 * s * pr, (h - bottomSafe) * 0.18);
     const scoreDisplayH = 35 * s * pr; // 得分显示区域高度
     const barY = h - bottomSafe - barHeight - scoreDisplayH - 20 * s * pr;  // 上移给得分留空间
     const itemWidth = Math.min(w / 4, 85 * s * pr);
