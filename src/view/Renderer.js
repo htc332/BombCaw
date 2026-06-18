@@ -357,7 +357,7 @@ class Renderer {
     const bottomSafe = Math.max(20 * s * pr, safeAreaBottom + 10 * pr); // 底部安全区
     
     // 关卡信息下移偏移量
-    const levelInfoOffset = 200;
+    const levelInfoOffset = 400;
     
     // 棋盘区域 = 剩余空间（保持原有计算逻辑）
     const availableH = h - levelH - statsH - infoH - bottomSafe;
