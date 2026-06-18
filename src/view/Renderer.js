@@ -463,8 +463,8 @@ class Renderer {
     const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
     
     // 关卡编号，在棋盘上方显示，不置顶
-    // 与棋盘保持300像素以上间隔
-    const gapToBoard = Math.max(300 * pr, 80 * s * pr);
+    // 与棋盘保持100像素间隔
+    const gapToBoard = 100 * pr;
     ctx.fillStyle = '#FFD700';
     ctx.font = `bold ${14 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
@@ -476,9 +476,9 @@ class Renderer {
     const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
     
     // 统计信息，在棋盘上方显示，不置顶
-    // 与关卡信息保持间隔，与棋盘保持300像素以上间隔
-    const gapToBoard = Math.max(300 * pr, 80 * s * pr);
-    const gapBetweenInfo = 40 * s * pr; // 关卡和统计信息之间的间隔
+    // 与棋盘保持100像素间隔，与关卡信息保持间隔
+    const gapToBoard = 100 * pr;
+    const gapBetweenInfo = 30 * s * pr; // 关卡和统计信息之间的间隔
     const y = offsetY - gapToBoard + gapBetweenInfo;
     
     ctx.fillStyle = '#E8D5C0';

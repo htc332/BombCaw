@@ -56,7 +56,7 @@ class UIManager {
     const bottomSafe = layout.bottomSafe || Math.max(20 * s * pr, 0);
     const barHeight = layout.shopBarH || Math.min(90 * s * pr, (h - bottomSafe) * 0.18);
     const scoreDisplayH = 35 * s * pr; // 得分显示区域高度
-    const barY = h - bottomSafe - barHeight - scoreDisplayH - 20 * s * pr;  // 上移给得分留空间
+    const barY = h - bottomSafe - barHeight - scoreDisplayH + 10 * s * pr;  // 下移避免盖住棋盘
     const itemWidth = Math.min(w / 4, 85 * s * pr);
     const itemHeight = barHeight - 15 * s * pr;
     const startX = (w - itemWidth * 4) / 2;
@@ -173,15 +173,15 @@ class UIManager {
       }
     }
     
-    // 提示文字在棋盘下方，购买栏上方
+    // 提示文字在棋盘下方，购买栏上方，下移避免盖住棋盘
     ctx.fillStyle = '#FFFFFF';
     ctx.font = `${12 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(hintText, w / 2, barY - 35 * s * pr);
+    ctx.fillText(hintText, w / 2, barY - 50 * s * pr);
     
-    // 绘制当前得分（牛奶图标 + 数字）
-    const scoreY = barY - 20 * s * pr;
+    // 绘制当前得分（牛奶图标 + 数字），下移避免盖住棋盘
+    const scoreY = barY - 30 * s * pr;
     const scoreText = `${score}`;
     ctx.fillStyle = '#FFD700';
     ctx.font = `bold ${14 * s * pr}px sans-serif`;
