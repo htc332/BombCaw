@@ -183,6 +183,17 @@ class Renderer {
       loadJson(`${bp}/sprites/static_bombs/Sleep/Sleep_lv3.json`),
       loadImg(`${bp}/sprites/static_bombs/Sleep/Sleep_lv4.png`),
       loadJson(`${bp}/sprites/static_bombs/Sleep/Sleep_lv4.json`),
+      // 艺术数字（关卡显示用）
+      loadImg(`res/ui/Numbs/0.png`),
+      loadImg(`res/ui/Numbs/1.png`),
+      loadImg(`res/ui/Numbs/2.png`),
+      loadImg(`res/ui/Numbs/3.png`),
+      loadImg(`res/ui/Numbs/4.png`),
+      loadImg(`res/ui/Numbs/5.png`),
+      loadImg(`res/ui/Numbs/6.png`),
+      loadImg(`res/ui/Numbs/7.png`),
+      loadImg(`res/ui/Numbs/8.png`),
+      loadImg(`res/ui/Numbs/9.png`),
     ];
     
     Promise.all(promises).then((results) => {
@@ -240,6 +251,20 @@ class Renderer {
       this.staticBombSprites.level2 = makeStaticSprite(results[33], results[34]);
       this.staticBombSprites.level3 = makeStaticSprite(results[35], results[36]);
       this.staticBombSprites.level4 = makeStaticSprite(results[37], results[38]);
+      
+      // 艺术数字
+      this.numImages = {
+        0: results[39],
+        1: results[40],
+        2: results[41],
+        3: results[42],
+        4: results[43],
+        5: results[44],
+        6: results[45],
+        7: results[46],
+        8: results[47],
+        9: results[48]
+      };
       
       // 生产环境关闭静态炸弹精灵加载日志
       // console.log('[Renderer] Static bomb sprites loaded:', {
@@ -465,11 +490,55 @@ class Renderer {
     // 关卡编号，在棋盘上方显示，不置顶
     // 与棋盘保持100像素间隔
     const gapToBoard = 100 * pr;
-    ctx.fillStyle = '#FFD700';
-    ctx.font = `bold ${14 * s * pr}px sans-serif`;
-    ctx.textAlign = 'center';
+    const centerY = offsetY - gapToBoard;
+    const level = state.level || 1;
+    
+    // 绘制 "关卡" 文字 - 风格向艺术数字靠近
+    // 使用奶油色到桃红色的渐变效果（模拟艺术数字的配色）
+    const text = '关卡';
+    const fontSize = 16 * s * pr;
+    
+    ctx.font = `bold ${fontSize}px sans-serif`;
+    ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`关卡: ${state.level || 1}`, w / 2, offsetY - gapToBoard);
+    
+    // 文字位置：居中偏左
+    const numWidth = 28 * s * pr; // 艺术数字宽度估算
+    const textX = w / 2 - numWidth / 2 - 5 * s * pr;
+    
+    // 绘制文字描边（黑色粗边，模拟艺术数字的描边）
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 3 * s * pr;
+    ctx.strokeText(text, textX, centerY);
+    
+    // 绘制文字填充（奶油色，接近艺术数字的顶部颜色）
+    ctx.fillStyle = '#FFF0D4';
+    ctx.fillText(text, textX, centerY);
+    
+    // 绘制艺术数字
+    const numStr = String(level);
+    let currentX = w / 2 - numWidth / 2;
+    
+    for (let i = 0; i < numStr.length; i++) {
+      const digit = numStr[i];
+      const numImg = this.numImages[digit];
+      
+      if (numImg && numImg.width > 0) {
+        // 艺术数字尺寸
+        const numH = 32 * s * pr;
+        const numW = numH * (numImg.width / numImg.height);
+        
+        ctx.drawImage(numImg, currentX, centerY - numH / 2, numW, numH);
+        currentX += numW + 2 * s * pr;
+      } else {
+        // 回退：使用文字
+        ctx.fillStyle = '#FFD700';
+        ctx.font = `bold ${24 * s * pr}px sans-serif`;
+        ctx.textAlign = 'left';
+        ctx.fillText(digit, currentX, centerY);
+        currentX += 20 * s * pr;
+      }
+    }
   }
   
   drawStats(state, w, levelH, statsH, offsetY) {
