@@ -403,11 +403,11 @@ class Renderer {
     
     const layout = this.calcLayout(gameState.gridSize || 5);
     
-    // 1. 关卡编号（顶部）
-    this.drawLevel(gameState, w, layout.levelH);
+    // 1. 关卡编号（棋盘上方）
+    this.drawLevel(gameState, w, layout.levelH, layout.offsetY);
     
-    // 2. 统计信息（关卡下方）
-    this.drawStats(gameState, w, layout.levelH, layout.statsH);
+    // 2. 统计信息（棋盘上方）
+    this.drawStats(gameState, w, layout.levelH, layout.statsH, layout.offsetY);
     
     // 3. 游戏棋盘（中心区域，保持原有逻辑不变）
     this.drawGrid(gameState.gridSize || 5, layout.offsetX, layout.offsetY);
@@ -459,29 +459,29 @@ class Renderer {
     }
   }
   
-  drawLevel(state, w, levelH) {
+  drawLevel(state, w, levelH, offsetY) {
     const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
     
-    // 关卡编号，独立一行，居中
+    // 关卡编号，在棋盘上方显示，不置顶
     ctx.fillStyle = '#FFD700';
     ctx.font = `bold ${14 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`关卡: ${state.level || 1}`, w / 2, levelH / 2);
+    ctx.fillText(`关卡: ${state.level || 1}`, w / 2, offsetY - levelH / 2 - 5 * s * pr);
   }
   
-  drawStats(state, w, levelH, statsH) {
+  drawStats(state, w, levelH, statsH, offsetY) {
     const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
-    const y = levelH;
+    const y = offsetY - statsH / 2;
     
-    // 统计信息，一行显示，居中
+    // 统计信息，在棋盘上方显示，不置顶
     ctx.fillStyle = '#E8D5C0';
     ctx.font = `${14 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
     const statsText = `消灭:${state.wallsDestroyed || 0}只  剩余:${state.wallCount || 0}只`;
-    ctx.fillText(statsText, w / 2, y + statsH / 2);
+    ctx.fillText(statsText, w / 2, y);
   }
   
   drawFuncButtons(state, w, funcBtnH) {
