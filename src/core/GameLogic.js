@@ -301,26 +301,26 @@ class GameLogic {
         range.push(pos);
       });
     } else if (evo === 2) {
-      // [v0.8.0] LV2: 竖直方向上下各3格（带墙壁鼠阻挡）
+      // [v0.8.0] LV2: 竖直方向上下各3格（带任何墙壁阻挡）
       const dirs = [[0,1], [0,-1]];
       dirs.forEach(([dx, dy]) => {
         for (let d = 1; d <= 3; d++) {
           const pos = { x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d };
           range.push(pos);
-          // 遇到墙壁鼠阻挡该方向
-          if (this.isWallMouseAt(pos.x, pos.y)) break;
+          // [v0.8.1] 遇到任何墙壁阻挡该方向（包括所有类型老鼠）
+          if (this.isWallAt(pos.x, pos.y)) break;
         }
       });
     } else if (evo === 3) {
-      // [v0.8.0] LV3: 横向左右各3格，上方1格（带墙壁鼠阻挡）
+      // [v0.8.0] LV3: 横向左右各3格，上方1格（带任何墙壁阻挡）
       // 横向左右各3格
       const hDirs = [[1,0], [-1,0]];
       hDirs.forEach(([dx, dy]) => {
         for (let d = 1; d <= 3; d++) {
           const pos = { x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d };
           range.push(pos);
-          // 遇到墙壁鼠阻挡该方向
-          if (this.isWallMouseAt(pos.x, pos.y)) break;
+          // [v0.8.1] 遇到任何墙壁阻挡该方向（包括所有类型老鼠）
+          if (this.isWallAt(pos.x, pos.y)) break;
         }
       });
       // 上方1格
@@ -346,7 +346,14 @@ class GameLogic {
     return range;
   }
 
-  // [v0.8.1] 检查指定位置是否有墙壁鼠（用于阻挡爆炸）
+  // [v0.8.1] 检查指定位置是否有任何墙壁（用于阻挡爆炸）
+  isWallAt(x, y) {
+    const key = `${x},${y}`;
+    const wall = this.walls.get(key);
+    return wall && !wall.dying;
+  }
+
+  // [v0.8.1] 检查指定位置是否有墙壁鼠（用于特效显示）
   isWallMouseAt(x, y) {
     const key = `${x},${y}`;
     const wall = this.walls.get(key);
@@ -360,17 +367,17 @@ class GameLogic {
     const evo = bomb.evolution || 0;
     
     if (evo === 2) {
-      // LV2: 检查竖直方向被阻挡的格子
+      // LV2: 检查竖直方向被阻挡的格子（任何墙壁都会阻挡）
       const dirs = [[0,1], [0,-1]];
       dirs.forEach(([dx, dy]) => {
         for (let d = 1; d <= 3; d++) {
           const x = bomb.x + dx * d;
           const y = bomb.y + dy * d;
-          // 检查原始位置是否有墙壁鼠（不检查dying状态，因为爆炸前还没死）
+          // 检查原始位置是否有任何墙壁（不检查dying状态，因为爆炸前还没死）
           const key = `${x},${y}`;
           const wall = this.walls.get(key);
-          if (wall && wall.type === 'wall') {
-            // 记录被阻挡的格子（包含墙壁鼠本身和后面的格子）
+          if (wall) {
+            // 记录被阻挡的格子（包含墙壁本身和后面的格子）
             for (let bd = d; bd <= 3; bd++) {
               blocked.push({ x: bomb.x + dx * bd, y: bomb.y + dy * bd });
             }
@@ -379,16 +386,16 @@ class GameLogic {
         }
       });
     } else if (evo === 3) {
-      // LV3: 检查横向方向被阻挡的格子
+      // LV3: 检查横向方向被阻挡的格子（任何墙壁都会阻挡）
       const dirs = [[1,0], [-1,0]];
       dirs.forEach(([dx, dy]) => {
         for (let d = 1; d <= 3; d++) {
           const x = bomb.x + dx * d;
           const y = bomb.y + dy * d;
-          // 检查原始位置是否有墙壁鼠
+          // 检查原始位置是否有任何墙壁
           const key = `${x},${y}`;
           const wall = this.walls.get(key);
-          if (wall && wall.type === 'wall') {
+          if (wall) {
             for (let bd = d; bd <= 3; bd++) {
               blocked.push({ x: bomb.x + dx * bd, y: bomb.y + dy * bd });
             }
