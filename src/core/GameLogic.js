@@ -289,23 +289,30 @@ class GameLogic {
       // [v0.8.0] LV1: 爆炸范围不变 - 十字1格
       const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
       dirs.forEach(([dx, dy]) => {
-        range.push({ x: bomb.x + dx, y: bomb.y + dy, distance: 1 });
+        const pos = { x: bomb.x + dx, y: bomb.y + dy, distance: 1 };
+        range.push(pos);
       });
     } else if (evo === 2) {
-      // [v0.8.0] LV2: 竖直方向上下各3格
+      // [v0.8.0] LV2: 竖直方向上下各3格（带墙壁鼠阻挡）
       const dirs = [[0,1], [0,-1]];
       dirs.forEach(([dx, dy]) => {
         for (let d = 1; d <= 3; d++) {
-          range.push({ x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d });
+          const pos = { x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d };
+          range.push(pos);
+          // 遇到墙壁鼠阻挡该方向
+          if (this.isWallMouseAt(pos.x, pos.y)) break;
         }
       });
     } else if (evo === 3) {
-      // [v0.8.0] LV3: 横向左右各3格，上方1格
+      // [v0.8.0] LV3: 横向左右各3格，上方1格（带墙壁鼠阻挡）
       // 横向左右各3格
       const hDirs = [[1,0], [-1,0]];
       hDirs.forEach(([dx, dy]) => {
         for (let d = 1; d <= 3; d++) {
-          range.push({ x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d });
+          const pos = { x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d };
+          range.push(pos);
+          // 遇到墙壁鼠阻挡该方向
+          if (this.isWallMouseAt(pos.x, pos.y)) break;
         }
       });
       // 上方1格
@@ -329,6 +336,13 @@ class GameLogic {
     }
 
     return range;
+  }
+
+  // [v0.8.1] 检查指定位置是否有墙壁鼠（用于阻挡爆炸）
+  isWallMouseAt(x, y) {
+    const key = `${x},${y}`;
+    const wall = this.walls.get(key);
+    return wall && wall.type === 'wall' && !wall.dying;
   }
 
   // [v0.7.10] 任何炸弹爆炸时，所有幽灵鼠都显示出来（无论是否被炸到）
