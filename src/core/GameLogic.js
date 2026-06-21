@@ -308,7 +308,10 @@ class GameLogic {
           const pos = { x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d };
           range.push(pos);
           // [v0.8.1] 只有墙壁鼠(type: 'wall')能阻挡爆炸
-          if (this.isWallMouseAt(pos.x, pos.y)) break;
+          // 使用原始墙壁状态检查（不检查dying，因为爆炸前还没死）
+          const key = `${pos.x},${pos.y}`;
+          const wall = this.walls.get(key);
+          if (wall && wall.type === 'wall') break;
         }
       });
     } else if (evo === 3) {
@@ -320,7 +323,10 @@ class GameLogic {
           const pos = { x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d };
           range.push(pos);
           // [v0.8.1] 只有墙壁鼠(type: 'wall')能阻挡爆炸
-          if (this.isWallMouseAt(pos.x, pos.y)) break;
+          // 使用原始墙壁状态检查（不检查dying，因为爆炸前还没死）
+          const key = `${pos.x},${pos.y}`;
+          const wall = this.walls.get(key);
+          if (wall && wall.type === 'wall') break;
         }
       });
       // 上方1格
