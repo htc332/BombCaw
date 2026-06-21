@@ -354,6 +354,7 @@ class GameLogic {
   }
 
   // [v0.8.1] 计算被墙壁鼠阻挡的格子（用于特效显示阻挡效果）
+  // 注意：此方法需要在爆炸前调用，检查原始墙壁状态
   getBlockedCells(bomb, actualRange) {
     const blocked = [];
     const evo = bomb.evolution || 0;
@@ -365,7 +366,10 @@ class GameLogic {
         for (let d = 1; d <= 3; d++) {
           const x = bomb.x + dx * d;
           const y = bomb.y + dy * d;
-          if (this.isWallMouseAt(x, y)) {
+          // 检查原始位置是否有墙壁鼠（不检查dying状态，因为爆炸前还没死）
+          const key = `${x},${y}`;
+          const wall = this.walls.get(key);
+          if (wall && wall.type === 'wall') {
             // 记录被阻挡的格子（包含墙壁鼠本身和后面的格子）
             for (let bd = d; bd <= 3; bd++) {
               blocked.push({ x: bomb.x + dx * bd, y: bomb.y + dy * bd });
@@ -381,7 +385,10 @@ class GameLogic {
         for (let d = 1; d <= 3; d++) {
           const x = bomb.x + dx * d;
           const y = bomb.y + dy * d;
-          if (this.isWallMouseAt(x, y)) {
+          // 检查原始位置是否有墙壁鼠
+          const key = `${x},${y}`;
+          const wall = this.walls.get(key);
+          if (wall && wall.type === 'wall') {
             for (let bd = d; bd <= 3; bd++) {
               blocked.push({ x: bomb.x + dx * bd, y: bomb.y + dy * bd });
             }
@@ -585,9 +592,6 @@ class GameLogic {
       blockedCells: blockedCells
     });
 
-    // 计算爆炸范围
-    const range = this.getExplosionRange(staticBomb);
-    
     // 处理爆炸范围内的所有格子
     range.forEach(pos => {
       this.processExplosionHit(pos.x, pos.y, staticBomb.evolution);
