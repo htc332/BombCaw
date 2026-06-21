@@ -252,12 +252,20 @@ class GameLogic {
     }
     
     this.bombs.delete(bomb.key);
-    this.emitEvent('bomb_exploded', { x: bomb.x, y: bomb.y, evolution: bomb.evolution });
-
     // 计算爆炸范围
     const range = this.getExplosionRange(bomb);
+    
+    // [v0.8.1] 计算被墙壁鼠阻挡的格子（用于特效显示）
+    const blockedCells = this.getBlockedCells(bomb, range);
+    
     // 生产环境关闭详细爆炸日志
     // console.log('[Explosion] Bomb at', bomb.x, bomb.y, 'evo:', bomb.evolution, 'range:', JSON.stringify(range));
+    
+    this.emitEvent('bomb_exploded', { 
+      x: bomb.x, y: bomb.y, 
+      evolution: bomb.evolution,
+      blockedCells: blockedCells  // 被阻挡的格子列表
+    });
     
     // 处理爆炸范围内的所有格子
     range.forEach(pos => {
@@ -343,6 +351,47 @@ class GameLogic {
     const key = `${x},${y}`;
     const wall = this.walls.get(key);
     return wall && wall.type === 'wall' && !wall.dying;
+  }
+
+  // [v0.8.1] 计算被墙壁鼠阻挡的格子（用于特效显示阻挡效果）
+  getBlockedCells(bomb, actualRange) {
+    const blocked = [];
+    const evo = bomb.evolution || 0;
+    
+    if (evo === 2) {
+      // LV2: 检查竖直方向被阻挡的格子
+      const dirs = [[0,1], [0,-1]];
+      dirs.forEach(([dx, dy]) => {
+        for (let d = 1; d <= 3; d++) {
+          const x = bomb.x + dx * d;
+          const y = bomb.y + dy * d;
+          if (this.isWallMouseAt(x, y)) {
+            // 记录被阻挡的格子（包含墙壁鼠本身和后面的格子）
+            for (let bd = d; bd <= 3; bd++) {
+              blocked.push({ x: bomb.x + dx * bd, y: bomb.y + dy * bd });
+            }
+            break;
+          }
+        }
+      });
+    } else if (evo === 3) {
+      // LV3: 检查横向方向被阻挡的格子
+      const dirs = [[1,0], [-1,0]];
+      dirs.forEach(([dx, dy]) => {
+        for (let d = 1; d <= 3; d++) {
+          const x = bomb.x + dx * d;
+          const y = bomb.y + dy * d;
+          if (this.isWallMouseAt(x, y)) {
+            for (let bd = d; bd <= 3; bd++) {
+              blocked.push({ x: bomb.x + dx * bd, y: bomb.y + dy * bd });
+            }
+            break;
+          }
+        }
+      });
+    }
+    
+    return blocked;
   }
 
   // [v0.7.10] 任何炸弹爆炸时，所有幽灵鼠都显示出来（无论是否被炸到）
@@ -522,10 +571,18 @@ class GameLogic {
     this.processingExplosion = true;
     
     this.staticBombs.delete(staticBomb.key);
+    
+    // 计算爆炸范围
+    const range = this.getExplosionRange(staticBomb);
+    
+    // [v0.8.1] 计算被墙壁鼠阻挡的格子
+    const blockedCells = this.getBlockedCells(staticBomb, range);
+    
     this.emitEvent('static_bomb_exploded', { 
       x: staticBomb.x, 
       y: staticBomb.y,
-      evolution: staticBomb.evolution 
+      evolution: staticBomb.evolution,
+      blockedCells: blockedCells
     });
 
     // 计算爆炸范围

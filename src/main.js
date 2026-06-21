@@ -440,10 +440,12 @@ class BombWallGame {
     this.audio.play('explosion');
     
     // 创建爆炸特效 - 传入 evo 让 Animator 根据新的爆炸范围绘制
+    // [v0.8.1] 传入 blockedCells 让特效显示墙壁鼠阻挡
     var gridSize = this.gameLogic.gridSize;
     var centerGridX = event.x;
     var centerGridY = event.y;
-    this.animator.createCrossExplosion(pos.cx, pos.cy, cellSize, evo, gridSize, centerGridX, centerGridY);
+    var blockedCells = event.blockedCells || [];
+    this.animator.createCrossExplosion(pos.cx, pos.cy, cellSize, evo, gridSize, centerGridX, centerGridY, blockedCells);
     
     // 轻量辅助粒子（仅中心）- 只在evolution<=1时触发，避免高等级时粒子过多
     if (evo <= 1) {
@@ -473,10 +475,11 @@ class BombWallGame {
     
     // [v0.7.10] 幽灵鼠显隐已由 GameLogic.revealGhostIfHit 独立控制，此处无需全局处理
     
-    // 传入 evo 让 Animator 根据新的爆炸范围绘制
+    // [v0.8.1] 传入 blockedCells 让特效显示墙壁鼠阻挡
+    var blockedCells = event.blockedCells || [];
     this.animator.createCrossExplosion(
       pos.cx, pos.cy, cellSize, evo,
-      gridSize, event.x, event.y
+      gridSize, event.x, event.y, blockedCells
     );
     
     // 轻量辅助粒子（仅中心）

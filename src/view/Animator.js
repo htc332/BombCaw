@@ -51,7 +51,7 @@ var ExplosionConfig = {
 
 // ========== SimpleExplosion: 极简爆炸 ==========
 
-function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerGridY, evo) {
+function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerGridY, evo, blockedCells) {
   this.cx = cx;
   this.cy = cy;
   this.cellSize = cellSize;
@@ -66,21 +66,31 @@ function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerG
   this.minY = -half;
   this.maxY = gridSize % 2 === 0 ? half - 1 : half;
   
+  // [v0.8.1] 被阻挡的格子集合（墙壁鼠阻挡）
+  this.blockedSet = new Set();
+  if (blockedCells) {
+    blockedCells.forEach(function(cell) {
+      this.blockedSet.add(cell.x + ',' + cell.y);
+    }.bind(this));
+  }
+  
   // [v0.7.9] 根据 evo 创建正确的爆炸形状
   // evo=0 (Lv1): 十字 1 格
-  // evo=2 (Lv2): 上下 2 格（竖直）
-  // evo=3 (Lv3): 左右 2 格（横向）
+  // evo=2 (Lv2): 上下 3 格（竖直）- 带墙壁鼠阻挡
+  // evo=3 (Lv3): 左右 3 格（横向）+ 上方1格 - 带墙壁鼠阻挡
   // evo=5 (Lv4): 十字 1 格 + 对角 1 格
   
   if (evo === 2) {
-    // Lv2 蓝色：上下 2 格（竖直方向）
+    // Lv2 蓝色：上下 3 格（竖直方向）
     this.cells.push({ x: 0, y: 0, distance: 0, spawnTime: 0 });
     var dirs2 = [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }];
     dirs2.forEach(function(dir) {
-      for (var d = 1; d <= 2; d++) {
+      for (var d = 1; d <= 3; d++) {
         var gx = dir.dx * d;
         var gy = dir.dy * d;
         if (gx < this.minX || gx > this.maxX || gy < this.minY || gy > this.maxY) continue;
+        // [v0.8.1] 检查是否被墙壁鼠阻挡
+        if (this.blockedSet.has(gx + ',' + gy)) break;
         this.cells.push({
           x: gx, y: gy,
           distance: d,
@@ -89,14 +99,17 @@ function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerG
       }
     }.bind(this));
   } else if (evo === 3) {
-    // Lv3 紫色：左右 2 格（横向方向）
+    // Lv3 紫色：左右 3 格（横向方向）+ 上方1格
     this.cells.push({ x: 0, y: 0, distance: 0, spawnTime: 0 });
+    // 横向左右各3格（带阻挡）
     var dirs3 = [{ dx: -1, dy: 0 }, { dx: 1, dy: 0 }];
     dirs3.forEach(function(dir) {
-      for (var d = 1; d <= 2; d++) {
+      for (var d = 1; d <= 3; d++) {
         var gx = dir.dx * d;
         var gy = dir.dy * d;
         if (gx < this.minX || gx > this.maxX || gy < this.minY || gy > this.maxY) continue;
+        // [v0.8.1] 检查是否被墙壁鼠阻挡
+        if (this.blockedSet.has(gx + ',' + gy)) break;
         this.cells.push({
           x: gx, y: gy,
           distance: d,
@@ -104,8 +117,15 @@ function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerG
         });
       }
     }.bind(this));
-    // [DEBUG] Lv3 横向爆炸
-    console.log('[Animator] Lv3 cells:', JSON.stringify(this.cells));
+    // 上方1格（不受阻挡影响，因为不在主方向上）
+    var upY = -1;
+    if (upY >= this.minY && upY <= this.maxY) {
+      this.cells.push({
+        x: 0, y: upY,
+        distance: 1,
+        spawnTime: ExplosionConfig.spreadInterval
+      });
+    }
   } else if (evo === 5) {
     // Lv4 红色：十字 1 格 + 对角 1 格
     this.cells.push({ x: 0, y: 0, distance: 0, spawnTime: 0 });
@@ -320,7 +340,8 @@ class Animator {
   
   // 创建十字蔓延爆炸
   // [v0.7.9] 根据 evolution 值创建正确的爆炸形状
-  createCrossExplosion(cx, cy, cellSize, evo, gridSize, centerGridX, centerGridY) {
+  // [v0.8.1] 支持传入被墙壁鼠阻挡的格子列表
+  createCrossExplosion(cx, cy, cellSize, evo, gridSize, centerGridX, centerGridY, blockedCells) {
     // 限制同屏数量
     if (this.explosions.length >= 3) {
       this.explosions.shift(); // 移除最旧的
@@ -330,8 +351,8 @@ class Animator {
     var powerMap = { 0: 1, 2: 2, 3: 3, 5: 4 };
     var power = powerMap[evo] || 1;
     
-    // 创建新爆炸对象，传入 evo 用于形状计算
-    var explosion = new SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerGridY, evo);
+    // 创建新爆炸对象，传入 evo 用于形状计算，传入 blockedCells 用于阻挡
+    var explosion = new SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerGridY, evo, blockedCells);
     
     this.explosions.push(explosion);
     return explosion;
