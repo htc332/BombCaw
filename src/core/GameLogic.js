@@ -384,8 +384,9 @@ class GameLogic {
           const wall = this.walls.get(key);
           if (wall && wall.type === 'wall') {
             // 记录被阻挡的格子（包含墙壁鼠本身和后面的格子）
+            // 注意：返回相对坐标（相对于炸弹中心），因为Animator使用相对坐标
             for (let bd = d; bd <= 3; bd++) {
-              blocked.push({ x: bomb.x + dx * bd, y: bomb.y + dy * bd });
+              blocked.push({ x: dx * bd, y: dy * bd });
             }
             break;
           }
@@ -402,8 +403,10 @@ class GameLogic {
           const key = `${x},${y}`;
           const wall = this.walls.get(key);
           if (wall && wall.type === 'wall') {
+            // 记录被阻挡的格子（包含墙壁鼠本身和后面的格子）
+            // 注意：返回相对坐标（相对于炸弹中心），因为Animator使用相对坐标
             for (let bd = d; bd <= 3; bd++) {
-              blocked.push({ x: bomb.x + dx * bd, y: bomb.y + dy * bd });
+              blocked.push({ x: dx * bd, y: dy * bd });
             }
             break;
           }
