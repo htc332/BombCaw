@@ -493,20 +493,52 @@ class Renderer {
     const centerY = offsetY - gapToBoard;
     const level = state.level || 1;
     
+    // [v0.8.1] 关卡显示固定4位，不足补零（如第1关显示0001）
+    const numStr = String(level).padStart(4, '0');
+    
+    // 计算4位数字总宽度（用于居中布局）
+    const numImgH = 32 * s * pr; // 艺术数字高度
+    let totalNumWidth = 0;
+    const numWidths = [];
+    
+    // 预计算每个数字的宽度
+    for (let i = 0; i < numStr.length; i++) {
+      const digit = numStr[i];
+      const numImg = this.numImages[digit];
+      if (numImg && numImg.width > 0) {
+        const numW = numImgH * (numImg.width / numImg.height);
+        numWidths.push(numW);
+        totalNumWidth += numW;
+      } else {
+        numWidths.push(20 * s * pr); // 回退文字宽度估算
+        totalNumWidth += 20 * s * pr;
+      }
+    }
+    // 加上数字间间距
+    totalNumWidth += (numStr.length - 1) * 2 * s * pr;
+    
     // 绘制 "关卡" 文字 - 风格向艺术数字靠近
     // 使用奶油色到桃红色的渐变效果（模拟艺术数字的配色）
     const text = '关卡';
-    const fontSize = 16 * s * pr;
+    const fontSize = 18 * s * pr; // [v0.8.1] 放大到18px（原16px→17px→18px）
     
     ctx.font = `bold ${fontSize}px sans-serif`;
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
     
-    // 文字位置：居中偏左
-    const numWidth = 28 * s * pr; // 艺术数字宽度估算
-    const textX = w / 2 - numWidth / 2 - 5 * s * pr;
+    // 测量 "关卡" 文字宽度
+    const textMetrics = ctx.measureText(text);
+    const textWidth = textMetrics.width;
+    const textNumGap = 8 * s * pr; // 文字与数字之间的间距
+    
+    // 计算整体宽度：文字 + 间距 + 4位数字
+    const totalWidth = textWidth + textNumGap + totalNumWidth;
+    
+    // 整体居中起始位置
+    const startX = w / 2 - totalWidth / 2;
     
     // 绘制文字描边（黑色粗边，模拟艺术数字的描边）
+    const textX = startX + textWidth;
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 3 * s * pr;
     ctx.strokeText(text, textX, centerY);
@@ -515,9 +547,8 @@ class Renderer {
     ctx.fillStyle = '#FFF0D4';
     ctx.fillText(text, textX, centerY);
     
-    // 绘制艺术数字
-    const numStr = String(level);
-    let currentX = w / 2 - numWidth / 2;
+    // 绘制艺术数字（4位，固定宽度）
+    let currentX = startX + textWidth + textNumGap;
     
     for (let i = 0; i < numStr.length; i++) {
       const digit = numStr[i];
@@ -525,8 +556,8 @@ class Renderer {
       
       if (numImg && numImg.width > 0) {
         // 艺术数字尺寸
-        const numH = 32 * s * pr;
-        const numW = numH * (numImg.width / numImg.height);
+        const numH = numImgH;
+        const numW = numWidths[i];
         
         ctx.drawImage(numImg, currentX, centerY - numH / 2, numW, numH);
         currentX += numW + 2 * s * pr;
