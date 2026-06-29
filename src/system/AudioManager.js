@@ -15,8 +15,10 @@ class AudioManager {
     this.volume = 1.0;
     this.initialized = false;
     
-    // 音效缓存
-    this.audioCache = {};
+    // 背景音乐
+    this.bgm = null;
+    this.bgmPath = 'subpackage/audio/bgm_level.mp3';
+    this.bgmLoaded = false;
     
     // 音效配置
     // vibrate 设置为 null 表示该音效不触发震动
@@ -140,6 +142,77 @@ class AudioManager {
   }
 
   /**
+   * 加载背景音乐
+   */
+  loadBGM() {
+    if (this.bgm) return;
+    
+    try {
+      this.bgm = wx.createInnerAudioContext();
+      this.bgm.src = this.bgmPath;
+      this.bgm.loop = true;
+      this.bgm.volume = this.volume;
+      
+      this.bgm.onCanPlay(() => {
+        this.bgmLoaded = true;
+        console.log('[AudioManager] BGM loaded');
+        if (this.musicEnabled) {
+          this.playBGM();
+        }
+      });
+      
+      this.bgm.onError((err) => {
+        console.error('[AudioManager] BGM error:', err);
+      });
+      
+    } catch (e) {
+      console.error('[AudioManager] Load BGM failed:', e);
+    }
+  }
+
+  /**
+   * 播放背景音乐
+   */
+  playBGM() {
+    if (!this.bgm) {
+      this.loadBGM();
+      return;
+    }
+    if (!this.musicEnabled) return;
+    
+    try {
+      this.bgm.play();
+      console.log('[AudioManager] BGM playing');
+    } catch (e) {
+      console.error('[AudioManager] Play BGM failed:', e);
+    }
+  }
+
+  /**
+   * 暂停背景音乐
+   */
+  pauseBGM() {
+    if (!this.bgm) return;
+    try {
+      this.bgm.pause();
+    } catch (e) {
+      console.error('[AudioManager] Pause BGM failed:', e);
+    }
+  }
+
+  /**
+   * 停止背景音乐
+   */
+  stopBGM() {
+    if (!this.bgm) return;
+    try {
+      this.bgm.stop();
+    } catch (e) {
+      console.error('[AudioManager] Stop BGM failed:', e);
+    }
+  }
+
+  /**
    * 播放音频文件（预留接口）
    */
   playAudioFile(soundName) {
@@ -160,11 +233,21 @@ class AudioManager {
   setMusicEnabled(enabled) {
     this.musicEnabled = enabled;
     wx.setStorageSync('bomb_wall_music_enabled', enabled);
+    
+    if (enabled) {
+      this.playBGM();
+    } else {
+      this.pauseBGM();
+    }
   }
 
   setVolume(vol) {
     this.volume = Math.max(0, Math.min(1, vol));
     wx.setStorageSync('bomb_wall_volume', this.volume);
+    
+    if (this.bgm) {
+      this.bgm.volume = this.volume;
+    }
   }
 }
 

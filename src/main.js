@@ -137,6 +137,7 @@ class BombWallGame {
     
     this.audio = audioManager;
     this.audio.init();
+    this.audio.loadBGM(); // 预加载背景音乐
     
     this.adManager = new AdManager();
     

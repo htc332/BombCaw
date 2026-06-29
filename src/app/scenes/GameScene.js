@@ -23,6 +23,11 @@ class GameScene extends BaseScene {
   onEnter(data) {
     this.level = data?.level || 1;
     
+    // 播放背景音乐
+    if (audioManager) {
+      audioManager.playBGM();
+    }
+    
     // 如果已有游戏实例，启动关卡
     if (this.gameInstance && this.gameInstance.startLevel) {
       this.gameInstance.startLevel(this.level);
@@ -33,17 +38,29 @@ class GameScene extends BaseScene {
 
   onExit() {
     // 游戏实例继续存在，只是停止更新
+    // 暂停背景音乐（不停止，保持位置）
+    if (audioManager) {
+      audioManager.pauseBGM();
+    }
   }
 
   onPause() {
     if (this.gameInstance) {
       this.gameInstance.gameState = 'paused';
     }
+    // 暂停背景音乐
+    if (audioManager) {
+      audioManager.pauseBGM();
+    }
   }
 
   onResume() {
     if (this.gameInstance) {
       this.gameInstance.gameState = 'playing';
+    }
+    // 恢复背景音乐
+    if (audioManager) {
+      audioManager.playBGM();
     }
   }
 
