@@ -171,13 +171,23 @@ class AudioManager {
       this.bgm.loop = true;
       this.bgm.volume = this.volume;
       
+      // 使用多个事件确保加载检测
+      this.bgm.onLoadedData = () => {
+        console.log('[AudioManager] BGM data loaded');
+      };
+      
       this.bgm.onCanPlay(() => {
         this.bgmLoaded = true;
-        console.log('[AudioManager] BGM loaded');
-        if (this.musicEnabled) {
-          this.playBGM();
-        }
+        console.log('[AudioManager] BGM can play');
       });
+      
+      // 直接尝试播放（微信小游戏可能需要用户交互后才能播放）
+      if (this.musicEnabled) {
+        // 延迟一点确保上下文准备就绪
+        setTimeout(() => {
+          this.playBGM();
+        }, 100);
+      }
       
       this.bgm.onError((err) => {
         console.error('[AudioManager] BGM error:', err);
@@ -198,8 +208,15 @@ class AudioManager {
     if (!this.musicEnabled) return;
     
     try {
+      // 微信小游戏需要用户交互后才能自动播放
+      // 先检查是否可以直接播放
       this.bgm.play();
-      console.log('[AudioManager] BGM playing');
+      console.log('[AudioManager] BGM play called');
+      
+      // 监听播放状态
+      this.bgm.onPlay(() => {
+        console.log('[AudioManager] BGM actually playing');
+      });
     } catch (e) {
       console.error('[AudioManager] Play BGM failed:', e);
     }

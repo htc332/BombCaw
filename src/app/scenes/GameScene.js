@@ -9,6 +9,7 @@ class GameScene extends BaseScene {
     super('game');
     this.gameInstance = null;
     this.level = 1;
+    this.bgmStarted = false; // 标记BGM是否已开始
   }
 
   onInit() {
@@ -22,10 +23,11 @@ class GameScene extends BaseScene {
 
   onEnter(data) {
     this.level = data?.level || 1;
+    this.bgmStarted = false;
     
-    // 播放背景音乐
-    if (audioManager) {
-      audioManager.playBGM();
+    // 预加载背景音乐，但不自动播放（等待用户交互）
+    if (audioManager && !audioManager.bgm) {
+      audioManager.loadBGM();
     }
     
     // 如果已有游戏实例，启动关卡
@@ -58,8 +60,8 @@ class GameScene extends BaseScene {
     if (this.gameInstance) {
       this.gameInstance.gameState = 'playing';
     }
-    // 恢复背景音乐
-    if (audioManager) {
+    // 恢复背景音乐（如果已经开始过）
+    if (audioManager && this.bgmStarted) {
       audioManager.playBGM();
     }
   }
@@ -78,6 +80,12 @@ class GameScene extends BaseScene {
   }
 
   onTouch(x, y) {
+    // 用户第一次交互时开始播放BGM
+    if (!this.bgmStarted && audioManager) {
+      this.bgmStarted = true;
+      audioManager.playBGM();
+    }
+    
     if (this.gameInstance) {
       this.gameInstance.handleTouch?.(x, y);
       return true;
