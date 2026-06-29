@@ -17,7 +17,7 @@ class AudioManager {
     
     // 背景音乐
     this.bgm = null;
-    this.bgmPath = 'subpackage/audio/bgm_level.mp3';
+    this.bgmPath = 'res/audio/bgm_level.mp3';
     this.bgmLoaded = false;
     
     // 音效配置
