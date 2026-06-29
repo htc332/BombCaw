@@ -1403,7 +1403,7 @@ class Renderer {
     this.scoreFloatAnimations.push({
       x: pos.cx,
       y: pos.cy,
-      text: text,
+      text: text, // 纯数字，如 "+1"
       startTime: this.animTime,
       duration: 1.5, // 1.5秒
       offsetY: 0
@@ -1440,15 +1440,26 @@ class Renderer {
       ctx.save();
       ctx.globalAlpha = alpha;
       
-      // 绘制牛奶图标 + 文字
-      const fontSize = 16 * s * pr;
+      // [v0.8.4-fix] 绘制牛奶图标 + 数字（缩小50%）
+      const iconSize = 8 * s * pr; // 原16px，缩小50%
+      const fontSize = 8 * s * pr; // 原16px，缩小50%
+      
+      // 绘制牛奶图标（使用ui_grid.png，与底部相同）
+      const milkIcon = this.uiImages.milkIcon || this.uiImages.uiGrid;
+      if (milkIcon && milkIcon.complete && milkIcon.width > 0) {
+        const iconX = anim.x - iconSize - 2 * s * pr;
+        const iconY = floatY - iconSize / 2;
+        ctx.drawImage(milkIcon, iconX, iconY, iconSize, iconSize);
+      }
+      
+      // 绘制数字
       ctx.font = `bold ${fontSize}px sans-serif`;
-      ctx.textAlign = 'center';
+      ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       
       // 文字描边
       ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 3 * s * pr;
+      ctx.lineWidth = 2 * s * pr;
       ctx.lineJoin = 'round';
       ctx.strokeText(anim.text, anim.x, floatY);
       

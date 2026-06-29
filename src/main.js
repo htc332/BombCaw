@@ -504,9 +504,9 @@ class BombWallGame {
     this.renderer.addDeathAnimation(event.x, event.y, event.wallType || 'normal');
     this.audio.play('break');
     
-    // [v0.8.4] 积分飘字：牛奶+1
+    // [v0.8.4] 积分飘字：显示牛奶图标 + +1
     if (event.gained && event.gained > 0) {
-      this.renderer.addScoreFloatAnimation(event.x, event.y, `牛奶+${event.gained}`, this.gameLogic.gridSize);
+      this.renderer.addScoreFloatAnimation(event.x, event.y, `+${event.gained}`, this.gameLogic.gridSize);
     }
     
     // [Ghost] 幽灵鼠被炸死时，显示提示

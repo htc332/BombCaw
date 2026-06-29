@@ -24,6 +24,12 @@ class UIManager {
     if (this.milkIcon) {
       this.milkIcon.src = 'images/ui_grid.png';
     }
+    
+    // [v0.8.4-fix] 将牛奶图标引用传递给 renderer
+    if (this.renderer) {
+      this.renderer.uiImages = this.renderer.uiImages || {};
+      this.renderer.uiImages.milkIcon = this.milkIcon;
+    }
   }
 
   // ========== 购买栏（Shop Bar）==========
