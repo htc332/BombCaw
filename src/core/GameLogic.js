@@ -32,6 +32,11 @@ class GameLogic {
     this.bombsPlaced = 0;       // 已放置炸弹数
     this.wallsDestroyed = 0;    // 已消灭老鼠数
     
+    // [v0.8.3] 牛奶收益统计
+    this.milkProfit = 0;        // 本次操作净收益
+    this.scoreBeforePlace = 0;  // 放置前分数（用于计算收益）
+    this.isExplosionChain = false; // 是否正在爆炸链中
+    
     // 加分事件记录（用于UI显示）
     this.lastScoreEvent = null;  // { text: '普通鼠摧毁 +1', time: Date.now() }
   }
@@ -62,6 +67,11 @@ class GameLogic {
     // [v0.8.0] 本局统计重置
     this.bombsPlaced = 0;
     this.wallsDestroyed = 0;
+    
+    // [v0.8.3] 牛奶收益统计重置
+    this.milkProfit = 0;
+    this.scoreBeforePlace = 0;
+    this.isExplosionChain = false;
 
     // 初始化墙壁
     if (levelConfig.walls) {
@@ -168,6 +178,12 @@ class GameLogic {
     // 扣除分数
     this.score -= cost;
     this.bombsPlaced++; // 统计
+    
+    // [v0.8.3] 记录放置前分数（用于计算牛奶收益）
+    if (!this.isExplosionChain) {
+      this.scoreBeforePlace = this.score + cost; // 放置前的分数
+      this.isExplosionChain = true;
+    }
 
     // 放置炸弹
     // 根据选中的炸弹类型获取 evolution
@@ -284,6 +300,9 @@ class GameLogic {
     // this.upgradeAdjacentBombs(bomb);
 
     this.processingExplosion = false;
+
+    // [v0.8.3] 检查爆炸链是否结束，计算牛奶收益
+    this.checkExplosionChainEnd();
 
     // 检查游戏状态
     this.checkGameState();
@@ -623,6 +642,9 @@ class GameLogic {
 
     this.processingExplosion = false;
 
+    // [v0.8.3] 检查爆炸链是否结束，计算牛奶收益
+    this.checkExplosionChainEnd();
+
     // 检查游戏状态
     this.checkGameState();
   }
@@ -697,6 +719,27 @@ class GameLogic {
     }
   }
 
+  // [v0.8.3] 检查爆炸链是否结束，计算牛奶收益
+  checkExplosionChainEnd() {
+    // 检查是否还有未爆炸的炸弹（动态炸弹 + 已激活的静态炸弹）
+    const hasPendingBombs = this.bombs.size > 0 || 
+      Array.from(this.staticBombs.values()).some(sb => sb.active);
+    
+    if (!hasPendingBombs && this.isExplosionChain) {
+      // 爆炸链结束，计算收益
+      this.milkProfit = this.score - this.scoreBeforePlace;
+      this.isExplosionChain = false;
+      
+      this.emitEvent('explosion_chain_end', {
+        scoreBefore: this.scoreBeforePlace,
+        scoreAfter: this.score,
+        profit: this.milkProfit,
+        bombsPlaced: this.bombsPlaced,
+        wallsDestroyed: this.wallsDestroyed
+      });
+    }
+  }
+
   // ========== 广告续命 ==========
 
   reviveWithAd(count = 3) {
@@ -738,7 +781,11 @@ class GameLogic {
       staticBombs: Array.from(this.staticBombs.values()).map(sb => ({ ...sb })),
       lastScoreEvent: this.lastScoreEvent,
       bombsPlaced: this.bombsPlaced,
-      wallsDestroyed: this.wallsDestroyed
+      wallsDestroyed: this.wallsDestroyed,
+      // [v0.8.3] 牛奶收益统计
+      milkProfit: this.milkProfit,
+      scoreBeforePlace: this.scoreBeforePlace,
+      isExplosionChain: this.isExplosionChain
     };
   }
 }

@@ -575,19 +575,39 @@ class Renderer {
   drawStats(state, w, levelH, statsH, offsetY) {
     const ctx = this.ctx, pr = this.pixelRatio, s = this.scale;
     
-    // 统计信息，在棋盘上方显示，不置顶
-    // 与棋盘保持100像素间隔，与关卡信息保持间隔
+    // [v0.8.3] 新统计栏：已用牛牛、消灭鼠鼠、牛奶收益
+    // 在棋盘上方显示，不置顶
     const gapToBoard = 100 * pr;
     const gapBetweenInfo = 30 * s * pr; // 关卡和统计信息之间的间隔
     const y = offsetY - gapToBoard + gapBetweenInfo;
     
+    // 三列布局
+    const colWidth = w / 3;
+    const centerY = y;
+    
+    // 1. 已用牛牛（左列）
     ctx.fillStyle = '#E8D5C0';
     ctx.font = `${14 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    ctx.fillText(`已用牛牛:${state.bombsPlaced || 0}`, colWidth * 0.5, centerY);
     
-    const statsText = `消灭:${state.wallsDestroyed || 0}只  剩余:${state.wallCount || 0}只`;
-    ctx.fillText(statsText, w / 2, y);
+    // 2. 消灭鼠鼠（中列）
+    ctx.fillText(`消灭鼠鼠:${state.wallsDestroyed || 0}`, colWidth * 1.5, centerY);
+    
+    // 3. 牛奶收益（右列）
+    // [v0.8.3] 负收益（亏损）→ 绿色，正收益（盈利）→ 红色
+    const profit = state.milkProfit || 0;
+    if (profit < 0) {
+      ctx.fillStyle = '#4CAF50'; // 绿色（亏损）
+    } else if (profit > 0) {
+      ctx.fillStyle = '#F44336'; // 红色（盈利）
+    } else {
+      ctx.fillStyle = '#E8D5C0'; // 默认颜色
+    }
+    
+    const profitSign = profit > 0 ? '+' : '';
+    ctx.fillText(`牛奶收益:${profitSign}${profit}`, colWidth * 2.5, centerY);
   }
   
   drawFuncButtons(state, w, funcBtnH) {
