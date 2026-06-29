@@ -86,6 +86,8 @@ class Renderer {
     };
     // 死亡动画实例列表 {x, y, startTime, duration}
     this.deathAnimations = [];
+    // [v0.8.4] 积分飘字动画列表 {x, y, text, startTime, duration, offsetY}
+    this.scoreFloatAnimations = [];
     this.uiImages = {};
     this.numImages = {};
     this.imagesLoaded = false;
@@ -447,6 +449,9 @@ class Renderer {
     if (this.uiManager && this.uiManager.renderShopBar) {
       this.uiManager.renderShopBar(gameState, w, h, layout);
     }
+    
+    // 6. [v0.8.4] 绘制积分飘字动画
+    this.drawScoreFloatAnimations(layout.offsetX, layout.offsetY, gameState.gridSize || 5);
     
     // 保存布局信息供遮罩层使用
     this.lastLayout = layout;
@@ -1390,6 +1395,69 @@ class Renderer {
     ctx.textAlign = align || 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(String(num), x, y);
+  }
+
+  // [v0.8.4] 添加积分飘字动画
+  addScoreFloatAnimation(gx, gy, text, gridSize) {
+    const pos = this.gridToScreen(gx, gy, gridSize);
+    this.scoreFloatAnimations.push({
+      x: pos.cx,
+      y: pos.cy,
+      text: text,
+      startTime: this.animTime,
+      duration: 1.5, // 1.5秒
+      offsetY: 0
+    });
+  }
+
+  // [v0.8.4] 绘制积分飘字动画
+  drawScoreFloatAnimations(offsetX, offsetY, gridSize) {
+    const ctx = this.ctx;
+    const pr = this.pixelRatio || 2;
+    const s = this.scale;
+    
+    // 过滤已完成的动画
+    this.scoreFloatAnimations = this.scoreFloatAnimations.filter(anim => {
+      const elapsed = this.animTime - anim.startTime;
+      return elapsed < anim.duration;
+    });
+    
+    this.scoreFloatAnimations.forEach(anim => {
+      const elapsed = this.animTime - anim.startTime;
+      const progress = elapsed / anim.duration;
+      
+      // 向上飘动
+      const floatY = anim.y - progress * 60 * s * pr;
+      
+      // 透明度：前20%淡入，后30%淡出，中间保持
+      let alpha = 1.0;
+      if (progress < 0.2) {
+        alpha = progress / 0.2;
+      } else if (progress > 0.7) {
+        alpha = 1.0 - (progress - 0.7) / 0.3;
+      }
+      
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      
+      // 绘制牛奶图标 + 文字
+      const fontSize = 16 * s * pr;
+      ctx.font = `bold ${fontSize}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      // 文字描边
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 3 * s * pr;
+      ctx.lineJoin = 'round';
+      ctx.strokeText(anim.text, anim.x, floatY);
+      
+      // 文字填充（金色，与底部牛奶积分颜色一致）
+      ctx.fillStyle = '#FFD700';
+      ctx.fillText(anim.text, anim.x, floatY);
+      
+      ctx.restore();
+    });
   }
 }
 

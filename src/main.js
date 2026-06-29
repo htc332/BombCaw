@@ -504,6 +504,11 @@ class BombWallGame {
     this.renderer.addDeathAnimation(event.x, event.y, event.wallType || 'normal');
     this.audio.play('break');
     
+    // [v0.8.4] 积分飘字：牛奶+1
+    if (event.gained && event.gained > 0) {
+      this.renderer.addScoreFloatAnimation(event.x, event.y, `牛奶+${event.gained}`, this.game.gridSize);
+    }
+    
     // [Ghost] 幽灵鼠被炸死时，显示提示
     if (event.wallType === 'ghost') {
       this.showHint('幽灵鼠被消灭!');
