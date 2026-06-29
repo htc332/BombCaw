@@ -490,8 +490,8 @@ class Renderer {
     // 关卡编号，在棋盘上方显示，不置顶
     // 与棋盘保持100像素间隔
     const gapToBoard = 100 * pr;
-    // [v0.8.3-fix] 往上移动65像素，再向下移35像素（净上移30像素）
-    const centerY = offsetY - gapToBoard - 30 * s * pr;
+    // [v0.8.3-fix] 往上移动65像素，再向下移35像素，再向上移5像素（净上移35像素）
+    const centerY = offsetY - gapToBoard - 35 * s * pr;
     const level = state.level || 1;
     
     // [v0.8.1] 关卡显示固定4位，不足补零（如第1关显示0001）
