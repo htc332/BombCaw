@@ -722,8 +722,10 @@ class GameLogic {
   // [v0.8.3] 检查爆炸链是否结束，计算牛奶收益
   checkExplosionChainEnd() {
     // 检查是否还有未爆炸的炸弹（动态炸弹 + 已激活的静态炸弹）
+    // [v0.8.4-fix] 还要检查是否还有正在处理中的爆炸
     const hasPendingBombs = this.bombs.size > 0 || 
-      Array.from(this.staticBombs.values()).some(sb => sb.active);
+      Array.from(this.staticBombs.values()).some(sb => sb.active) ||
+      this.processingExplosion;
     
     if (!hasPendingBombs && this.isExplosionChain) {
       // 爆炸链结束，计算收益

@@ -8,7 +8,7 @@ class BombWallGame {
     this.startTime = Date.now();
     this.debugLogs = [];
     this.maxLogs = 20;
-    this.isDebugMode = false; // 生产环境关闭调试日志
+    this.isDebugMode = true; // [v0.8.4-fix] 临时开启调试模式排查BUG
     
     this.initCanvas();
     this.initSystems();
@@ -506,7 +506,7 @@ class BombWallGame {
     
     // [v0.8.4] 积分飘字：牛奶+1
     if (event.gained && event.gained > 0) {
-      this.renderer.addScoreFloatAnimation(event.x, event.y, `牛奶+${event.gained}`, this.game.gridSize);
+      this.renderer.addScoreFloatAnimation(event.x, event.y, `牛奶+${event.gained}`, this.gameLogic.gridSize);
     }
     
     // [Ghost] 幽灵鼠被炸死时，显示提示
