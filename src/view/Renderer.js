@@ -1440,9 +1440,9 @@ class Renderer {
       ctx.save();
       ctx.globalAlpha = alpha;
       
-      // [v0.8.4-fix] 绘制牛奶图标 + 数字（缩小50%）
-      const iconSize = 8 * s * pr; // 原16px，缩小50%
-      const fontSize = 8 * s * pr; // 原16px，缩小50%
+      // [v0.8.4-fix] 绘制牛奶图标 + 数字（放大50%）
+      const iconSize = 12 * s * pr; // 原8px，放大50%
+      const fontSize = 12 * s * pr; // 原8px，放大50%
       
       // 绘制牛奶图标（使用ui_grid.png，与底部相同）
       const milkIcon = this.uiImages.milkIcon || this.uiImages.uiGrid;
