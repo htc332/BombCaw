@@ -490,7 +490,8 @@ class Renderer {
     // 关卡编号，在棋盘上方显示，不置顶
     // 与棋盘保持100像素间隔
     const gapToBoard = 100 * pr;
-    const centerY = offsetY - gapToBoard;
+    // [v0.8.3-fix] 往上移动65像素
+    const centerY = offsetY - gapToBoard - 65 * s * pr;
     const level = state.level || 1;
     
     // [v0.8.1] 关卡显示固定4位，不足补零（如第1关显示0001）
@@ -579,35 +580,51 @@ class Renderer {
     // 在棋盘上方显示，不置顶
     const gapToBoard = 100 * pr;
     const gapBetweenInfo = 30 * s * pr; // 关卡和统计信息之间的间隔
-    const y = offsetY - gapToBoard + gapBetweenInfo;
+    // [v0.8.3-fix] 往上移动65像素
+    const y = offsetY - gapToBoard + gapBetweenInfo - 65 * s * pr;
     
     // 三列布局
     const colWidth = w / 3;
     const centerY = y;
     
-    // 1. 已用牛牛（左列）
-    ctx.fillStyle = '#E8D5C0';
-    ctx.font = `${14 * s * pr}px sans-serif`;
+    // 设置字体：加粗
+    const fontSize = 14 * s * pr;
+    ctx.font = `bold ${fontSize}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`已用牛牛:${state.bombsPlaced || 0}`, colWidth * 0.5, centerY);
+    
+    // 辅助函数：绘制带黑色描边的文字
+    const drawTextWithStroke = (text, x, y, fillStyle) => {
+      ctx.save();
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 3 * s * pr;
+      ctx.lineJoin = 'round';
+      ctx.strokeText(text, x, y);
+      ctx.fillStyle = fillStyle;
+      ctx.fillText(text, x, y);
+      ctx.restore();
+    };
+    
+    // 1. 已用牛牛（左列）
+    drawTextWithStroke(`已用牛牛:${state.bombsPlaced || 0}`, colWidth * 0.5, centerY, '#E8D5C0');
     
     // 2. 消灭鼠鼠（中列）
-    ctx.fillText(`消灭鼠鼠:${state.wallsDestroyed || 0}`, colWidth * 1.5, centerY);
+    drawTextWithStroke(`消灭鼠鼠:${state.wallsDestroyed || 0}`, colWidth * 1.5, centerY, '#E8D5C0');
     
     // 3. 牛奶收益（右列）
     // [v0.8.3] 负收益（亏损）→ 绿色，正收益（盈利）→ 红色
     const profit = state.milkProfit || 0;
+    let profitColor;
     if (profit < 0) {
-      ctx.fillStyle = '#4CAF50'; // 绿色（亏损）
+      profitColor = '#4CAF50'; // 绿色（亏损）
     } else if (profit > 0) {
-      ctx.fillStyle = '#F44336'; // 红色（盈利）
+      profitColor = '#F44336'; // 红色（盈利）
     } else {
-      ctx.fillStyle = '#E8D5C0'; // 默认颜色
+      profitColor = '#E8D5C0'; // 默认颜色
     }
     
     const profitSign = profit > 0 ? '+' : '';
-    ctx.fillText(`牛奶收益:${profitSign}${profit}`, colWidth * 2.5, centerY);
+    drawTextWithStroke(`牛奶收益:${profitSign}${profit}`, colWidth * 2.5, centerY, profitColor);
   }
   
   drawFuncButtons(state, w, funcBtnH) {
