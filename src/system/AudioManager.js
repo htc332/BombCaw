@@ -17,7 +17,7 @@ class AudioManager {
     
     // 背景音乐
     this.bgm = null;
-    this.bgmPath = 'res/audio/bgm_level.mp3';
+    this.bgmPath = 'subpackage/audio/bgm_level.mp3';
     this.bgmLoaded = false;
     
     // 音效配置
@@ -148,6 +148,24 @@ class AudioManager {
     if (this.bgm) return;
     
     try {
+      // 先加载分包
+      wx.loadSubpackage({
+        name: 'audio',
+        success: () => {
+          console.log('[AudioManager] Audio subpackage loaded');
+          this.createBGM();
+        },
+        fail: (err) => {
+          console.error('[AudioManager] Load audio subpackage failed:', err);
+        }
+      });
+    } catch (e) {
+      console.error('[AudioManager] Load BGM failed:', e);
+    }
+  }
+
+  createBGM() {
+    try {
       this.bgm = wx.createInnerAudioContext();
       this.bgm.src = this.bgmPath;
       this.bgm.loop = true;
@@ -164,9 +182,8 @@ class AudioManager {
       this.bgm.onError((err) => {
         console.error('[AudioManager] BGM error:', err);
       });
-      
     } catch (e) {
-      console.error('[AudioManager] Load BGM failed:', e);
+      console.error('[AudioManager] Create BGM failed:', e);
     }
   }
 

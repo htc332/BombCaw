@@ -15,6 +15,10 @@
     {
       "name": "levels",
       "root": "subpackage/levels/"
+    },
+    {
+      "name": "audio",
+      "root": "subpackage/audio/"
     }
   ],
   "plugins": {},
