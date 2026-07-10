@@ -10,6 +10,8 @@ class BombWallGame {
     this.maxLogs = 20;
     this.isDebugMode = true; // [v0.8.4-fix] 临时开启调试模式排查BUG
     
+    this.bgmStarted = false; // [v0.8.5] 标记BGM是否已开始
+    
     this.initCanvas();
     this.initSystems();
     this.initGame();
@@ -300,7 +302,11 @@ class BombWallGame {
   }
 
   handleTouch(x, y) {
-    // console.log('[Touch] handleTouch called', x, y, 'gameState:', this.gameState);
+    // [v0.8.5] 用户第一次交互时开始播放BGM
+    if (this.audio && !this.bgmStarted) {
+      this.bgmStarted = true;
+      this.audio.playBGM();
+    }
     
     if (this.gameState === 'login') {
       // console.log('[Touch] rejected: login state');
