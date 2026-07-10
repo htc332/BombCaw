@@ -120,9 +120,9 @@ class AudioManager {
       
       this._updateDiag('AUDIO: src=' + this.bgmPath);
       
-      this.bgm.onCanPlay(() => {
+      this.bgm.onCanplay(() => {
         this.bgmLoaded = true;
-        this._updateDiag('AUDIO: onCanPlay, duration=' + this.bgm.duration);
+        this._updateDiag('AUDIO: onCanplay, duration=' + this.bgm.duration);
       });
       
       this.bgm.onError((err) => {
