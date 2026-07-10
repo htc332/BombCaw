@@ -1,6 +1,6 @@
 /**
  * System/AudioManager.js
- * 音频管理器 - 使用工程原有日志系统
+ * 音频管理器 - 专注BGM诊断
  */
 
 class AudioManager {
@@ -18,7 +18,7 @@ class AudioManager {
     this.bgmLoaded = false;
     this.bgmPlaying = false;
     
-    // [v0.8.5] 音效使用 Web Audio API 生成，不需要外部文件
+    // 音效配置（合成音效）
     this.soundEffects = {
       place: { type: 'synthetic', freq: 800, duration: 100 },
       explode: { type: 'synthetic', freq: 200, duration: 300 },
@@ -29,202 +29,149 @@ class AudioManager {
       hit: { type: 'synthetic', freq: 1000, duration: 80 }
     };
     
-    this.vibrateConfig = {
-      enabled: false, // [v0.8.5] 关闭震动反馈
-      light: { type: 'light', duration: 15 },
-      medium: { type: 'medium', duration: 25 },
-      heavy: { type: 'heavy', duration: 40 }
-    };
+    // 关闭震动
+    this.vibrateConfig = { enabled: false };
     
-    // Web Audio API 上下文
+    // Web Audio API
     this.audioContext = null;
     
-    // 日志系统
-    this.logs = [];
-    this.logFile = wx.env.USER_DATA_PATH + '/audio_debug.log';
+    // 诊断日志（只记录关键事件）
+    this._diagLogs = [];
     
-    this.log('Constructor called');
+    this._log('AUDIO: Constructor');
   }
   
-  log(msg) {
-    var time = new Date().toLocaleTimeString();
-    var logMsg = '[' + time + '] [AudioManager] ' + msg;
-    this.logs.push(logMsg);
-    console.log(logMsg);
+  // 只记录关键诊断信息
+  _log(msg) {
+    var entry = '[' + Date.now() + '] ' + msg;
+    this._diagLogs.push(entry);
+    console.log('[BGM-DIAG] ' + msg);
     
-    // 写入文件（异步）
-    if (this.logs.length > 50) {
-      this.flushLogs();
+    // 限制日志数量
+    if (this._diagLogs.length > 20) {
+      this._diagLogs.shift();
     }
   }
   
-  flushLogs() {
-    try {
-      var fs = wx.getFileSystemManager();
-      var content = this.logs.join('\n') + '\n';
-      fs.appendFileSync(this.logFile, content, 'utf8');
-      this.logs = [];
-    } catch (e) {
-      console.error('[AudioManager] Flush logs failed:', e.message);
-    }
-  }
-  
-  readLogs() {
-    try {
-      var fs = wx.getFileSystemManager();
-      return fs.readFileSync(this.logFile, 'utf8');
-    } catch (e) {
-      return 'No logs yet';
-    }
+  // 导出诊断日志
+  exportLogs() {
+    return this._diagLogs.join('\n');
   }
 
   init() {
-    if (this.initialized) {
-      this.log('Already initialized, skip');
-      return;
-    }
+    if (this.initialized) return;
     
-    this.log('init() starting...');
+    this._log('AUDIO: init() start');
     
     try {
       this.enabled = wx.getStorageSync('bomb_wall_sound_enabled') !== false;
       this.musicEnabled = wx.getStorageSync('bomb_wall_music_enabled') !== false;
       this.volume = wx.getStorageSync('bomb_wall_volume') || 1.0;
       
-      this.log('Settings loaded - enabled:' + this.enabled + ' musicEnabled:' + this.musicEnabled);
+      this._log('AUDIO: settings loaded, music=' + this.musicEnabled);
       
-      // 初始化 Web Audio API
-      this.initWebAudio();
-      
-      this.initialized = true;
-      this.log('Initialized successfully');
-    } catch (e) {
-      this.log('Init failed: ' + e.message);
-    }
-  }
-  
-  initWebAudio() {
-    try {
+      // 初始化 Web Audio
       if (typeof wx.createWebAudioContext === 'function') {
         this.audioContext = wx.createWebAudioContext();
-        this.log('Web Audio API initialized');
-      } else {
-        this.log('Web Audio API not available');
+        this._log('AUDIO: WebAudio ready');
       }
+      
+      this.initialized = true;
+      this._log('AUDIO: init done');
     } catch (e) {
-      this.log('Web Audio init failed: ' + e.message);
+      this._log('AUDIO: init ERROR ' + e.message);
     }
   }
 
   loadBGM() {
-    this.log('loadBGM() called, bgm:' + !!this.bgm);
+    this._log('AUDIO: loadBGM()');
     
     if (this.bgm) {
-      this.log('BGM already exists, skip');
+      this._log('AUDIO: BGM exists, skip');
       return;
     }
     
-    this.log('Creating BGM directly...');
-    this.createBGM();
+    this._createBGM();
   }
 
-  createBGM() {
-    this.log('createBGM() called');
+  _createBGM() {
+    this._log('AUDIO: createBGM()');
+    
     try {
-      this.log('Calling wx.createInnerAudioContext...');
       this.bgm = wx.createInnerAudioContext();
-      this.log('InnerAudioContext created:' + !!this.bgm);
+      this._log('AUDIO: context created');
       
-      // 设置属性（在 src 之前）
+      // 先设置属性，再设置 src
       this.bgm.loop = true;
       this.bgm.volume = this.volume;
       this.bgm.src = this.bgmPath;
       
-      this.log('BGM configured, src:' + this.bgmPath);
+      this._log('AUDIO: src=' + this.bgmPath);
       
+      // 关键事件监听
       this.bgm.onCanPlay(() => {
         this.bgmLoaded = true;
-        this.log('BGM can play, duration:' + this.bgm.duration);
+        this._log('AUDIO: onCanPlay, duration=' + this.bgm.duration);
       });
       
       this.bgm.onError((err) => {
-        this.log('BGM error: ' + JSON.stringify(err));
-        // 如果绝对路径失败，尝试相对路径
-        if (err.errCode === 10001 && this.bgm.src.startsWith('/')) {
-          this.log('Retrying with relative path...');
-          this.bgm.src = this.bgmPath.substring(1); // 去掉开头的 /
-        }
+        this._log('AUDIO: onError code=' + err.errCode + ' msg=' + (err.errMsg || 'unknown'));
       });
       
       this.bgm.onPlay(() => {
         this.bgmPlaying = true;
-        this.log('BGM onPlay fired');
-      });
-      
-      this.bgm.onEnded(() => {
-        this.log('BGM ended (should loop)');
+        this._log('AUDIO: onPlay');
       });
       
       this.bgm.onWaiting(() => {
-        this.log('BGM waiting for data');
+        this._log('AUDIO: onWaiting');
       });
       
-      this.log('BGM created, waiting for user interaction to play');
+      this._log('AUDIO: BGM ready, wait for touch');
     } catch (e) {
-      this.log('Create BGM failed: ' + e.message);
+      this._log('AUDIO: create ERROR ' + e.message);
     }
   }
 
   playBGM() {
-    this.log('playBGM() called, bgm:' + !!this.bgm + ' musicEnabled:' + this.musicEnabled + ' loaded:' + this.bgmLoaded);
+    this._log('AUDIO: playBGM() called');
     
     if (!this.bgm) {
-      this.log('BGM not created, loading...');
+      this._log('AUDIO: no BGM, loading...');
       this.loadBGM();
       return;
     }
+    
     if (!this.musicEnabled) {
-      this.log('Music disabled, skip');
+      this._log('AUDIO: music disabled');
+      return;
+    }
+    
+    if (this.bgmPlaying) {
+      this._log('AUDIO: already playing');
       return;
     }
     
     try {
-      // 检查是否已经播放中
-      if (this.bgmPlaying) {
-        this.log('BGM already playing');
-        return;
-      }
-      
       this.bgm.play();
-      this.log('BGM play() called');
-      
-      // 设置一个标志，表示我们尝试播放了
-      this._playAttempted = true;
+      this._log('AUDIO: play() executed');
     } catch (e) {
-      this.log('Play BGM failed: ' + e.message);
+      this._log('AUDIO: play ERROR ' + e.message);
     }
   }
 
   pauseBGM() {
     if (!this.bgm) return;
-    try {
-      this.bgm.pause();
-      this.bgmPlaying = false;
-      this.log('BGM paused');
-    } catch (e) {
-      this.log('Pause BGM failed: ' + e.message);
-    }
+    this.bgm.pause();
+    this.bgmPlaying = false;
+    this._log('AUDIO: paused');
   }
 
   stopBGM() {
     if (!this.bgm) return;
-    try {
-      this.bgm.stop();
-      this.bgmPlaying = false;
-      this.log('BGM stopped');
-    } catch (e) {
-      this.log('Stop BGM failed: ' + e.message);
-    }
+    this.bgm.stop();
+    this.bgmPlaying = false;
+    this._log('AUDIO: stopped');
   }
 
   play(soundName) {
@@ -233,72 +180,32 @@ class AudioManager {
     const config = this.soundEffects[soundName];
     if (!config) return;
     
-    if (config.type === 'vibrate') {
-      this.vibrate(config.intensity);
-    } else if (config.type === 'synthetic') {
-      this.playSyntheticSound(config.freq, config.duration);
+    if (config.type === 'synthetic') {
+      this._playSynthetic(config.freq, config.duration);
     }
   }
   
-  playSyntheticSound(freq, duration) {
+  _playSynthetic(freq, duration) {
     if (!this.audioContext) return;
     
     try {
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
+      const osc = this.audioContext.createOscillator();
+      const gain = this.audioContext.createGain();
       
-      oscillator.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
+      osc.connect(gain);
+      gain.connect(this.audioContext.destination);
       
-      oscillator.frequency.value = freq;
-      oscillator.type = 'square';
+      osc.frequency.value = freq;
+      osc.type = 'square';
       
-      gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration / 1000);
+      gain.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration / 1000);
       
-      oscillator.start(this.audioContext.currentTime);
-      oscillator.stop(this.audioContext.currentTime + duration / 1000);
-      
-      this.log('Synthetic sound played: ' + freq + 'Hz for ' + duration + 'ms');
+      osc.start(this.audioContext.currentTime);
+      osc.stop(this.audioContext.currentTime + duration / 1000);
     } catch (e) {
-      this.log('Synthetic sound failed: ' + e.message);
+      // 忽略合成音效错误
     }
-  }
-
-  vibrate(config) {
-    if (!this.vibrateConfig.enabled) return;
-    if (!wx.vibrateShort) return;
-    if (config === null || config === undefined) return;
-    
-    let type, duration;
-    if (typeof config === 'string') {
-      const preset = this.vibrateConfig[config];
-      if (!preset) return;
-      type = preset.type;
-      duration = preset.duration;
-    } else if (typeof config === 'object') {
-      type = config.type || 'light';
-      duration = config.duration || 15;
-    } else {
-      return;
-    }
-    
-    try {
-      wx.vibrateShort({ type: type });
-    } catch (e) {
-      try {
-        if (duration > 30) {
-          wx.vibrateLong();
-        } else {
-          wx.vibrateShort();
-        }
-      } catch (e2) {}
-    }
-  }
-
-  setEnabled(enabled) {
-    this.enabled = enabled;
-    wx.setStorageSync('bomb_wall_sound_enabled', enabled);
   }
 
   setMusicEnabled(enabled) {
