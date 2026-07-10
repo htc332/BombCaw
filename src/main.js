@@ -135,9 +135,33 @@ class BombWallGame {
     // 将 uiManager 引用传递给 renderer，用于绘制购买栏
     this.renderer.uiManager = this.uiManager;
     
-    this.audio = audioManager;
-    this.audio.init();
-    this.audio.loadBGM(); // 预加载背景音乐
+    // 音频管理器 - 使用游戏日志系统
+    var am = GameGlobal.audioManager;
+    this.log('[Audio] GameGlobal.audioManager type: ' + typeof am);
+    this.log('[Audio] GameGlobal.audioManager.loadBGM type: ' + typeof (am && am.loadBGM));
+    
+    this.audio = am;
+    if (this.audio) {
+      this.log('[Audio] Calling init()...');
+      this.audio.init();
+      this.log('[Audio] Manager initialized');
+      
+      this.log('[Audio] Calling loadBGM()...');
+      if (typeof this.audio.loadBGM === 'function') {
+        this.log('[Audio] loadBGM is function, calling...');
+        try {
+          this.audio.loadBGM();
+          this.log('[Audio] loadBGM() executed');
+        } catch (e) {
+          this.log('[Audio] loadBGM() error: ' + e.message);
+        }
+      } else {
+        this.log('[Audio] loadBGM not available!');
+      }
+    } else {
+      this.log('[Audio] audioManager not found!');
+    }
+    this.log('[Audio] BGM loading started');
     
     this.adManager = new AdManager();
     

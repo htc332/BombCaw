@@ -1,29 +1,24 @@
 /**
  * System/AudioManager.js
- * 音频管理器 - 音效和背景音乐
- * 
- * 上线标准：
- * 1. 即时的音效反馈
- * 2. 震动支持
- * 3. 可配置的音量控制
+ * 音频管理器 - 使用工程原有日志系统
  */
 
 class AudioManager {
   constructor() {
+    if (AudioManager.instance) return AudioManager.instance;
+    AudioManager.instance = this;
+    
     this.enabled = true;
     this.musicEnabled = true;
     this.volume = 1.0;
     this.initialized = false;
     
-    // 背景音乐
     this.bgm = null;
-    this.bgmPath = 'subpackage/audio/bgm_level.mp3';
+    this.bgmPath = 'res/audio/bgm_level.mp3';
     this.bgmLoaded = false;
     
-    // 音效配置
-    // vibrate 设置为 null 表示该音效不触发震动
     this.soundEffects = {
-      place: { type: 'vibrate', intensity: null },      // 放置不震动
+      place: { type: 'vibrate', intensity: null },
       explode: { type: 'vibrate', intensity: 'heavy' },
       break: { type: 'vibrate', intensity: null },
       upgrade: { type: 'vibrate', intensity: 'light' },
@@ -32,59 +27,139 @@ class AudioManager {
       hit: { type: 'vibrate', intensity: 'light' }
     };
     
-    // 震动组件配置 - 可外部调整
     this.vibrateConfig = {
-      enabled: true,           // 总开关
+      enabled: false, // [v0.8.5] 关闭震动反馈
       light: { type: 'light', duration: 15 },
       medium: { type: 'medium', duration: 25 },
       heavy: { type: 'heavy', duration: 40 }
     };
+    
+    console.log('[AudioManager] Constructor called');
   }
 
   init() {
-    if (this.initialized) return;
+    if (this.initialized) {
+      console.log('[AudioManager] Already initialized, skip');
+      return;
+    }
+    
+    console.log('[AudioManager] init() starting...');
     
     try {
-      // 从存储读取设置
       this.enabled = wx.getStorageSync('bomb_wall_sound_enabled') !== false;
       this.musicEnabled = wx.getStorageSync('bomb_wall_music_enabled') !== false;
       this.volume = wx.getStorageSync('bomb_wall_volume') || 1.0;
       
+      console.log('[AudioManager] Settings loaded - enabled:', this.enabled, 'musicEnabled:', this.musicEnabled);
+      
       this.initialized = true;
-      console.log('[AudioManager] Initialized');
+      console.log('[AudioManager] Initialized successfully');
     } catch (e) {
-      console.error('[AudioManager] Init failed:', e);
+      console.error('[AudioManager] Init failed:', e.message);
     }
   }
 
-  /**
-   * 播放音效
-   */
+  loadBGM() {
+    console.log('[AudioManager] loadBGM() called, bgm:', !!this.bgm);
+    
+    if (this.bgm) {
+      console.log('[AudioManager] BGM already exists, skip');
+      return;
+    }
+    
+    console.log('[AudioManager] Creating BGM directly...');
+    this.createBGM();
+  }
+
+  createBGM() {
+    console.log('[AudioManager] createBGM() called');
+    try {
+      console.log('[AudioManager] Calling wx.createInnerAudioContext...');
+      this.bgm = wx.createInnerAudioContext();
+      console.log('[AudioManager] InnerAudioContext created:', !!this.bgm);
+      
+      this.bgm.src = this.bgmPath;
+      this.bgm.loop = true;
+      this.bgm.volume = this.volume;
+      
+      console.log('[AudioManager] BGM configured, src:', this.bgmPath);
+      
+      this.bgm.onCanPlay(() => {
+        this.bgmLoaded = true;
+        console.log('[AudioManager] BGM can play');
+      });
+      
+      this.bgm.onError((err) => {
+        console.error('[AudioManager] BGM error:', err);
+      });
+      
+      this.bgm.onPlay(() => {
+        console.log('[AudioManager] BGM onPlay fired');
+      });
+      
+      console.log('[AudioManager] BGM created, waiting for user interaction to play');
+    } catch (e) {
+      console.error('[AudioManager] Create BGM failed:', e.message);
+    }
+  }
+
+  playBGM() {
+    console.log('[AudioManager] playBGM() called, bgm:', !!this.bgm, 'musicEnabled:', this.musicEnabled);
+    
+    if (!this.bgm) {
+      console.log('[AudioManager] BGM not created, loading...');
+      this.loadBGM();
+      return;
+    }
+    if (!this.musicEnabled) {
+      console.log('[AudioManager] Music disabled, skip');
+      return;
+    }
+    
+    try {
+      this.bgm.play();
+      console.log('[AudioManager] BGM play() called');
+    } catch (e) {
+      console.error('[AudioManager] Play BGM failed:', e.message);
+    }
+  }
+
+  pauseBGM() {
+    if (!this.bgm) return;
+    try {
+      this.bgm.pause();
+      console.log('[AudioManager] BGM paused');
+    } catch (e) {
+      console.error('[AudioManager] Pause BGM failed:', e.message);
+    }
+  }
+
+  stopBGM() {
+    if (!this.bgm) return;
+    try {
+      this.bgm.stop();
+      console.log('[AudioManager] BGM stopped');
+    } catch (e) {
+      console.error('[AudioManager] Stop BGM failed:', e.message);
+    }
+  }
+
   play(soundName) {
     if (!this.enabled) return;
     
     const config = this.soundEffects[soundName];
     if (!config) return;
     
-    // 震动反馈
     if (config.type === 'vibrate') {
       this.vibrate(config.intensity);
     }
-    
-    // 未来可以添加音频文件播放
-    // this.playAudioFile(soundName);
   }
 
-  /**
-   * 震动反馈组件 - 可调整参数
-   * @param {string|object} config - 强度名称('light'/'medium'/'heavy') 或配置对象 {type, duration}
-   */
-  vibrate(config = 'light') {
+  vibrate(config) {
     if (!this.vibrateConfig.enabled) return;
     if (!wx.vibrateShort) return;
     if (config === null || config === undefined) return;
     
-    // 解析配置
     let type, duration;
     if (typeof config === 'string') {
       const preset = this.vibrateConfig[config];
@@ -99,165 +174,17 @@ class AudioManager {
     }
     
     try {
-      // 支持 type 参数的微信版本
       wx.vibrateShort({ type: type });
     } catch (e) {
-      // 旧版本兼容 - 使用 vibrateLong 模拟长震动
       try {
         if (duration > 30) {
           wx.vibrateLong();
         } else {
           wx.vibrateShort();
         }
-      } catch (e2) {
-        // 忽略错误
-      }
+      } catch (e2) {}
     }
   }
-
-  /**
-   * 设置震动配置
-   * @param {object} config - 震动配置对象
-   */
-  setVibrateConfig(config) {
-    if (config.enabled !== undefined) {
-      this.vibrateConfig.enabled = config.enabled;
-    }
-    if (config.light) Object.assign(this.vibrateConfig.light, config.light);
-    if (config.medium) Object.assign(this.vibrateConfig.medium, config.medium);
-    if (config.heavy) Object.assign(this.vibrateConfig.heavy, config.heavy);
-    
-    console.log('[AudioManager] Vibrate config updated:', this.vibrateConfig);
-  }
-
-  /**
-   * 设置某个音效的震动强度（设为 null 则禁用该音效震动）
-   * @param {string} soundName - 音效名称
-   * @param {string|null} intensity - 强度名称或 null
-   */
-  setSoundVibrate(soundName, intensity) {
-    if (this.soundEffects[soundName]) {
-      this.soundEffects[soundName].intensity = intensity;
-    }
-  }
-
-  /**
-   * 加载背景音乐
-   */
-  loadBGM() {
-    if (this.bgm) return;
-    
-    try {
-      // 先加载分包
-      wx.loadSubpackage({
-        name: 'audio',
-        success: () => {
-          console.log('[AudioManager] Audio subpackage loaded');
-          this.createBGM();
-        },
-        fail: (err) => {
-          console.error('[AudioManager] Load audio subpackage failed:', err);
-        }
-      });
-    } catch (e) {
-      console.error('[AudioManager] Load BGM failed:', e);
-    }
-  }
-
-  createBGM() {
-    try {
-      this.bgm = wx.createInnerAudioContext();
-      this.bgm.src = this.bgmPath;
-      this.bgm.loop = true;
-      this.bgm.volume = this.volume;
-      
-      // 使用多个事件确保加载检测
-      this.bgm.onLoadedData = () => {
-        console.log('[AudioManager] BGM data loaded');
-      };
-      
-      this.bgm.onCanPlay(() => {
-        this.bgmLoaded = true;
-        console.log('[AudioManager] BGM can play');
-      });
-      
-      // 直接尝试播放（微信小游戏可能需要用户交互后才能播放）
-      if (this.musicEnabled) {
-        // 延迟一点确保上下文准备就绪
-        setTimeout(() => {
-          this.playBGM();
-        }, 100);
-      }
-      
-      this.bgm.onError((err) => {
-        console.error('[AudioManager] BGM error:', err);
-      });
-    } catch (e) {
-      console.error('[AudioManager] Create BGM failed:', e);
-    }
-  }
-
-  /**
-   * 播放背景音乐
-   */
-  playBGM() {
-    if (!this.bgm) {
-      this.loadBGM();
-      return;
-    }
-    if (!this.musicEnabled) return;
-    
-    try {
-      // 微信小游戏需要用户交互后才能自动播放
-      // 先检查是否可以直接播放
-      this.bgm.play();
-      console.log('[AudioManager] BGM play called');
-      
-      // 监听播放状态
-      this.bgm.onPlay(() => {
-        console.log('[AudioManager] BGM actually playing');
-      });
-    } catch (e) {
-      console.error('[AudioManager] Play BGM failed:', e);
-    }
-  }
-
-  /**
-   * 暂停背景音乐
-   */
-  pauseBGM() {
-    if (!this.bgm) return;
-    try {
-      this.bgm.pause();
-    } catch (e) {
-      console.error('[AudioManager] Pause BGM failed:', e);
-    }
-  }
-
-  /**
-   * 停止背景音乐
-   */
-  stopBGM() {
-    if (!this.bgm) return;
-    try {
-      this.bgm.stop();
-    } catch (e) {
-      console.error('[AudioManager] Stop BGM failed:', e);
-    }
-  }
-
-  /**
-   * 播放音频文件（预留接口）
-   */
-  playAudioFile(soundName) {
-    // 未来实现：
-    // const audio = wx.createInnerAudioContext();
-    // audio.src = `res/audio/${soundName}.mp3`;
-    // audio.volume = this.volume;
-    // audio.play();
-  }
-
-  // ========== 设置 ==========
 
   setEnabled(enabled) {
     this.enabled = enabled;
@@ -285,10 +212,8 @@ class AudioManager {
   }
 }
 
-// 导出单例
 const audioManager = new AudioManager();
 GameGlobal.AudioManager = AudioManager;
 GameGlobal.audioManager = audioManager;
 
-// CommonJS 导出
 module.exports = { AudioManager, audioManager };

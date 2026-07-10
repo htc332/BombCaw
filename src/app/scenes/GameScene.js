@@ -25,9 +25,22 @@ class GameScene extends BaseScene {
     this.level = data?.level || 1;
     this.bgmStarted = false;
     
-    // 预加载背景音乐，但不自动播放（等待用户交互）
-    if (audioManager && !audioManager.bgm) {
-      audioManager.loadBGM();
+    console.log('[GameScene] onEnter level:', this.level);
+    
+    // 检查 audioManager 是否存在
+    const am = audioManager || GameGlobal.audioManager;
+    console.log('[GameScene] audioManager exists:', !!am);
+    
+    if (am) {
+      console.log('[GameScene] Initializing audio...');
+      am.init();
+      
+      if (!am.bgm) {
+        console.log('[GameScene] Loading BGM...');
+        am.loadBGM();
+      }
+    } else {
+      console.error('[GameScene] audioManager not found!');
     }
     
     // 如果已有游戏实例，启动关卡
@@ -41,8 +54,9 @@ class GameScene extends BaseScene {
   onExit() {
     // 游戏实例继续存在，只是停止更新
     // 暂停背景音乐（不停止，保持位置）
-    if (audioManager) {
-      audioManager.pauseBGM();
+    const am = audioManager || GameGlobal.audioManager;
+    if (am) {
+      am.pauseBGM();
     }
   }
 
@@ -51,8 +65,9 @@ class GameScene extends BaseScene {
       this.gameInstance.gameState = 'paused';
     }
     // 暂停背景音乐
-    if (audioManager) {
-      audioManager.pauseBGM();
+    const am = audioManager || GameGlobal.audioManager;
+    if (am) {
+      am.pauseBGM();
     }
   }
 
@@ -61,8 +76,9 @@ class GameScene extends BaseScene {
       this.gameInstance.gameState = 'playing';
     }
     // 恢复背景音乐（如果已经开始过）
-    if (audioManager && this.bgmStarted) {
-      audioManager.playBGM();
+    const am = audioManager || GameGlobal.audioManager;
+    if (am && this.bgmStarted) {
+      am.playBGM();
     }
   }
 
@@ -77,13 +93,46 @@ class GameScene extends BaseScene {
     if (this.gameInstance) {
       this.gameInstance.render?.();
     }
+    
+    // 绘制音频调试信息（使用游戏现有渲染系统）
+    try {
+      const am = audioManager || GameGlobal.audioManager;
+      if (am && this.gameInstance && this.gameInstance.renderer) {
+        const renderer = this.gameInstance.renderer;
+        const ctx = renderer.ctx;
+        if (ctx) {
+          // 使用游戏现有的文字样式
+          ctx.fillStyle = 'rgba(0,0,0,0.8)';
+          ctx.fillRect(10, 10, 400, 100);
+          ctx.fillStyle = '#FFE4B5';
+          ctx.font = 'bold 16px sans-serif';
+          ctx.textAlign = 'left';
+          
+          let y = 30;
+          const x = 20;
+          ctx.fillText('AUDIO: ' + (am.initialized ? 'OK' : 'NO_INIT'), x, y);
+          y += 20;
+          ctx.fillText('BGM: ' + (am.bgm ? 'CREATED' : 'NULL'), x, y);
+          y += 20;
+          ctx.fillText('MUSIC: ' + (am.musicEnabled ? 'ON' : 'OFF'), x, y);
+          y += 20;
+          ctx.fillText('STATUS: ' + (am.debugInfo?.status || 'unknown'), x, y);
+        }
+      }
+    } catch (e) {
+      // 忽略调试绘制错误
+    }
   }
 
   onTouch(x, y) {
     // 用户第一次交互时开始播放BGM
-    if (!this.bgmStarted && audioManager) {
+    console.log('[GameScene] onTouch called, bgmStarted:', this.bgmStarted);
+    
+    const am = audioManager || GameGlobal.audioManager;
+    if (!this.bgmStarted && am) {
       this.bgmStarted = true;
-      audioManager.playBGM();
+      console.log('[GameScene] First touch, playing BGM...');
+      am.playBGM();
     }
     
     if (this.gameInstance) {

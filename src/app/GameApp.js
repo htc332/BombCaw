@@ -123,8 +123,11 @@ class GameApp {
     }
     
     return this.sceneManager.switchTo('game', { level }).then(() => {
-      // 生产环境关闭场景进入日志
-      // console.log(`[GameApp] Entered game scene, level ${level}`);
+      // 进入游戏场景时初始化并播放BGM
+      if (audioManager) {
+        audioManager.init();
+        audioManager.playBGM();
+      }
     });
   }
 
