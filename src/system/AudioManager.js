@@ -14,7 +14,7 @@ class AudioManager {
     this.initialized = false;
     
     this.bgm = null;
-    this.bgmPath = 'res/audio/bgm_level.mp3';
+    this.bgmPath = '/res/audio/bgm_level.mp3';
     this.bgmLoaded = false;
     this.bgmPlaying = false;
     
@@ -149,10 +149,10 @@ class AudioManager {
       
       this.bgm.onError((err) => {
         this.log('BGM error: ' + JSON.stringify(err));
-        // 尝试重新加载
-        if (err.errCode === 10001) {
-          this.log('Retrying with full path...');
-          this.bgm.src = '/' + this.bgmPath;
+        // 如果绝对路径失败，尝试相对路径
+        if (err.errCode === 10001 && this.bgm.src.startsWith('/')) {
+          this.log('Retrying with relative path...');
+          this.bgm.src = this.bgmPath.substring(1); // 去掉开头的 /
         }
       });
       
