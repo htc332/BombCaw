@@ -39,31 +39,67 @@ class AudioManager {
     // Web Audio API 上下文
     this.audioContext = null;
     
-    console.log('[AudioManager] Constructor called');
+    // 日志系统
+    this.logs = [];
+    this.logFile = wx.env.USER_DATA_PATH + '/audio_debug.log';
+    
+    this.log('Constructor called');
+  }
+  
+  log(msg) {
+    var time = new Date().toLocaleTimeString();
+    var logMsg = '[' + time + '] [AudioManager] ' + msg;
+    this.logs.push(logMsg);
+    console.log(logMsg);
+    
+    // 写入文件（异步）
+    if (this.logs.length > 50) {
+      this.flushLogs();
+    }
+  }
+  
+  flushLogs() {
+    try {
+      var fs = wx.getFileSystemManager();
+      var content = this.logs.join('\n') + '\n';
+      fs.appendFileSync(this.logFile, content, 'utf8');
+      this.logs = [];
+    } catch (e) {
+      console.error('[AudioManager] Flush logs failed:', e.message);
+    }
+  }
+  
+  readLogs() {
+    try {
+      var fs = wx.getFileSystemManager();
+      return fs.readFileSync(this.logFile, 'utf8');
+    } catch (e) {
+      return 'No logs yet';
+    }
   }
 
   init() {
     if (this.initialized) {
-      console.log('[AudioManager] Already initialized, skip');
+      this.log('Already initialized, skip');
       return;
     }
     
-    console.log('[AudioManager] init() starting...');
+    this.log('init() starting...');
     
     try {
       this.enabled = wx.getStorageSync('bomb_wall_sound_enabled') !== false;
       this.musicEnabled = wx.getStorageSync('bomb_wall_music_enabled') !== false;
       this.volume = wx.getStorageSync('bomb_wall_volume') || 1.0;
       
-      console.log('[AudioManager] Settings loaded - enabled:', this.enabled, 'musicEnabled:', this.musicEnabled);
+      this.log('Settings loaded - enabled:' + this.enabled + ' musicEnabled:' + this.musicEnabled);
       
       // 初始化 Web Audio API
       this.initWebAudio();
       
       this.initialized = true;
-      console.log('[AudioManager] Initialized successfully');
+      this.log('Initialized successfully');
     } catch (e) {
-      console.error('[AudioManager] Init failed:', e.message);
+      this.log('Init failed: ' + e.message);
     }
   }
   
@@ -71,101 +107,101 @@ class AudioManager {
     try {
       if (typeof wx.createWebAudioContext === 'function') {
         this.audioContext = wx.createWebAudioContext();
-        console.log('[AudioManager] Web Audio API initialized');
+        this.log('Web Audio API initialized');
       } else {
-        console.log('[AudioManager] Web Audio API not available');
+        this.log('Web Audio API not available');
       }
     } catch (e) {
-      console.error('[AudioManager] Web Audio init failed:', e.message);
+      this.log('Web Audio init failed: ' + e.message);
     }
   }
 
   loadBGM() {
-    console.log('[AudioManager] loadBGM() called, bgm:', !!this.bgm);
+    this.log('loadBGM() called, bgm:' + !!this.bgm);
     
     if (this.bgm) {
-      console.log('[AudioManager] BGM already exists, skip');
+      this.log('BGM already exists, skip');
       return;
     }
     
-    console.log('[AudioManager] Creating BGM directly...');
+    this.log('Creating BGM directly...');
     this.createBGM();
   }
 
   createBGM() {
-    console.log('[AudioManager] createBGM() called');
+    this.log('createBGM() called');
     try {
-      console.log('[AudioManager] Calling wx.createInnerAudioContext...');
+      this.log('Calling wx.createInnerAudioContext...');
       this.bgm = wx.createInnerAudioContext();
-      console.log('[AudioManager] InnerAudioContext created:', !!this.bgm);
+      this.log('InnerAudioContext created:' + !!this.bgm);
       
       // 设置属性（在 src 之前）
       this.bgm.loop = true;
       this.bgm.volume = this.volume;
       this.bgm.src = this.bgmPath;
       
-      console.log('[AudioManager] BGM configured, src:', this.bgmPath);
+      this.log('BGM configured, src:' + this.bgmPath);
       
       this.bgm.onCanPlay(() => {
         this.bgmLoaded = true;
-        console.log('[AudioManager] BGM can play, duration:', this.bgm.duration);
+        this.log('BGM can play, duration:' + this.bgm.duration);
       });
       
       this.bgm.onError((err) => {
-        console.error('[AudioManager] BGM error:', JSON.stringify(err));
+        this.log('BGM error: ' + JSON.stringify(err));
         // 尝试重新加载
         if (err.errCode === 10001) {
-          console.log('[AudioManager] Retrying with full path...');
+          this.log('Retrying with full path...');
           this.bgm.src = '/' + this.bgmPath;
         }
       });
       
       this.bgm.onPlay(() => {
         this.bgmPlaying = true;
-        console.log('[AudioManager] BGM onPlay fired');
+        this.log('BGM onPlay fired');
       });
       
       this.bgm.onEnded(() => {
-        console.log('[AudioManager] BGM ended (should loop)');
+        this.log('BGM ended (should loop)');
       });
       
       this.bgm.onWaiting(() => {
-        console.log('[AudioManager] BGM waiting for data');
+        this.log('BGM waiting for data');
       });
       
-      console.log('[AudioManager] BGM created, waiting for user interaction to play');
+      this.log('BGM created, waiting for user interaction to play');
     } catch (e) {
-      console.error('[AudioManager] Create BGM failed:', e.message);
+      this.log('Create BGM failed: ' + e.message);
     }
   }
 
   playBGM() {
-    console.log('[AudioManager] playBGM() called, bgm:', !!this.bgm, 'musicEnabled:', this.musicEnabled, 'loaded:', this.bgmLoaded);
+    this.log('playBGM() called, bgm:' + !!this.bgm + ' musicEnabled:' + this.musicEnabled + ' loaded:' + this.bgmLoaded);
     
     if (!this.bgm) {
-      console.log('[AudioManager] BGM not created, loading...');
+      this.log('BGM not created, loading...');
       this.loadBGM();
       return;
     }
     if (!this.musicEnabled) {
-      console.log('[AudioManager] Music disabled, skip');
+      this.log('Music disabled, skip');
       return;
     }
     
     try {
       // 检查是否已经播放中
       if (this.bgmPlaying) {
-        console.log('[AudioManager] BGM already playing');
+        this.log('BGM already playing');
         return;
       }
       
       this.bgm.play();
-      console.log('[AudioManager] BGM play() called');
+      this.log('BGM play() called');
       
       // 设置一个标志，表示我们尝试播放了
       this._playAttempted = true;
     } catch (e) {
-      console.error('[AudioManager] Play BGM failed:', e.message);
+      this.log('Play BGM failed: ' + e.message);
     }
   }
 
@@ -174,9 +210,9 @@ class AudioManager {
     try {
       this.bgm.pause();
       this.bgmPlaying = false;
-      console.log('[AudioManager] BGM paused');
+      this.log('BGM paused');
     } catch (e) {
-      console.error('[AudioManager] Pause BGM failed:', e.message);
+      this.log('Pause BGM failed: ' + e.message);
     }
   }
 
@@ -185,9 +221,9 @@ class AudioManager {
     try {
       this.bgm.stop();
       this.bgmPlaying = false;
-      console.log('[AudioManager] BGM stopped');
+      this.log('BGM stopped');
     } catch (e) {
-      console.error('[AudioManager] Stop BGM failed:', e.message);
+      this.log('Stop BGM failed: ' + e.message);
     }
   }
 
@@ -222,8 +258,10 @@ class AudioManager {
       
       oscillator.start(this.audioContext.currentTime);
       oscillator.stop(this.audioContext.currentTime + duration / 1000);
+      
+      this.log('Synthetic sound played: ' + freq + 'Hz for ' + duration + 'ms');
     } catch (e) {
-      console.error('[AudioManager] Synthetic sound failed:', e.message);
+      this.log('Synthetic sound failed: ' + e.message);
     }
   }
 
