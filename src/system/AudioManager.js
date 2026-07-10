@@ -34,8 +34,22 @@ class AudioManager {
     
     // 诊断日志写入独立文件
     this._logFile = wx.env.USER_DATA_PATH + '/bgm_diag.txt';
+    // 诊断信息（同时显示在游戏画面上）
+    this.diagInfo = 'AUDIO: initializing...';
+    
     this._writeLog('=== BGM Diagnostic Log ===');
     this._writeLog('Constructor called');
+  }
+  
+  // 更新画面显示的诊断信息
+  _updateDiag(msg) {
+    this.diagInfo = msg;
+    this._writeLog(msg);
+  }
+  
+  // 获取诊断信息（供游戏画面渲染）
+  getDiagInfo() {
+    return this.diagInfo || 'AUDIO: no info';
   }
   
   _writeLog(msg) {
@@ -59,34 +73,34 @@ class AudioManager {
   init() {
     if (this.initialized) return;
     
-    this._writeLog('init() start');
+    this._updateDiag('AUDIO: init() start');
     
     try {
       this.enabled = wx.getStorageSync('bomb_wall_sound_enabled') !== false;
       this.musicEnabled = wx.getStorageSync('bomb_wall_music_enabled') !== false;
       this.volume = wx.getStorageSync('bomb_wall_volume') || 1.0;
       
-      this._writeLog('Settings: music=' + this.musicEnabled + ' vol=' + this.volume);
+      this._updateDiag('AUDIO: settings loaded, music=' + this.musicEnabled);
       
       if (typeof wx.createWebAudioContext === 'function') {
         this.audioContext = wx.createWebAudioContext();
-        this._writeLog('WebAudio OK');
+        this._updateDiag('AUDIO: WebAudio OK');
       } else {
-        this._writeLog('WebAudio NOT available');
+        this._updateDiag('AUDIO: WebAudio NOT available');
       }
       
       this.initialized = true;
-      this._writeLog('init() done');
+      this._updateDiag('AUDIO: init() done');
     } catch (e) {
-      this._writeLog('init() ERROR: ' + e.message);
+      this._updateDiag('AUDIO: init() ERROR: ' + e.message);
     }
   }
 
   loadBGM() {
-    this._writeLog('loadBGM()');
+    this._updateDiag('AUDIO: loadBGM()');
     
     if (this.bgm) {
-      this._writeLog('BGM already exists');
+      this._updateDiag('AUDIO: BGM already exists');
       return;
     }
     
@@ -94,66 +108,66 @@ class AudioManager {
   }
 
   _createBGM() {
-    this._writeLog('createBGM()');
+    this._updateDiag('AUDIO: createBGM()');
     
     try {
       this.bgm = wx.createInnerAudioContext();
-      this._writeLog('InnerAudioContext created');
+      this._updateDiag('AUDIO: InnerAudioContext created');
       
       this.bgm.loop = true;
       this.bgm.volume = this.volume;
       this.bgm.src = this.bgmPath;
       
-      this._writeLog('src set to: ' + this.bgmPath);
+      this._updateDiag('AUDIO: src=' + this.bgmPath);
       
       this.bgm.onCanPlay(() => {
         this.bgmLoaded = true;
-        this._writeLog('onCanPlay: duration=' + this.bgm.duration);
+        this._updateDiag('AUDIO: onCanPlay, duration=' + this.bgm.duration);
       });
       
       this.bgm.onError((err) => {
-        this._writeLog('onError: code=' + err.errCode + ' msg=' + (err.errMsg || 'unknown'));
+        this._updateDiag('AUDIO: onError code=' + err.errCode + ' msg=' + (err.errMsg || 'unknown'));
       });
       
       this.bgm.onPlay(() => {
         this.bgmPlaying = true;
-        this._writeLog('onPlay: BGM started');
+        this._updateDiag('AUDIO: onPlay - BGM STARTED!');
       });
       
       this.bgm.onWaiting(() => {
-        this._writeLog('onWaiting: buffering');
+        this._updateDiag('AUDIO: onWaiting - buffering');
       });
       
-      this._writeLog('BGM ready, waiting for user touch');
+      this._updateDiag('AUDIO: BGM ready, click to play');
     } catch (e) {
-      this._writeLog('createBGM() ERROR: ' + e.message);
+      this._updateDiag('AUDIO: createBGM() ERROR: ' + e.message);
     }
   }
 
   playBGM() {
-    this._writeLog('playBGM() called');
+    this._updateDiag('AUDIO: playBGM() called');
     
     if (!this.bgm) {
-      this._writeLog('No BGM instance, loading...');
+      this._updateDiag('AUDIO: no BGM, loading...');
       this.loadBGM();
       return;
     }
     
     if (!this.musicEnabled) {
-      this._writeLog('Music disabled');
+      this._updateDiag('AUDIO: music disabled');
       return;
     }
     
     if (this.bgmPlaying) {
-      this._writeLog('Already playing');
+      this._updateDiag('AUDIO: already playing');
       return;
     }
     
     try {
       this.bgm.play();
-      this._writeLog('play() executed');
+      this._updateDiag('AUDIO: play() executed');
     } catch (e) {
-      this._writeLog('play() ERROR: ' + e.message);
+      this._updateDiag('AUDIO: play() ERROR: ' + e.message);
     }
   }
 

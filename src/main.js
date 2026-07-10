@@ -763,6 +763,17 @@ class BombWallGame {
       ctx.fillText(log, 10 * pr, y);
     }
     
+    // [v0.8.5] 显示音频诊断信息
+    var audioDiag = this.audio && this.audio.getDiagInfo ? this.audio.getDiagInfo() : 'AUDIO: not loaded';
+    var diagY = startY + maxLines * logH + 5 * pr;
+    
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+    ctx.fillRect(5 * pr, diagY - logH * 0.7, ctx.measureText(audioDiag).width + 10 * pr, logH);
+    
+    ctx.fillStyle = '#FF0';
+    ctx.font = 'bold ' + (10 * pr) + 'px monospace';
+    ctx.fillText(audioDiag, 10 * pr, diagY);
+    
     ctx.restore();
   }
 
