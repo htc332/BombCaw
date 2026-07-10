@@ -293,11 +293,17 @@ class BombWallGame {
     });
 
     wx.onShow(() => {
-      // console.log('[BombWall] Game shown');
+      // [v0.8.5] 回到前台时恢复BGM
+      if (this.audio && this.bgmStarted) {
+        this.audio.playBGM();
+      }
     });
 
     wx.onHide(() => {
-      // console.log('[BombWall] Game hidden');
+      // [v0.8.5] 切换到后台时暂停BGM
+      if (this.audio) {
+        this.audio.pauseBGM();
+      }
     });
   }
 
