@@ -80,6 +80,8 @@ try {
   require('src/view/ParticleSystem.js');
   require('src/view/Renderer.js');
   require('src/view/UIManager.js');
+  require('src/view/LevelCompletePopup.js');  // [v0.9.1] 通关弹窗组件
+  require('src/view/LevelFailPopup.js');      // [v0.9.2] 失败弹窗组件
   require('src/main.js');
   console.log('[Game] All modules loaded');
 

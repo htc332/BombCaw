@@ -1,16 +1,17 @@
 /**
- * View/LevelFailPopup.js
- * 失败弹窗组件 - v0.9.9
- * Q萌系专业设计版
+ * View/LevelCompletePopup.js
+ * 通关弹窗组件 - v0.9.9
+ * Q萌系设计版（与失败弹窗风格统一）
  * 
- * 设计规范：
- * 1. 配色：奶油白背景 + 薄荷绿边框 + 深棕文字（Q萌标准色板）
- * 2. 布局：倒计时独立区域 → 数据面板 → 按钮，严格不重叠
- * 3. 间距：标签与数字 12px 间距，行与行 20px 间距
- * 4. 动效：弹簧入场 + 呼吸倒计时 + 按钮悬浮感
+ * 配色规范：
+ * - 背景：奶油白 #FFFDF5 → #FFF8E7
+ * - 边框：薄荷绿 #7EC8A0
+ * - 文字：深棕 #5C4033
+ * - 强调：糖果黄 #FFD700 / 糖果粉 #FFB6C1
+ * - 按钮：糖果绿 #90EE90 → #7EC8A0
  */
 
-class LevelFailPopup {
+class LevelCompletePopup {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
@@ -20,22 +21,32 @@ class LevelFailPopup {
     this.showDuration = 0.5;
     this.showTimer = 0;
     
-    this.data = { level: 1, score: 0, failCount: 0, adReward: 10 };
-    this.onWatchAd = null;
-    this.onWaitRestart = null;
-    this.autoTransitionTimer = 10;
-    this.buttonArea = null;
+    this.data = {
+      level: 1,
+      score: 0,
+      bombsPlaced: 0,
+      wallsDestroyed: 0,
+      nextLevel: 2
+    };
     
-    this.milkIcon = null;
-    this.loadMilkIcon();
+    this.onNextLevel = null;
+    this.autoTransitionTimer = 3;
+    this.buttonArea = null;
     this.animTime = 0;
+    
+    // 装饰星星
+    this.stars = [];
+    this.initStars();
   }
   
-  loadMilkIcon() {
-    const img = wx.createImage ? wx.createImage() : new Image();
-    img.onload = () => { this.milkIcon = img; };
-    img.onerror = () => { this.milkIcon = null; };
-    img.src = 'images/ui_grid.png';
+  initStars() {
+    this.stars = [
+      { x: -0.35, y: -0.40, size: 0.025, phase: 0, speed: 2.5 },
+      { x: 0.35, y: -0.40, size: 0.025, phase: 1.2, speed: 3.0 },
+      { x: -0.40, y: 0.30, size: 0.02, phase: 0.5, speed: 2.8 },
+      { x: 0.40, y: 0.30, size: 0.02, phase: 2.0, speed: 3.2 },
+      { x: 0, y: -0.45, size: 0.02, phase: 0.3, speed: 3.8 },
+    ];
   }
   
   show(data) {
@@ -43,26 +54,30 @@ class LevelFailPopup {
     this.isShowing = true;
     this.showProgress = 0;
     this.showTimer = 0;
-    this.autoTransitionTimer = 10;
+    this.autoTransitionTimer = 3;
   }
   
   hide() {
     this.isShowing = false;
     this.showProgress = 0;
-    this.autoTransitionTimer = 10;
+    this.autoTransitionTimer = 3;
   }
   
   update(dt) {
     if (!this.isShowing) return;
     this.animTime += dt;
+    
     if (this.showProgress < 1) {
       this.showTimer += dt;
       const t = Math.min(this.showTimer / this.showDuration, 1);
       this.showProgress = this.easeOutBack(t);
     }
+    
     if (this.autoTransitionTimer > 0) {
       this.autoTransitionTimer -= dt;
-      if (this.autoTransitionTimer <= 0) this.onWaitRestart && this.onWaitRestart();
+      if (this.autoTransitionTimer <= 0) {
+        this.onNextLevel && this.onNextLevel();
+      }
     }
   }
   
@@ -85,29 +100,28 @@ class LevelFailPopup {
     const safeBottom = (info.windowHeight - (info.safeArea?.bottom || info.windowHeight)) * pr;
     const usableH = h - safeTop - safeBottom;
     
-    // 弹窗尺寸：宽度占屏幕70%
+    // 与失败弹窗统一尺寸
     const panelW = w * 0.70;
-    const panelH = panelW * 1.15; // 更矮更紧凑
+    const panelH = panelW * 1.15;
     
     const panelX = (w - panelW) / 2;
     const panelY = safeTop + (usableH - panelH) / 2;
     
-    // 各区域严格划分（不重叠）
+    // 区域划分
     const titleY = panelY + panelH * 0.04;
-    const countdownY = panelY + panelH * 0.14; // 倒计时区域起始
-    const countdownH = panelH * 0.22; // 倒计时区域高度（增大避免重叠）
-    const dataY = panelY + panelH * 0.40; // 数据面板起始（下移）
-    const dataH = panelH * 0.34; // 数据面板高度
-    const btnY = panelY + panelH * 0.78; // 按钮起始
+    const starY = panelY + panelH * 0.12;
+    const starH = panelH * 0.10;
+    const dataY = panelY + panelH * 0.26;
+    const dataH = panelH * 0.42;
+    const btnY = panelY + panelH * 0.74;
     
-    // 按钮区域
     const btnW = panelW * 0.65;
     const btnH = Math.max(panelH * 0.10, 40 * pr);
     const btnX = (w - btnW) / 2;
     
     this.buttonArea = { x: btnX, y: btnY, width: btnW, height: btnH };
     
-    return { pr, s, w, h, panelX, panelY, panelW, panelH, titleY, countdownY, countdownH, dataY, dataH, btnX, btnY, btnW, btnH };
+    return { pr, s, w, h, panelX, panelY, panelW, panelH, titleY, starY, starH, dataY, dataH, btnX, btnY, btnW, btnH };
   }
   
   draw() {
@@ -121,7 +135,7 @@ class LevelFailPopup {
     ctx.fillStyle = `rgba(0, 0, 0, ${0.6 * p})`;
     ctx.fillRect(0, 0, layout.w, layout.h);
     
-    // 弹窗位置（弹簧动画）
+    // 弹窗位置
     const cx = layout.panelX + layout.panelW / 2;
     const cy = layout.panelY + layout.panelH / 2;
     const scaledW = layout.panelW * p;
@@ -129,16 +143,16 @@ class LevelFailPopup {
     const scaledX = cx - scaledW / 2;
     const scaledY = cy - scaledH / 2;
     
-    // 绘制弹窗面板
+    // 绘制弹窗面板（与失败弹窗统一）
     this.drawPanel(ctx, scaledX, scaledY, scaledW, scaledH, layout.pr);
     
     // 绘制标题
     this.drawTitle(ctx, scaledX, scaledY, scaledW, layout.titleY, layout.pr, layout.s);
     
-    // 绘制倒计时（独立区域，不与其他元素重叠）
-    this.drawCountdown(ctx, scaledX, scaledY, scaledW, layout.countdownY, layout.countdownH, layout.pr, layout.s);
+    // 绘制装饰星星
+    this.drawStars(ctx, scaledX, scaledY, scaledW, scaledH, layout.pr, p);
     
-    // 绘制数据面板（三行信息）
+    // 绘制数据面板
     this.drawDataPanel(ctx, scaledX, scaledY, scaledW, layout.dataY, layout.dataH, layout.pr, layout.s);
     
     // 绘制按钮
@@ -146,29 +160,27 @@ class LevelFailPopup {
   }
   
   drawPanel(ctx, x, y, w, h, pr) {
-    // Q萌风格：奶油白背景 + 薄荷绿边框 + 圆角
-    
     // 阴影
     ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
     this.roundRect(ctx, x + 4 * pr, y + 4 * pr, w, h, 24 * pr);
     ctx.fill();
     
-    // 主背景：奶油白
+    // 主背景：奶油粉白（粉红萌系）
     const bgGradient = ctx.createLinearGradient(x, y, x, y + h);
-    bgGradient.addColorStop(0, '#FFFDF5');
-    bgGradient.addColorStop(1, '#FFF8E7');
+    bgGradient.addColorStop(0, '#FFF5F7');
+    bgGradient.addColorStop(1, '#FFE4EC');
     ctx.fillStyle = bgGradient;
     this.roundRect(ctx, x, y, w, h, 24 * pr);
     ctx.fill();
     
-    // 外边框：薄荷绿
-    ctx.strokeStyle = '#7EC8A0';
+    // 外边框：樱花粉
+    ctx.strokeStyle = '#FFB6C1';
     ctx.lineWidth = 3 * pr;
     this.roundRect(ctx, x, y, w, h, 24 * pr);
     ctx.stroke();
     
     // 内边框（虚线装饰）
-    ctx.strokeStyle = 'rgba(126, 200, 160, 0.3)';
+    ctx.strokeStyle = 'rgba(255, 182, 193, 0.4)';
     ctx.lineWidth = 1 * pr;
     ctx.setLineDash([6 * pr, 4 * pr]);
     this.roundRect(ctx, x + 8 * pr, y + 8 * pr, w - 16 * pr, h - 16 * pr, 16 * pr);
@@ -177,16 +189,16 @@ class LevelFailPopup {
   }
   
   drawTitle(ctx, px, py, pw, titleY, pr, s) {
-    // 标题：深棕色 + 可爱字体
+    // 标题：深棕色
     ctx.fillStyle = '#5C4033';
     ctx.font = `bold ${22 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    ctx.fillText('关卡失败', px + pw / 2, titleY);
+    ctx.fillText('关卡完成!', px + pw / 2, titleY);
     
-    // 装饰线
+    // 装饰线（樱花粉）
     const lineY = titleY + 28 * pr;
-    ctx.strokeStyle = 'rgba(126, 200, 160, 0.5)';
+    ctx.strokeStyle = 'rgba(255, 182, 193, 0.5)';
     ctx.lineWidth = 1 * pr;
     ctx.beginPath();
     ctx.moveTo(px + pw * 0.2, lineY);
@@ -194,52 +206,39 @@ class LevelFailPopup {
     ctx.stroke();
   }
   
-  drawCountdown(ctx, px, py, pw, countdownY, countdownH, pr, s) {
-    const seconds = Math.ceil(this.autoTransitionTimer);
-    const circleR = Math.min(pw * 0.08, 20 * s * pr);
-    const circleX = px + pw / 2;
-    const circleY = countdownY + countdownH / 2;
+  drawStars(ctx, px, py, pw, ph, pr, progress) {
+    const cx = px + pw / 2;
+    const cy = py + ph * 0.18;
+    const animTime = Date.now() / 1000;
     
-    // 脉冲动画
-    const pulse = 1 + 0.06 * Math.sin(this.animTime * 3);
-    const pulseR = circleR * pulse;
-    
-    // 外圈光晕（柔和的粉色）
-    const glowGradient = ctx.createRadialGradient(circleX, circleY, pulseR * 0.5, circleX, circleY, pulseR + 6 * pr);
-    glowGradient.addColorStop(0, 'rgba(255, 182, 193, 0.4)');
-    glowGradient.addColorStop(1, 'rgba(255, 182, 193, 0)');
-    ctx.fillStyle = glowGradient;
+    this.stars.forEach(star => {
+      const x = cx + star.x * pw;
+      const y = cy + star.y * ph;
+      const size = star.size * pw * progress;
+      
+      const alpha = 0.5 + 0.5 * Math.sin(animTime * star.speed + star.phase);
+      const scale = 0.8 + 0.2 * Math.sin(animTime * star.speed * 0.7 + star.phase);
+      const drawSize = size * scale;
+      
+      ctx.globalAlpha = alpha * progress;
+      this.drawStarShape(ctx, x, y, drawSize, '#FFD700');
+      ctx.globalAlpha = 1.0;
+    });
+  }
+  
+  drawStarShape(ctx, cx, cy, size, color) {
+    ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.arc(circleX, circleY, pulseR + 6 * pr, 0, Math.PI * 2);
+    for (let i = 0; i < 10; i++) {
+      const angle = (i * Math.PI) / 5 - Math.PI / 2;
+      const radius = i % 2 === 0 ? size : size * 0.4;
+      const x = cx + Math.cos(angle) * radius;
+      const y = cy + Math.sin(angle) * radius;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
     ctx.fill();
-    
-    // 主圆圈（糖果粉）
-    const isUrgent = seconds <= 3;
-    ctx.fillStyle = isUrgent ? '#FF6B6B' : '#FFB6C1';
-    ctx.beginPath();
-    ctx.arc(circleX, circleY, pulseR, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // 圆圈边框（深一点）
-    ctx.strokeStyle = isUrgent ? '#FF4444' : '#FF69B4';
-    ctx.lineWidth = 2 * pr;
-    ctx.beginPath();
-    ctx.arc(circleX, circleY, pulseR, 0, Math.PI * 2);
-    ctx.stroke();
-    
-    // 数字（白色）
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = `bold ${Math.round(pulseR * 1.0)}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(String(seconds), circleX, circleY);
-    
-    // 提示文字（在圆圈下方，不重叠）
-    ctx.fillStyle = '#8B7355';
-    ctx.font = `${10 * s * pr}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.fillText('秒后重新开始', circleX, circleY + pulseR + 8 * pr);
   }
   
   drawDataPanel(ctx, px, py, pw, dataY, dataH, pr, s) {
@@ -249,26 +248,26 @@ class LevelFailPopup {
     const panelH = dataH;
     const panelY = dataY;
     
-    // 数据面板背景（浅薄荷绿）
-    ctx.fillStyle = 'rgba(126, 200, 160, 0.15)';
+    // 数据面板背景（浅樱花粉）
+    ctx.fillStyle = 'rgba(255, 182, 193, 0.15)';
     this.roundRect(ctx, panelX, panelY, panelW, panelH, 12 * pr);
     ctx.fill();
     
     // 面板边框
-    ctx.strokeStyle = 'rgba(126, 200, 160, 0.4)';
+    ctx.strokeStyle = 'rgba(255, 182, 193, 0.4)';
     ctx.lineWidth = 1 * pr;
     this.roundRect(ctx, panelX, panelY, panelW, panelH, 12 * pr);
     ctx.stroke();
     
-    // 三行信息 - 严格间距
+    // 三行信息
     const cx = panelX + panelW / 2;
-    const lineHeight = panelH / 3.0; // 每行占1/3
+    const lineHeight = panelH / 3.0;
     const startY = panelY + lineHeight * 0.5;
     
     const items = [
-      { label: '当前关卡', value: this.data.level },
-      { label: '剩余积分', value: this.data.score },
-      { label: '亏损次数', value: this.data.failCount },
+      { label: '最终积分', value: this.data.score },
+      { label: '放置牛牛', value: this.data.bombsPlaced },
+      { label: '消灭鼠鼠', value: this.data.wallsDestroyed },
     ];
     
     items.forEach((item, index) => {
@@ -289,30 +288,28 @@ class LevelFailPopup {
   }
   
   drawButton(ctx, px, py, pw, btnX, btnY, btnW, btnH, pr, s) {
-    // Q萌按钮：糖果蓝渐变 + 圆角 + 阴影
-    
     // 阴影
-    ctx.fillStyle = 'rgba(91, 163, 245, 0.3)';
+    ctx.fillStyle = 'rgba(255, 105, 180, 0.2)';
     this.roundRect(ctx, btnX + 2 * pr, btnY + 3 * pr, btnW, btnH, 12 * pr);
     ctx.fill();
     
-    // 按钮背景：糖果蓝渐变
+    // 按钮背景：糖果粉渐变
     const btnGradient = ctx.createLinearGradient(btnX, btnY, btnX, btnY + btnH);
-    btnGradient.addColorStop(0, '#87CEEB');
-    btnGradient.addColorStop(0.5, '#5BA3F5');
-    btnGradient.addColorStop(1, '#4A90E2');
+    btnGradient.addColorStop(0, '#FFB6C1');
+    btnGradient.addColorStop(0.5, '#FF69B4');
+    btnGradient.addColorStop(1, '#FF1493');
     
     ctx.fillStyle = btnGradient;
     this.roundRect(ctx, btnX, btnY, btnW, btnH, 12 * pr);
     ctx.fill();
     
     // 按钮边框
-    ctx.strokeStyle = '#4A90E2';
+    ctx.strokeStyle = '#FF1493';
     ctx.lineWidth = 2 * pr;
     this.roundRect(ctx, btnX, btnY, btnW, btnH, 12 * pr);
     ctx.stroke();
     
-    // 高光（顶部）
+    // 高光
     ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
     ctx.beginPath();
     ctx.moveTo(btnX + 8 * pr, btnY + 2 * pr);
@@ -322,27 +319,23 @@ class LevelFailPopup {
     ctx.closePath();
     ctx.fill();
     
-    // 按钮文字（白色）
+    // 按钮文字
     const btnCX = btnX + btnW / 2;
     const btnCY = btnY + btnH / 2;
     
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = `bold ${14 * s * pr}px sans-serif`;
+    ctx.font = `bold ${15 * s * pr}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    ctx.fillText('开始下一关', btnCX, btnCY);
     
-    const rewardText = `+${this.data.adReward}`;
-    const fullText = `观看广告 ${rewardText}`;
-    
-    ctx.fillText(fullText, btnCX, btnCY);
-    
-    // 牛奶图标
-    if (this.milkIcon && this.milkIcon.complete && this.milkIcon.width > 0) {
-      const milkSize = 13 * s * pr;
-      const textWidth = ctx.measureText(fullText).width;
-      const milkX = btnCX + textWidth / 2 + 5 * pr;
-      const milkY = btnCY - milkSize / 2;
-      ctx.drawImage(this.milkIcon, milkX, milkY, milkSize, milkSize);
+    // 倒计时提示
+    if (this.autoTransitionTimer > 0) {
+      ctx.fillStyle = '#8B7355';
+      ctx.font = `${10 * s * pr}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(`${Math.ceil(this.autoTransitionTimer)}秒后自动进入`, btnCX, btnY + btnH + 10 * pr);
     }
   }
   
@@ -362,15 +355,25 @@ class LevelFailPopup {
   
   onTouch(x, y) {
     if (!this.isShowing || this.showProgress < 1) return false;
+    
     if (this.buttonArea) {
       const btn = this.buttonArea;
       if (x >= btn.x && x <= btn.x + btn.width && y >= btn.y && y <= btn.y + btn.height) {
-        this.onWatchAd && this.onWatchAd();
+        this.onNextLevel && this.onNextLevel();
         return true;
       }
     }
+    
+    // 点击弹窗任意位置也进入下一关
+    const layout = this.calcLayout();
+    if (x >= layout.panelX && x <= layout.panelX + layout.panelW && 
+        y >= layout.panelY && y <= layout.panelY + layout.panelH) {
+      this.onNextLevel && this.onNextLevel();
+      return true;
+    }
+    
     return false;
   }
 }
 
-GameGlobal.LevelFailPopup = LevelFailPopup;
+GameGlobal.LevelCompletePopup = LevelCompletePopup;

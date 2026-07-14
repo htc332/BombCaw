@@ -58,6 +58,14 @@
       {
         "value": ".git",
         "type": "folder"
+      },
+      {
+        "value": "test",
+        "type": "folder"
+      },
+      {
+        "value": "scripts",
+        "type": "folder"
       }
     ],
     "include": []

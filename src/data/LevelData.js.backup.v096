@@ -1,0 +1,567 @@
+/**
+ * Data/LevelData.js
+ * 关卡配置 - 基于算法生成 v0.9.6
+ * 
+ * 爆炸范围规则：
+ * - LV1(evolution=0): 十字1格（上下左右各1格）
+ * - LV2(evolution=2): 竖直上下各3格
+ * - LV3(evolution=3): 横向左右各3格 + 上方1格
+ * - LV4(evolution=5): 十字1格 + 对角1格
+ * 
+ * 设计原则：
+ * - 静态炸弹位置不能挡住玩家放炸弹的关键位置
+ * - 静态炸弹的爆炸范围要与老鼠布局匹配
+ * - LV2竖直炸弹：老鼠必须在同一x列，y方向分布
+ * - LV3横向炸弹：老鼠必须在同一y行，x方向分布
+ * - LV4十字对角：老鼠在十字或对角方向
+ * - 前期少（0-1个），后期多（2-4个）
+ */
+
+const LEVELS = {
+  // ========== 第一阶段：基础机制，极少静态炸弹（0001-0005）==========
+
+  // 0001 - 初识炸弹（教学关）
+  // 4只1级鼠，十字排列，中心放1颗LV1炸弹可清屏
+  1: {
+    gridSize: 5,
+    hint: '第1关：在中间放一颗炸弹，炸掉所有老鼠',
+    walls: [
+      { x: 0, y: -1, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+    ],
+    staticBombs: []
+  },
+
+  // 0002 - 积分计算（教学关）
+  // 8只1级鼠分散，需要2颗炸弹
+  // 1个LV1静态炸弹放在中心，十字1格爆炸
+  2: {
+    gridSize: 6,
+    hint: '第2关：引爆炸弹，触发连锁！',
+    walls: [
+      { x: -2, y: -2, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+    ],
+    staticBombs: [
+      // LV1静态炸弹放在中心(0,0)，十字1格爆炸可波及周围
+      { x: 0, y: 0, evolution: 0 }
+    ]
+  },
+
+  // 0003 - 积分大作战（积分关）
+  // 12只1级鼠，上下两排（同一x列，y方向分布）
+  // 2个LV2静态炸弹竖直爆炸覆盖上下排
+  3: {
+    gridSize: 7,
+    hint: '第3关：引爆炸弹，竖直清屏！',
+    walls: [
+      // 上排6只（x=-3,-2,-1,1,2,3, y=-2）
+      { x: -3, y: -2, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+      // 下排6只（x=-3,-2,-1,1,2,3, y=2）
+      { x: -3, y: 2, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+    ],
+    staticBombs: [
+      // LV2静态炸弹竖直爆炸，放在x=-2和x=2列，y=0
+      // 竖直上下3格可覆盖y=-2和y=2的老鼠
+      { x: -2, y: 0, evolution: 2 },
+      { x: 2, y: 0, evolution: 2 }
+    ]
+  },
+
+  // 0004 - 初遇挑战（难度关）
+  // 6只1级鼠分散，需要2颗炸弹精确计算
+  4: {
+    gridSize: 6,
+    hint: '第4关：老鼠分散了，需要精确放置',
+    walls: [
+      { x: -2, y: -2, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+    ],
+    staticBombs: []
+  },
+
+  // 0005 - 迷宫探索（难度关）
+  // 8只1级鼠，左右分布（同一y行，x方向分布）
+  // 1个LV3静态炸弹横向爆炸覆盖左右
+  5: {
+    gridSize: 7,
+    hint: '第5关：引爆炸弹，横向清屏！',
+    walls: [
+      // 左侧4只（y=-1,0,1, x=-3）
+      { x: -3, y: -1, type: 'normal' },
+      { x: -3, y: 0, type: 'normal' },
+      { x: -3, y: 1, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      // 右侧4只（y=-1,0,1, x=3）
+      { x: 3, y: -1, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+    ],
+    staticBombs: [
+      // LV3静态炸弹横向爆炸，放在y=0行，x=0
+      // 横向左右3格可覆盖x=-3到x=3的老鼠
+      { x: 0, y: 0, evolution: 3 }
+    ]
+  },
+
+  // ========== 第二阶段：引入静态炸弹（0006-0010）==========
+
+  // 0006 - 精确计算（挑战关）
+  // 5只1级鼠对角线排列
+  // 1个LV4静态炸弹十字+对角覆盖对角线
+  6: {
+    gridSize: 6,
+    hint: '第6关：挑战！用最少的炸弹消灭所有老鼠',
+    walls: [
+      { x: -2, y: -2, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+    ],
+    staticBombs: [
+      // LV4静态炸弹十字+对角，放在(0,-1)
+      // 对角方向可覆盖对角线老鼠
+      { x: 0, y: -1, evolution: 5 }
+    ]
+  },
+
+  // 0007 - 连锁反应（难度关）
+  // 6只1级鼠分两组，左右两侧（同一y行，x方向分布）
+  // 2个LV3静态炸弹横向爆炸覆盖左右组
+  7: {
+    gridSize: 7,
+    hint: '第7关：引爆炸弹，触发连锁反应！',
+    walls: [
+      // 左侧3只（y=-1,0,1, x=-3）
+      { x: -3, y: -1, type: 'normal' },
+      { x: -3, y: 0, type: 'normal' },
+      { x: -3, y: 1, type: 'normal' },
+      // 右侧3只（y=-1,0,1, x=3）
+      { x: 3, y: -1, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      // LV3静态炸弹横向爆炸，放在y=-1和y=1行
+      // 横向左右3格可覆盖x=-3到x=3的老鼠
+      { x: 0, y: -1, evolution: 3 },
+      { x: 0, y: 1, evolution: 3 }
+    ]
+  },
+
+  // 0008 - 资源管理（难度关）
+  // 7只1级鼠 + 2只2级鼠，上下分布（同一x列，y方向分布）
+  // 2个LV2静态炸弹竖直爆炸覆盖上下
+  8: {
+    gridSize: 7,
+    hint: '第8关：2级老鼠需要更强的炸弹',
+    walls: [
+      // 上排4只1级鼠（x=-3,-1,1,3, y=-2）
+      { x: -3, y: -2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+      // 下排2只2级鼠 + 1只1级鼠（x=-2,0,2, y=2）
+      { x: -2, y: 2, type: 'strong' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: 2, y: 2, type: 'strong' },
+    ],
+    staticBombs: [
+      // LV2静态炸弹竖直爆炸，放在x=-2和x=2列，y=0
+      // 竖直上下3格可覆盖y=-2和y=2的老鼠
+      { x: -2, y: 0, evolution: 2 },
+      { x: 2, y: 0, evolution: 2 }
+    ]
+  },
+
+  // 0009 - 极限布局（难度关）
+  // 12只1级鼠分散复杂
+  // 2个LV4静态炸弹十字+对角覆盖复杂布局
+  9: {
+    gridSize: 7,
+    hint: '第9关：复杂布局，仔细规划炸弹顺序',
+    walls: [
+      // 四角
+      { x: -3, y: -3, type: 'normal' },
+      { x: 3, y: -3, type: 'normal' },
+      { x: -3, y: 3, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      // 四边中点
+      { x: -3, y: 0, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 0, y: -3, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      // 内圈
+      { x: -1, y: -1, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      // LV4静态炸弹十字+对角，放在(-1,0)和(1,0)
+      // 十字和对角可覆盖周围老鼠
+      { x: -1, y: 0, evolution: 5 },
+      { x: 1, y: 0, evolution: 5 }
+    ]
+  },
+
+  // 0010 - 一键清屏（彩蛋关）
+  // 16只1级鼠排列成网格（同一x列或y行分布）
+  // 2个LV2静态炸弹竖直爆炸覆盖网格
+  10: {
+    gridSize: 8,
+    hint: '第10关：彩蛋！找到一键清屏的位置',
+    walls: [
+      // 外圈16只（x=-3,-1,1,3, y=-3,-1,1,3）
+      { x: -3, y: -3, type: 'normal' },
+      { x: -1, y: -3, type: 'normal' },
+      { x: 1, y: -3, type: 'normal' },
+      { x: 3, y: -3, type: 'normal' },
+      { x: -3, y: -1, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: -3, y: 1, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: -3, y: 3, type: 'normal' },
+      { x: -1, y: 3, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      // LV2静态炸弹竖直爆炸，放在x=-2和x=2列，y=0
+      // 竖直上下3格可覆盖y=-3,-1,1,3的老鼠
+      { x: -2, y: 0, evolution: 2 },
+      { x: 2, y: 0, evolution: 2 }
+    ]
+  },
+
+  // ========== 第三阶段：2级鼠登场，静态炸弹增多（0011-0015）==========
+
+  // 0011 - 新敌人登场（教学关）
+  // 2只1级鼠 + 2只2级鼠，上下分布（同一x列，y方向分布）
+  // 2个LV2静态炸弹竖直爆炸帮助消灭2级鼠
+  11: {
+    gridSize: 6,
+    hint: '第11关：2级老鼠需要炸两次！',
+    walls: [
+      // 上排2只1级鼠（x=-2,2, y=-1）
+      { x: -2, y: -1, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+      // 下排2只2级鼠（x=-2,2, y=1）
+      { x: -2, y: 1, type: 'strong' },
+      { x: 2, y: 1, type: 'strong' },
+    ],
+    staticBombs: [
+      // LV2静态炸弹竖直爆炸，放在x=-2和x=2列，y=0
+      // 竖直上下3格可覆盖y=-1和y=1的老鼠
+      { x: -2, y: 0, evolution: 2 },
+      { x: 2, y: 0, evolution: 2 }
+    ]
+  },
+
+  // 0012 - 混合战斗（教学关）
+  // 4只1级鼠 + 4只2级鼠，上下分布（同一x列，y方向分布）
+  // 2个LV2静态炸弹竖直爆炸覆盖混合
+  12: {
+    gridSize: 7,
+    hint: '第12关：1级和2级老鼠混合出现',
+    walls: [
+      // 上排4只（x=-3,-1,1,3, y=-2）
+      { x: -3, y: -2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 1, y: -2, type: 'strong' },
+      { x: 3, y: -2, type: 'strong' },
+      // 下排4只（x=-3,-1,1,3, y=2）
+      { x: -3, y: 2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 1, y: 2, type: 'strong' },
+      { x: 3, y: 2, type: 'strong' },
+    ],
+    staticBombs: [
+      // LV2静态炸弹竖直爆炸，放在x=-2和x=2列，y=0
+      // 竖直上下3格可覆盖y=-2和y=2的老鼠
+      { x: -2, y: 0, evolution: 2 },
+      { x: 2, y: 0, evolution: 2 }
+    ]
+  },
+
+  // 0013 - 积分大作战（积分关）
+  // 6只1级鼠 + 6只2级鼠，上下分布（同一x列，y方向分布）
+  // 3个LV2静态炸弹竖直爆炸形成连锁
+  13: {
+    gridSize: 7,
+    hint: '第13关：大量老鼠，赚取积分！',
+    walls: [
+      // 上排6只（x=-3,-2,-1,1,2,3, y=-2）
+      { x: -3, y: -2, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 1, y: -2, type: 'strong' },
+      { x: 2, y: -2, type: 'strong' },
+      { x: 3, y: -2, type: 'strong' },
+      // 下排6只（x=-3,-2,-1,1,2,3, y=2）
+      { x: -3, y: 2, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 1, y: 2, type: 'strong' },
+      { x: 2, y: 2, type: 'strong' },
+      { x: 3, y: 2, type: 'strong' },
+    ],
+    staticBombs: [
+      // LV2静态炸弹竖直爆炸，放在x=-2,0,2列，y=0
+      // 竖直上下3格可覆盖y=-2和y=2的老鼠
+      { x: -2, y: 0, evolution: 2 },
+      { x: 0, y: 0, evolution: 2 },
+      { x: 2, y: 0, evolution: 2 }
+    ]
+  },
+
+  // 0014 - 精准打击（难度关）
+  // 4只1级鼠 + 4只2级鼠，左右分布（同一y行，x方向分布）
+  // 3个LV3静态炸弹横向爆炸覆盖
+  14: {
+    gridSize: 7,
+    hint: '第14关：优先消灭2级老鼠',
+    walls: [
+      // 上排4只1级鼠（x=-3,-1,1,3, y=-1）
+      { x: -3, y: -1, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      // 下排4只2级鼠（x=-3,-1,1,3, y=1）
+      { x: -3, y: 1, type: 'strong' },
+      { x: -1, y: 1, type: 'strong' },
+      { x: 1, y: 1, type: 'strong' },
+      { x: 3, y: 1, type: 'strong' },
+    ],
+    staticBombs: [
+      // LV3静态炸弹横向爆炸，放在y=-1,0,1行，x=0
+      // 横向左右3格可覆盖x=-3到x=3的老鼠
+      { x: 0, y: -1, evolution: 3 },
+      { x: 0, y: 0, evolution: 3 },
+      { x: 0, y: 1, evolution: 3 }
+    ]
+  },
+
+  // 0015 - 连锁爆破（难度关）
+  // 8只2级鼠环形排列
+  // 3个LV4静态炸弹中心排列，十字+对角覆盖环形
+  15: {
+    gridSize: 7,
+    hint: '第15关：利用静态炸弹连锁消灭2级老鼠',
+    walls: [
+      // 8只2级鼠，环形（x=-2,0,2, y=-2,0,2）
+      { x: -2, y: -2, type: 'strong' },
+      { x: 0, y: -2, type: 'strong' },
+      { x: 2, y: -2, type: 'strong' },
+      { x: -2, y: 0, type: 'strong' },
+      { x: 2, y: 0, type: 'strong' },
+      { x: -2, y: 2, type: 'strong' },
+      { x: 0, y: 2, type: 'strong' },
+      { x: 2, y: 2, type: 'strong' },
+    ],
+    staticBombs: [
+      // LV4静态炸弹十字+对角，放在(-1,-1),(1,-1),(-1,1)
+      // 十字和对角可覆盖周围环形老鼠
+      { x: -1, y: -1, evolution: 5 },
+      { x: 1, y: -1, evolution: 5 },
+      { x: -1, y: 1, evolution: 5 }
+    ]
+  },
+
+  // ========== 第四阶段：大量静态炸弹，连锁爽感（0016-0020）==========
+
+  // 0016 - 极限挑战（挑战关）
+  // 8只2级鼠，环形排列
+  // 4个LV4静态炸弹中心排列，十字+对角覆盖
+  16: {
+    gridSize: 6,
+    hint: '第16关：挑战！空间狭小，精确计算',
+    walls: [
+      // 8只2级鼠，环形（x=-2,0,2, y=-2,0,2）
+      { x: -2, y: -2, type: 'strong' },
+      { x: 0, y: -2, type: 'strong' },
+      { x: 2, y: -2, type: 'strong' },
+      { x: -2, y: 0, type: 'strong' },
+      { x: 2, y: 0, type: 'strong' },
+      { x: -2, y: 2, type: 'strong' },
+      { x: 0, y: 2, type: 'strong' },
+      { x: 2, y: 2, type: 'strong' },
+    ],
+    staticBombs: [
+      // LV4静态炸弹十字+对角，放在四角
+      // 十字和对角可覆盖周围环形老鼠
+      { x: -1, y: -1, evolution: 5 },
+      { x: 1, y: -1, evolution: 5 },
+      { x: -1, y: 1, evolution: 5 },
+      { x: 1, y: 1, evolution: 5 }
+    ]
+  },
+
+  // 0017 - 混合军团（难度关）
+  // 6只1级鼠 + 6只2级鼠，上下分布（同一x列，y方向分布）
+  // 4个LV2静态炸弹竖直排列，大量连锁
+  17: {
+    gridSize: 7,
+    hint: '第17关：大量敌人，需要高效策略',
+    walls: [
+      // 上排6只（x=-3,-2,-1,1,2,3, y=-2）
+      { x: -3, y: -2, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 1, y: -2, type: 'strong' },
+      { x: 2, y: -2, type: 'strong' },
+      { x: 3, y: -2, type: 'strong' },
+      // 下排6只（x=-3,-2,-1,1,2,3, y=2）
+      { x: -3, y: 2, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 1, y: 2, type: 'strong' },
+      { x: 2, y: 2, type: 'strong' },
+      { x: 3, y: 2, type: 'strong' },
+    ],
+    staticBombs: [
+      // LV2静态炸弹竖直爆炸，放在x=-3,-1,1,3列，y=0
+      // 竖直上下3格可覆盖y=-2和y=2的老鼠
+      { x: -3, y: 0, evolution: 2 },
+      { x: -1, y: 0, evolution: 2 },
+      { x: 1, y: 0, evolution: 2 },
+      { x: 3, y: 0, evolution: 2 }
+    ]
+  },
+
+  // 0018 - 精英挑战（难度关）
+  // 12只2级鼠，左右分布（同一y行，x方向分布）
+  // 4个LV3静态炸弹横向排列，大量连锁
+  18: {
+    gridSize: 7,
+    hint: '第18关：全是2级老鼠，考验技巧',
+    walls: [
+      // 12只2级鼠，3行4列
+      // 上排（y=-1, x=-3,-1,1,3）
+      { x: -3, y: -1, type: 'strong' },
+      { x: -1, y: -1, type: 'strong' },
+      { x: 1, y: -1, type: 'strong' },
+      { x: 3, y: -1, type: 'strong' },
+      // 中排（y=0, x=-3,-1,1,3）
+      { x: -3, y: 0, type: 'strong' },
+      { x: -1, y: 0, type: 'strong' },
+      { x: 1, y: 0, type: 'strong' },
+      { x: 3, y: 0, type: 'strong' },
+      // 下排（y=1, x=-3,-1,1,3）
+      { x: -3, y: 1, type: 'strong' },
+      { x: -1, y: 1, type: 'strong' },
+      { x: 1, y: 1, type: 'strong' },
+      { x: 3, y: 1, type: 'strong' },
+    ],
+    staticBombs: [
+      // LV3静态炸弹横向爆炸，放在y=-1,0,1行，x=-2和x=2
+      // 横向左右3格可覆盖x=-3到x=3的老鼠
+      { x: -2, y: -1, evolution: 3 },
+      { x: 2, y: -1, evolution: 3 },
+      { x: -2, y: 1, evolution: 3 },
+      { x: 2, y: 1, evolution: 3 }
+    ]
+  },
+
+  // 0019 - 终极混合（难度关）
+  // 8只1级鼠 + 8只2级鼠，上下分布（同一x列，y方向分布）
+  // 4个LV2静态炸弹竖直排列，大量连锁
+  19: {
+    gridSize: 8,
+    hint: '第19关：终极混合，考验综合能力',
+    walls: [
+      // 上排8只（x=-3,-2,-1,1,2,3, y=-2）
+      { x: -3, y: -2, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+      { x: -3, y: -3, type: 'strong' },
+      { x: 3, y: -3, type: 'strong' },
+      // 下排8只（x=-3,-2,-1,1,2,3, y=2）
+      { x: -3, y: 2, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: -3, y: 3, type: 'strong' },
+      { x: 3, y: 3, type: 'strong' },
+    ],
+    staticBombs: [
+      // LV2静态炸弹竖直爆炸，放在x=-2,0,2列，y=0
+      // 竖直上下3格可覆盖y=-2,-3,2,3的老鼠
+      { x: -2, y: 0, evolution: 2 },
+      { x: 0, y: 0, evolution: 2 },
+      { x: 2, y: 0, evolution: 2 }
+    ]
+  },
+
+  // 0020 - 半百庆典（彩蛋关）
+  // 20只1级鼠，上下分布（同一x列，y方向分布）
+  // 4个LV2静态炸弹竖直排列，完美连锁
+  20: {
+    gridSize: 8,
+    hint: '第20关：彩蛋！完美连锁清屏',
+    walls: [
+      // 上排10只（x=-3,-2,-1,0,1,2,3, y=-2,-3）
+      { x: -3, y: -2, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+      { x: -3, y: -3, type: 'normal' },
+      { x: 0, y: -3, type: 'normal' },
+      { x: 3, y: -3, type: 'normal' },
+      // 下排10只（x=-3,-2,-1,0,1,2,3, y=2,3）
+      { x: -3, y: 2, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: -3, y: 3, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+    ],
+    staticBombs: [
+      // LV2静态炸弹竖直爆炸，放在x=-2,0,2列，y=0
+      // 竖直上下3格可覆盖y=-2,-3,2,3的老鼠
+      { x: -2, y: 0, evolution: 2 },
+      { x: 0, y: 0, evolution: 2 },
+      { x: 2, y: 0, evolution: 2 }
+    ]
+  },
+};

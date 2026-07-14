@@ -172,18 +172,6 @@ class GameLogic {
     
     if (this.score < cost) {
       this.emitEvent('action_rejected', { reason: 'insufficient_score', x, y, current: this.score, cost: cost });
-      
-      // [v0.9.3-fix] 积分不足时检查是否可以放置任何炸弹，如果不能则触发失败
-      const minCost = Math.min(...bombCosts);
-      if (this.score < minCost) {
-        // 检查是否还有待爆炸的炸弹
-        const hasPendingBombs = this.bombs.size > 0 || 
-          Array.from(this.staticBombs.values()).some(sb => sb.active);
-        if (!hasPendingBombs) {
-          this.checkFailure();
-        }
-      }
-      
       return false;
     }
     
@@ -688,10 +676,10 @@ class GameLogic {
     this.pendingVictory = true;
     this.gameActive = false;
     
-    // [v0.9.3] 延迟发送胜利事件，等待动画完成（0.4秒）
+    // [v0.9.0-fix] 延迟发送胜利事件，等待动画完成
     setTimeout(() => {
       this.confirmVictory();
-    }, 400);
+    }, 1500); // 等待1.5秒动画
   }
 
   confirmVictory() {
@@ -711,17 +699,16 @@ class GameLogic {
 
   checkFailure() {
     // [v0.8.0] 失败条件：分数 <= 0 且 没有待爆炸的炸弹（动态炸弹+静态炸弹）
-    // [v0.9.3-fix] 或者分数不足以放置最便宜的炸弹且没有待爆炸的炸弹
     const hasPendingBombs = this.bombs.size > 0 || 
       Array.from(this.staticBombs.values()).some(sb => sb.active);
     
-    const minCost = 2; // 最便宜炸弹消耗2分
-    const cannotAffordAnyBomb = this.score < minCost;
-    
-    if ((this.score <= 0 || cannotAffordAnyBomb) && !hasPendingBombs) {
+    if (this.score <= 0 && !hasPendingBombs) {
       this.gameActive = false;
       
       const remainingWalls = this.walls.size;
+      
+      // 生产环境关闭游戏结束日志
+      // console.log('[GameLogic] Game Over! Remaining walls:', remainingWalls);
       
       this.emitEvent('level_failed', { 
         reason: 'out_of_score',

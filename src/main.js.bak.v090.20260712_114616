@@ -167,26 +167,6 @@ class BombWallGame {
     
     this.adManager = new AdManager();
     
-    // [v0.9.1] 初始化通关弹窗
-    this.levelCompletePopup = new LevelCompletePopup(this.canvas);
-    this.levelCompletePopup.onNextLevel = () => {
-      this.hideLevelComplete();
-      var nextLevel = this.levelSystem.completeLevel(this.gameLogic.level, this.gameLogic.score);
-      this.startLevel(nextLevel);
-    };
-    
-    // [v0.9.2] 初始化失败弹窗
-    this.levelFailPopup = new LevelFailPopup(this.canvas);
-    this.levelFailPopup.onWatchAd = () => {
-      this.handleWatchAdForScore();
-    };
-    this.levelFailPopup.onWaitRestart = () => {
-      this.hideLevelFail();
-      // [v0.9.9-fix] 失败回到第1关时重置积分为初始值
-      this.gameLogic.score = 10;
-      this.startLevel(1); // 回到第1关
-    };
-    
     this.transitionTimer = null;
     this.hint = '';
     this.hintTimer = null;
@@ -332,20 +312,6 @@ class BombWallGame {
     if (this.audio && !this.bgmStarted) {
       this.bgmStarted = true;
       this.audio.playBGM();
-    }
-    
-    // [v0.9.1] 优先检测通关弹窗点击
-    if (this.gameState === 'victory' && this.levelCompletePopup) {
-      if (this.levelCompletePopup.onTouch(x, y)) {
-        return;
-      }
-    }
-    
-    // [v0.9.2] 优先检测失败弹窗点击
-    if (this.gameState === 'failed' && this.levelFailPopup) {
-      if (this.levelFailPopup.onTouch(x, y)) {
-        return;
-      }
     }
     
     if (this.gameState === 'login') {
@@ -627,21 +593,8 @@ class BombWallGame {
     // [v0.9.0] 使用DDA计算下一关
     var nextLevel = this.levelSystem.completeLevel(event.level, event.score);
     
-    // [v0.9.1] 显示通关弹窗
-    this.levelCompletePopup.show({
-      level: event.level,
-      score: event.score,
-      bombsPlaced: event.bombsPlaced || 0,
-      wallsDestroyed: event.wallsDestroyed || 0,
-      nextLevel: nextLevel
-    });
-    
-    // 3秒后自动进入下一关（如果用户没点击）
     this.transitionTimer = setTimeout(() => {
-      if (this.gameState === 'victory') {
-        this.levelCompletePopup.hide();
-        this.startLevel(nextLevel);
-      }
+      this.startLevel(nextLevel);
     }, 3000);
   }
 
@@ -650,33 +603,12 @@ class BombWallGame {
     this.gameState = 'failed';
     this.audio.play('defeat');
     
-    // [v0.9.2] 新计分系统：失败不再重置分数，保留当前分数用于广告复活
-    // 计算本局失败次数（用于广告奖励递增）
-    var failCount = (this.storage.get('level_' + this.gameLogic.level + '_fails') || 0) + 1;
-    this.storage.set('level_' + this.gameLogic.level + '_fails', failCount);
+    // [v0.8.0] 新计分系统：失败重置分数为10分
+    this.gameLogic.score = 10;
     
-    // 广告奖励：第1次10分，第2次20分，第3次50分
-    var adReward = 10;
-    if (failCount === 2) adReward = 20;
-    else if (failCount >= 3) adReward = 50;
-    
-    // [v0.9.2] 显示失败弹窗
-    this.showLevelFail({
-      level: this.gameLogic.level,
-      score: this.gameLogic.score,
-      failCount: failCount,
-      adReward: adReward
-    });
-    
-    // 10秒后回到第1关
     this.transitionTimer = setTimeout(() => {
-      if (this.gameState === 'failed') {
-        this.hideLevelFail();
-        // [v0.9.9-fix] 失败回到第1关时重置积分为初始值
-        this.gameLogic.score = 10;
-        this.startLevel(1); // 回到第1关
-      }
-    }, 10000);
+      this.startLevel(this.gameLogic.level);
+    }, 3000);
   }
 
   onActionRejected(event) {
@@ -732,16 +664,6 @@ class BombWallGame {
       this.particles.update();
       // 更新全局动画时间（用于墙壁动画）
       this.renderer.updateBombAnimation(dt);
-      
-      // [v0.9.1] 更新通关弹窗动画
-      if (this.gameState === 'victory' && this.levelCompletePopup) {
-        this.levelCompletePopup.update(dt);
-      }
-      
-      // [v0.9.2] 更新失败弹窗动画
-      if (this.gameState === 'failed' && this.levelFailPopup) {
-        this.levelFailPopup.update(dt);
-      }
       
       if (this.gameLogic.pendingVictory) {
         if (this.animator.getActiveCount() === 0 && this.particles.getActiveCount() === 0) {
@@ -812,23 +734,12 @@ class BombWallGame {
       ctx.restore(); // 恢复裁剪
       
       this.renderUI();
-      
       // 生产环境关闭屏幕日志显示
       if (this.isDebugMode) {
         this.drawDebugLogs(ctx, pr);
       }
       
-      ctx.restore(); // 恢复 shake 的 save
-      
-      // [v0.9.1] 绘制通关弹窗（在最上层，不使用 Canvas 变换）
-      if (this.gameState === 'victory' && this.levelCompletePopup) {
-        this.levelCompletePopup.draw();
-      }
-      
-      // [v0.9.2] 绘制失败弹窗（在最上层）
-      if (this.gameState === 'failed' && this.levelFailPopup) {
-        this.levelFailPopup.draw();
-      }
+      ctx.restore();
       
       this.animator.drawScreenFlash(ctx, w, h);
     } catch (e) {
@@ -965,62 +876,41 @@ class BombWallGame {
     var pr = this.pixelRatio || 2;
     
     if (this.gameState === 'victory') {
-      // [v0.9.1] 新通关弹窗由 LevelCompletePopup 绘制，renderUI 只绘制半透明背景
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
       ctx.fillRect(0, 0, w, h);
+      
+      ctx.fillStyle = '#FFD700';
+      ctx.font = 'bold ' + (36 * pr) + 'px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('关卡完成!', w / 2, h / 2 - 60 * pr);
+      
+      var state = this.gameLogic.getState();
+      ctx.fillStyle = '#FFF';
+      ctx.font = (18 * pr) + 'px sans-serif';
+      ctx.fillText('最终积分: ' + state.score, w / 2, h / 2 - 15 * pr);
+      ctx.fillText('放置炸弹: ' + state.bombsPlaced + '颗', w / 2, h / 2 + 15 * pr);
+      ctx.fillText('消灭老鼠: ' + state.wallsDestroyed + '只', w / 2, h / 2 + 45 * pr);
+      ctx.fillText('3秒后进入下一关...', w / 2, h / 2 + 85 * pr);
     }
     
     if (this.gameState === 'failed') {
-      // [v0.9.2] 新失败弹窗由 LevelFailPopup 绘制，renderUI 只绘制半透明背景
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
       ctx.fillRect(0, 0, w, h);
+      
+      ctx.fillStyle = '#FF6B35';
+      ctx.font = 'bold ' + (32 * pr) + 'px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('游戏结束', w / 2, h / 2 - 40 * pr);
+      
+      var state = this.gameLogic.getState();
+      ctx.fillStyle = '#888';
+      ctx.font = (16 * pr) + 'px sans-serif';
+      ctx.fillText('积分耗尽，无法继续放置炸弹', w / 2, h / 2 - 5 * pr);
+      ctx.fillText('积分已重置为10分', w / 2, h / 2 + 25 * pr);
+      ctx.fillText('3秒后重新开始...', w / 2, h / 2 + 55 * pr);
     }
-  }
-
-  hideLevelComplete() {
-    this.levelCompletePopup.hide();
-    if (this.transitionTimer) {
-      clearTimeout(this.transitionTimer);
-      this.transitionTimer = null;
-    }
-  }
-
-  hideLevelFail() {
-    this.levelFailPopup.hide();
-    if (this.transitionTimer) {
-      clearTimeout(this.transitionTimer);
-      this.transitionTimer = null;
-    }
-  }
-
-  showLevelComplete(data) {
-    this.levelCompletePopup.show(data);
-  }
-
-  showLevelFail(data) {
-    this.levelFailPopup.show(data);
-  }
-
-  handleWatchAdForScore() {
-    // [v0.9.2] 处理观看广告获得积分
-    var self = this;
-    this.adManager.showRewardedAd({
-      onSuccess: function(res) {
-        // 获取当前失败次数对应的奖励
-        var failCount = self.storage.get('level_' + self.gameLogic.level + '_fails') || 1;
-        var reward = 10;
-        if (failCount === 2) reward = 20;
-        else if (failCount >= 3) reward = 50;
-        
-        self.gameLogic.score += reward;
-        self.hideLevelFail();
-        self.gameState = 'playing';
-        self.showHint('获得 ' + reward + ' 积分!');
-      },
-      onFail: function(res) {
-        self.showHint('广告未看完，未获得积分');
-      }
-    });
   }
 }
 
