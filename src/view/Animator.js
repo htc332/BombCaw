@@ -81,11 +81,11 @@ function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerG
   // evo=5 (Lv4): 十字 1 格 + 对角 1 格
   
   if (evo === 2) {
-    // Lv2 蓝色：上下 3 格（竖直方向）
+    // [v0.9.9] Lv2 蓝色：上下 2 格（竖直方向）
     this.cells.push({ x: 0, y: 0, distance: 0, spawnTime: 0 });
     var dirs2 = [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }];
     dirs2.forEach(function(dir) {
-      for (var d = 1; d <= 3; d++) {
+      for (var d = 1; d <= 2; d++) {
         var gx = dir.dx * d;
         var gy = dir.dy * d;
         if (gx < this.minX || gx > this.maxX || gy < this.minY || gy > this.maxY) continue;
@@ -99,12 +99,12 @@ function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerG
       }
     }.bind(this));
   } else if (evo === 3) {
-    // Lv3 紫色：左右 3 格（横向方向）+ 上方1格
+    // [v0.9.9] Lv3 紫色：左右 2 格（横向方向）
     this.cells.push({ x: 0, y: 0, distance: 0, spawnTime: 0 });
-    // 横向左右各3格（带阻挡）
+    // 横向左右各2格（带阻挡）
     var dirs3 = [{ dx: -1, dy: 0 }, { dx: 1, dy: 0 }];
     dirs3.forEach(function(dir) {
-      for (var d = 1; d <= 3; d++) {
+      for (var d = 1; d <= 2; d++) {
         var gx = dir.dx * d;
         var gy = dir.dy * d;
         if (gx < this.minX || gx > this.maxX || gy < this.minY || gy > this.maxY) continue;
@@ -117,15 +117,8 @@ function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerG
         });
       }
     }.bind(this));
-    // 上方1格（不受阻挡影响，因为不在主方向上）
-    var upY = -1;
-    if (upY >= this.minY && upY <= this.maxY) {
-      this.cells.push({
-        x: 0, y: upY,
-        distance: 1,
-        spawnTime: ExplosionConfig.spreadInterval
-      });
-    }
+    // [debug] 打印LV3爆炸格子
+    console.log('[LV3 Explosion] cells:', this.cells.map(c => 'x:'+c.x+',y:'+c.y).join(' | '));
   } else if (evo === 5) {
     // Lv4 红色：十字 1 格 + 对角 1 格
     this.cells.push({ x: 0, y: 0, distance: 0, spawnTime: 0 });

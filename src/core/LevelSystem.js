@@ -223,11 +223,19 @@ class LevelSystem {
   }
 
   /**
-   * [v0.9.0] 完成关卡（支持DDA）
+   * [v0.9.0] 完成关卡（支持随机跳转）
+   * 第1关固定，之后从2-5关随机选择
    */
   completeLevel(level, score) {
-    // 计算下一关（动态难度调整）
-    const nextLevel = this.calculateNextLevel(level, score);
+    let nextLevel;
+    
+    if (level === 1) {
+      // 第1关结束后，从2-5关随机选择
+      nextLevel = Math.floor(Math.random() * 4) + 2; // 2,3,4,5
+    } else {
+      // 其他关卡按原逻辑（或也可以随机）
+      nextLevel = this.calculateNextLevel(level, score);
+    }
     
     // 解锁下一关
     this.unlockNext(level);

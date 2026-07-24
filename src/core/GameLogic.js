@@ -166,8 +166,8 @@ class GameLogic {
       return false;
     }
 
-    // [v0.8.0] 新计分系统：检查分数是否足够
-    const bombCosts = [2, 3, 4, 5]; // LV1-4 消耗
+    // [v0.9.9] 新计分系统：LV1/2/3统一2分，LV4改为4分
+    const bombCosts = [2, 2, 2, 4];
     const cost = bombCosts[this.selectedBombType] || 2;
     
     if (this.score < cost) {
@@ -332,36 +332,30 @@ class GameLogic {
         range.push(pos);
       });
     } else if (evo === 2) {
-      // [v0.8.0] LV2: 竖直方向上下各3格（带墙壁鼠阻挡）
+      // [v0.9.9] LV2: 竖直方向上下各2格（带墙壁鼠阻挡）
       const dirs = [[0,1], [0,-1]];
       dirs.forEach(([dx, dy]) => {
-        for (let d = 1; d <= 3; d++) {
+        for (let d = 1; d <= 2; d++) {
           const pos = { x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d };
           range.push(pos);
           // [v0.8.1] 只有墙壁鼠(type: 'wall')能阻挡爆炸
-          // 使用原始墙壁状态检查（不检查dying，因为爆炸前还没死）
           const key = `${pos.x},${pos.y}`;
           const wall = this.walls.get(key);
           if (wall && wall.type === 'wall') break;
         }
       });
     } else if (evo === 3) {
-      // [v0.8.0] LV3: 横向左右各3格，上方1格（带墙壁鼠阻挡）
-      // 横向左右各3格
+      // [v0.9.9] LV3: 横向左右各2格（带墙壁鼠阻挡）
       const hDirs = [[1,0], [-1,0]];
       hDirs.forEach(([dx, dy]) => {
-        for (let d = 1; d <= 3; d++) {
+        for (let d = 1; d <= 2; d++) {
           const pos = { x: bomb.x + dx * d, y: bomb.y + dy * d, distance: d };
           range.push(pos);
-          // [v0.8.1] 只有墙壁鼠(type: 'wall')能阻挡爆炸
-          // 使用原始墙壁状态检查（不检查dying，因为爆炸前还没死）
           const key = `${pos.x},${pos.y}`;
           const wall = this.walls.get(key);
           if (wall && wall.type === 'wall') break;
         }
       });
-      // 上方1格
-      range.push({ x: bomb.x, y: bomb.y - 1, distance: 1 });
     } else if (evo === 5) {
       // [v0.8.0] LV4: 爆炸范围不变 - 十字1格 + 对角1格
       const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
