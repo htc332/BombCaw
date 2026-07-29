@@ -1084,8 +1084,8 @@ class Renderer {
       const size = cs;
       
       let drawn = false;
-      // [v0.7.9-fix] 根据 evolution 映射到正确的 level 键
-      const levelMap = { 0: 'level1', 2: 'level2', 3: 'level3', 5: 'level4' };
+      // [v0.9.9-fix] 根据 evolution 映射到正确的 level 键 (0->level1, 1->level2, 2->level3, 3->level4)
+      const levelMap = { 0: 'level1', 1: 'level2', 2: 'level3', 3: 'level4' };
       const levelKey = levelMap[bomb.evolution] || 'level1';
       const sprite = this.bombSprites[levelKey];
       if (sprite && sprite.loaded) {
@@ -1101,8 +1101,8 @@ class Renderer {
   
   drawAnimatedBomb(ctx, bomb, cx, cy, size) {
     const evo = bomb.evolution || 0;
-    // [v0.7.9-fix] 根据 evolution 映射到正确的 level 键
-    const levelMap = { 0: 'level1', 2: 'level2', 3: 'level3', 5: 'level4' };
+    // [v0.9.9-fix] 根据 evolution 映射到正确的 level 键 (0->level1, 1->level2, 2->level3, 3->level4)
+    const levelMap = { 0: 'level1', 1: 'level2', 2: 'level3', 3: 'level4' };
     const levelKey = levelMap[evo] || 'level1';
     
     const sprite = this.bombSprites[levelKey];
