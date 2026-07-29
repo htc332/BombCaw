@@ -191,6 +191,26 @@ function validateLevel(levelNum, level) {
     }
   });
   
+  
+  // 8. 检查 staticBomb 方向是否与 walls 分布匹配
+  staticBombs.forEach((bomb, index) => {
+    if (bomb.evolution < 0 || bomb.evolution > 3) return;
+    
+    // 计算 walls 的分布方向
+    const verticalWalls = walls.filter(w => w.x === bomb.x).length;
+    const horizontalWalls = walls.filter(w => w.y === bomb.y).length;
+    
+    // evolution=1 (竖直) 应该对应竖直分布的 walls
+    if (bomb.evolution === 1 && verticalWalls === 0 && horizontalWalls > 0) {
+      warnings.push(`⚠️ staticBombs[${index}] 坐标(${bomb.x},${bomb.y}) evolution=1(竖直)但walls是横向分布，方向可能不匹配`);
+    }
+    
+    // evolution=2 (横向) 应该对应横向分布的 walls
+    if (bomb.evolution === 2 && horizontalWalls === 0 && verticalWalls > 0) {
+      warnings.push(`⚠️ staticBombs[${index}] 坐标(${bomb.x},${bomb.y}) evolution=2(横向)但walls是竖直分布，方向可能不匹配`);
+    }
+  });
+  
   return { errors, warnings, wallCount: walls.length, bombCount: staticBombs.length };
 }
 
