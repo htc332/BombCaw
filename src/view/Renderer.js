@@ -845,8 +845,10 @@ class Renderer {
       
       const gx = wall.x;
       const gy = wall.y;
-      const col = gx + half;
-      const row = gy + half;
+      // [v0.9.9-fix] 使用与 drawGrid 一致的坐标计算
+      const minC = gridSize % 2 === 0 ? -half + 1 : -half;
+      const col = gx - minC;
+      const row = gy - minC;
       
       const x = offsetX + col * (cs + g);
       const y = offsetY + row * (cs + g);
@@ -941,8 +943,10 @@ class Renderer {
     });
     
     this.deathAnimations.forEach(anim => {
-      const col = anim.x + half;
-      const row = anim.y + half;
+      // [v0.9.9-fix] 使用与 drawGrid 一致的坐标计算
+      const minC = gridSize % 2 === 0 ? -half + 1 : -half;
+      const col = anim.x - minC;
+      const row = anim.y - minC;
       const x = offsetX + col * (cs + g);
       const y = offsetY + row * (cs + g);
       
@@ -1069,10 +1073,12 @@ class Renderer {
   drawBombs(bombs, offsetX, offsetY, gridSize, dt) {
     const ctx = this.ctx, pr = this.pixelRatio || 2, half = Math.floor(gridSize / 2);
     const cs = this.cellSize, g = this.gap || 0;
+    // [v0.9.9-fix] 使用与 drawGrid 一致的坐标计算
+    const minC = gridSize % 2 === 0 ? -half + 1 : -half;
     
     bombs.forEach(bomb => {
-      const col = bomb.x + half;
-      const row = bomb.y + half;
+      const col = bomb.x - minC;
+      const row = bomb.y - minC;
       const cx = offsetX + col * (cs + g) + cs / 2;
       const cy = offsetY + row * (cs + g) + cs / 2;
       const size = cs;
@@ -1180,10 +1186,12 @@ class Renderer {
   drawStaticBombs(staticBombs, offsetX, offsetY, gridSize) {
     const ctx = this.ctx, pr = this.pixelRatio || 2, half = Math.floor(gridSize / 2);
     const cs = this.cellSize, g = this.gap || 0;
+    // [v0.9.9-fix] 使用与 drawGrid 一致的坐标计算
+    const minC = gridSize % 2 === 0 ? -half + 1 : -half;
     
     staticBombs.forEach(sb => {
-      const col = sb.x + half;
-      const row = sb.y + half;
+      const col = sb.x - minC;
+      const row = sb.y - minC;
       const cx = offsetX + col * (cs + g) + cs / 2;
       const cy = offsetY + row * (cs + g) + cs / 2;
       
