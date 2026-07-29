@@ -50,9 +50,9 @@ class UIManager {
     // [v0.8.0] 新计分系统：炸弹消耗积分
     const bombTypes = [
       { level: 1, name: '白色炸弹牛', cost: 2, evolution: 0, color: '#FFFFFF' },
-      { level: 2, name: '蓝色炸弹牛', cost: 2, evolution: 2, color: '#5BA3F5' },
-      { level: 3, name: '紫色炸弹牛', cost: 2, evolution: 3, color: '#C084FC' },
-      { level: 4, name: '红色炸弹牛', cost: 4, evolution: 5, color: '#FF4444' }
+      { level: 2, name: '蓝色炸弹牛', cost: 2, evolution: 1, color: '#5BA3F5' },
+      { level: 3, name: '紫色炸弹牛', cost: 2, evolution: 2, color: '#C084FC' },
+      { level: 4, name: '红色炸弹牛', cost: 4, evolution: 3, color: '#FF4444' }
     ];
     
     const score = gameState.score || 0;

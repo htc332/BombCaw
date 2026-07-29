@@ -736,7 +736,9 @@ class Renderer {
   drawGrid(gridSize, offsetX, offsetY) {
     const ctx = this.ctx, cs = this.cellSize, g = this.gap || 0;
     const half = Math.floor(gridSize / 2);
-    const maxC = gridSize % 2 === 0 ? half - 1 : half;
+    // [v0.9.9-fix] 偶数棋盘中心对齐：范围改为 [-half+1, half]，中心在 0.5
+    const minC = gridSize % 2 === 0 ? -half + 1 : -half;
+    const maxC = gridSize % 2 === 0 ? half : half;
     
     // 绘制网格外边界（粗边框）
     const totalW = gridSize * cs + (gridSize - 1) * g;
@@ -751,10 +753,10 @@ class Renderer {
     ctx.fillStyle = this.colors.cell;
     ctx.fillRect(offsetX, offsetY, totalW, totalH);
     
-    for (let gx = -half; gx <= maxC; gx++) {
-      for (let gy = -half; gy <= maxC; gy++) {
-        const x = offsetX + (gx + half) * (cs + g);
-        const y = offsetY + (gy + half) * (cs + g);
+    for (let gx = minC; gx <= maxC; gx++) {
+      for (let gy = minC; gy <= maxC; gy++) {
+        const x = offsetX + (gx - minC) * (cs + g);
+        const y = offsetY + (gy - minC) * (cs + g);
         
         // 交替颜色：格子A和格子B
         const isAlt = (gx + gy) % 2 === 0;
@@ -1185,8 +1187,8 @@ class Renderer {
       const cx = offsetX + col * (cs + g) + cs / 2;
       const cy = offsetY + row * (cs + g) + cs / 2;
       
-      // 获取静态炸弹等级：evo=0→1级, evo=2→2级, evo=3→3级, evo=5→4级
-      const levelMap = { 0: 0, 2: 1, 3: 2, 5: 3 };
+      // [v0.9.9-fix] 获取静态炸弹等级：evo=0→1级, evo=1→2级, evo=2→3级, evo=3→4级
+      const levelMap = { 0: 0, 1: 1, 2: 2, 3: 3 };
       const level = levelMap[sb.evolution] !== undefined ? levelMap[sb.evolution] : 0;
       
       // 生产环境关闭静态炸弹绘制日志（高频触发）
@@ -1368,23 +1370,27 @@ class Renderer {
   screenToGrid(screenX, screenY, gridSize) {
     const layout = this.calcLayout(gridSize);
     const half = Math.floor(gridSize / 2);
-    const maxC = gridSize % 2 === 0 ? half - 1 : half;
+    // [v0.9.9-fix] 偶数棋盘中心对齐
+    const minC = gridSize % 2 === 0 ? -half + 1 : -half;
+    const maxC = gridSize % 2 === 0 ? half : half;
     const step = this.cellSize + (this.gap || 0);
-    const gx = Math.floor((screenX - layout.offsetX) / step) - half;
-    const gy = Math.floor((screenY - layout.offsetY) / step) - half;
-    if (gx < -half || gx > maxC || gy < -half || gy > maxC) return null;
+    const gx = Math.floor((screenX - layout.offsetX) / step) + minC;
+    const gy = Math.floor((screenY - layout.offsetY) / step) + minC;
+    if (gx < minC || gx > maxC || gy < minC || gy > maxC) return null;
     return { x: gx, y: gy };
   }
   
   gridToScreen(gx, gy, gridSize) {
     const layout = this.calcLayout(gridSize);
     const half = Math.floor(gridSize / 2);
+    // [v0.9.9-fix] 偶数棋盘中心对齐
+    const minC = gridSize % 2 === 0 ? -half + 1 : -half;
     const step = this.cellSize + (this.gap || 0);
     return {
-      x: layout.offsetX + (gx + half) * step,
-      y: layout.offsetY + (gy + half) * step,
-      cx: layout.offsetX + (gx + half) * step + this.cellSize / 2,
-      cy: layout.offsetY + (gy + half) * step + this.cellSize / 2,
+      x: layout.offsetX + (gx - minC) * step,
+      y: layout.offsetY + (gy - minC) * step,
+      cx: layout.offsetX + (gx - minC) * step + this.cellSize / 2,
+      cy: layout.offsetY + (gy - minC) * step + this.cellSize / 2,
       size: this.cellSize
     };
   }

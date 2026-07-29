@@ -74,13 +74,13 @@ function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerG
     }.bind(this));
   }
   
-  // [v0.7.9] 根据 evo 创建正确的爆炸形状
+  // [v0.9.9-fix] 根据 evo 创建正确的爆炸形状
   // evo=0 (Lv1): 十字 1 格
-  // evo=2 (Lv2): 上下 3 格（竖直）- 带墙壁鼠阻挡
-  // evo=3 (Lv3): 左右 3 格（横向）+ 上方1格 - 带墙壁鼠阻挡
-  // evo=5 (Lv4): 十字 1 格 + 对角 1 格
+  // evo=1 (Lv2): 上下 2 格（竖直）- 带墙壁鼠阻挡
+  // evo=2 (Lv3): 左右 2 格（横向）- 带墙壁鼠阻挡
+  // evo=3 (Lv4): 十字 1 格 + 对角 1 格
   
-  if (evo === 2) {
+  if (evo === 1) {
     // [v0.9.9] Lv2 蓝色：上下 2 格（竖直方向）
     this.cells.push({ x: 0, y: 0, distance: 0, spawnTime: 0 });
     var dirs2 = [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }];
@@ -98,8 +98,8 @@ function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerG
         });
       }
     }.bind(this));
-  } else if (evo === 3) {
-    // [v0.9.9] Lv3 紫色：左右 2 格（横向方向）
+  } else if (evo === 2) {
+    // [v0.9.9-fix] Lv3 紫色：左右 2 格（横向方向）
     this.cells.push({ x: 0, y: 0, distance: 0, spawnTime: 0 });
     // 横向左右各2格（带阻挡）
     var dirs3 = [{ dx: -1, dy: 0 }, { dx: 1, dy: 0 }];
@@ -119,8 +119,8 @@ function SimpleExplosion(cx, cy, cellSize, power, gridSize, centerGridX, centerG
     }.bind(this));
     // [debug] 打印LV3爆炸格子
     console.log('[LV3 Explosion] cells:', this.cells.map(c => 'x:'+c.x+',y:'+c.y).join(' | '));
-  } else if (evo === 5) {
-    // Lv4 红色：十字 1 格 + 对角 1 格
+  } else if (evo === 3) {
+    // [v0.9.9-fix] Lv4 红色：十字 1 格 + 对角 1 格
     this.cells.push({ x: 0, y: 0, distance: 0, spawnTime: 0 });
     // 十字方向
     var crossDirs = [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 }];

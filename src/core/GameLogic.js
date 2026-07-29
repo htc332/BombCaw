@@ -122,6 +122,11 @@ class GameLogic {
 
   spawnStaticBomb(x, y, evolution = 0) {
     const key = `${x},${y}`;
+    // [v0.9.9-fix] 防止静态炸弹与墙壁重叠
+    if (this.walls.has(key)) {
+      console.warn(`[GameLogic] 静态炸弹(${x},${y})与墙壁重叠，跳过放置`);
+      return;
+    }
     this.staticBombs.set(key, {
       x, y,
       evolution: evolution || 0,
@@ -201,9 +206,9 @@ class GameLogic {
     // 根据选中的炸弹类型获取 evolution
     const bombTypes = [
       { evolution: 0 },  // Lv1 白色
-      { evolution: 2 },  // Lv2 蓝色
-      { evolution: 3 },  // Lv3 紫色
-      { evolution: 5 }   // Lv4 红色
+      { evolution: 1 },  // Lv2 蓝色
+      { evolution: 2 },  // Lv3 紫色
+      { evolution: 3 }   // Lv4 红色
     ];
     const selectedType = bombTypes[this.selectedBombType] || bombTypes[0];
     
@@ -325,14 +330,14 @@ class GameLogic {
     const range = [{ x: bomb.x, y: bomb.y, distance: 0 }];
 
     if (evo === 0) {
-      // [v0.8.0] LV1: 爆炸范围不变 - 十字1格
+      // [v0.9.9-fix] LV1: 十字1格
       const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
       dirs.forEach(([dx, dy]) => {
         const pos = { x: bomb.x + dx, y: bomb.y + dy, distance: 1 };
         range.push(pos);
       });
-    } else if (evo === 2) {
-      // [v0.9.9] LV2: 竖直方向上下各2格（带墙壁鼠阻挡）
+    } else if (evo === 1) {
+      // [v0.9.9-fix] LV2: 竖直方向上下各2格（带墙壁鼠阻挡）
       const dirs = [[0,1], [0,-1]];
       dirs.forEach(([dx, dy]) => {
         for (let d = 1; d <= 2; d++) {
@@ -344,8 +349,8 @@ class GameLogic {
           if (wall && wall.type === 'wall') break;
         }
       });
-    } else if (evo === 3) {
-      // [v0.9.9] LV3: 横向左右各2格（带墙壁鼠阻挡）
+    } else if (evo === 2) {
+      // [v0.9.9-fix] LV3: 横向左右各2格（带墙壁鼠阻挡）
       const hDirs = [[1,0], [-1,0]];
       hDirs.forEach(([dx, dy]) => {
         for (let d = 1; d <= 2; d++) {
@@ -356,8 +361,8 @@ class GameLogic {
           if (wall && wall.type === 'wall') break;
         }
       });
-    } else if (evo === 5) {
-      // [v0.8.0] LV4: 爆炸范围不变 - 十字1格 + 对角1格
+    } else if (evo === 3) {
+      // [v0.9.9-fix] LV4: 十字1格 + 对角1格
       const dirs = [[0,1], [0,-1], [1,0], [-1,0]];
       dirs.forEach(([dx, dy]) => {
         range.push({ x: bomb.x + dx, y: bomb.y + dy, distance: 1 });
@@ -771,7 +776,10 @@ class GameLogic {
 
   isValidGridPos(x, y) {
     const half = Math.floor(this.gridSize / 2);
-    return x >= -half && x <= half && y >= -half && y <= half;
+    // [v0.9.9-fix] 偶数棋盘中心对齐：范围改为 [-half+1, half]
+    const minC = this.gridSize % 2 === 0 ? -half + 1 : -half;
+    const maxC = half;
+    return x >= minC && x <= maxC && y >= minC && y <= maxC;
   }
 
   getState() {

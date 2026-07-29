@@ -1,24 +1,5 @@
-/**
- * Data/LevelData.js
- * 关卡配置 - 基于算法生成 v0.9.7
- * 
- * 爆炸范围规则（老胡纠正后）：
- * - LV1(evolution=0): 十字1格（上下左右各1格）
- * - LV2(evolution=2): 竖直上下各2格
- * - LV3(evolution=3): 横向左右各2格
- * - LV4(evolution=5): 十字1格 + 对角1格
- * 
- * 坐标系：5x5网格，中心为(0,0)
- * x: -2,-1,0,1,2 (左到右)
- * y: -2,-1,0,1,2 (上到下)
- */
-
 const LEVELS = {
-  // ========== 第一阶段：基础机制（0001-0007）==========
-
-  // 0001 - 初识炸弹（教学关）
-  // 5x5网格，4只1级鼠十字排列
-  // CSV: ,,,,,,,,normal,,,,normal,,normal,,,,normal,,,,,,,
+  // 第1关
   1: {
     gridSize: 5,
     hint: '第1关：在中间放一颗炸弹，炸掉所有老鼠',
@@ -28,12 +9,8 @@ const LEVELS = {
       { x: 1, y: 0, type: 'normal' },
       { x: 0, y: 1, type: 'normal' },
     ],
-    staticBombs: []
   },
-
-  // 0002 - 静态炸弹连锁（教学关）
-  // 5x5网格，8只1级鼠 + 2个LV2静态炸弹
-  // CSV: ,normal,,normal,,,normal,,normal,,,staticBombsLV2,,staticBombsLV2,,,normal,,normal,,,normal,,normal,
+  // 第2关
   2: {
     gridSize: 5,
     hint: '第2关：找到连锁引爆的关键位置！',
@@ -49,13 +26,10 @@ const LEVELS = {
     ],
     staticBombs: [
       { x: -1, y: 0, evolution: 2 },
-      { x: 1, y: 0, evolution: 2 }
+      { x: 1, y: 0, evolution: 2 },
     ]
   },
-
-  // 0003 - 双连锁设计（难度关）
-  // 5x5网格，7只普通鼠 + 2个LV2静态炸弹 + 2个LV3静态炸弹
-  // CSV: ,,,normal,,,,,staticBombsLV2,normal,staticBombsLV3,normal,,normal,,,staticBombsLV2,normal,staticBombsLV3,normal,normal,normal,,,,
+  // 第3关
   3: {
     gridSize: 5,
     hint: '第3关：多个连锁点，找到最优解！',
@@ -70,16 +44,13 @@ const LEVELS = {
       { x: -2, y: 2, type: 'normal' },
     ],
     staticBombs: [
-      { x: 0, y: -1, evolution: 2 },
-      { x: 2, y: -1, evolution: 3 },
+      { x: -1, y: 0, evolution: 2 },
+      { x: 1, y: -1, evolution: 3 },
       { x: -2, y: 1, evolution: 2 },
-      { x: 0, y: 1, evolution: 3 }
+      { x: 0, y: 1, evolution: 3 },
     ]
   },
-
-  // 0004 - 交叉连锁（难度关）
-  // 5x5网格，5只普通鼠 + 2个LV2静态炸弹 + 2个LV3静态炸弹
-  // CSV: normal,,,,,staticBombsLV2,normal,staticBombsLV3,normal,normal,normal,,normal,,,staticBombsLV3,normal,staticBombsLV2,,,,,normal,,
+  // 第4关
   4: {
     gridSize: 5,
     hint: '第4关：交叉连锁，精确计算！',
@@ -94,15 +65,12 @@ const LEVELS = {
     ],
     staticBombs: [
       { x: -2, y: -1, evolution: 2 },
-      { x: 0, y: -1, evolution: 3 },
+      { x: 1, y: -1, evolution: 3 },
       { x: -2, y: 1, evolution: 3 },
-      { x: 0, y: 1, evolution: 2 }
+      { x: 1, y: 1, evolution: 3 },
     ]
   },
-
-  // 0005 - LV1炸弹网（积分关）
-  // 5x5网格，7只普通鼠 + 4个LV1静态炸弹
-  // CSV: normal,,,,normal,staticBombsLV1,normal,,normal,staticBombsLV1,normal,staticBombsLV1,normal,staticBombsLV1,normal,,normal,staticBombsLV1,normal,,,,normal,,
+  // 第5关
   5: {
     gridSize: 5,
     hint: '第5关：LV1炸弹网，多点击发！',
@@ -121,15 +89,12 @@ const LEVELS = {
     staticBombs: [
       { x: -2, y: -1, evolution: 0 },
       { x: 2, y: -1, evolution: 0 },
-      { x: -2, y: 0, evolution: 0 },
-      { x: 2, y: 0, evolution: 0 },
-      { x: -1, y: 1, evolution: 0 }
+      { x: -1, y: 0, evolution: 0 },
+      { x: 1, y: 0, evolution: 0 },
+      { x: -1, y: 2, evolution: 0 },
     ]
   },
-
-  // 0006 - 混合炸弹（挑战关）
-  // 5x5网格，6只普通鼠 + 1个LV1静态炸弹 + 2个LV2静态炸弹 + 1个LV3静态炸弹
-  // CSV: ,normal,,normal,,,staticBombsLV2,normal,staticBombsLV3,,,normal,,normal,,,staticBombsLV1,normal,staticBombsLV2,,,normal,,normal,
+  // 第6关
   6: {
     gridSize: 5,
     hint: '第6关：混合炸弹，复杂连锁！',
@@ -147,14 +112,11 @@ const LEVELS = {
     staticBombs: [
       { x: -1, y: -1, evolution: 2 },
       { x: 1, y: -1, evolution: 3 },
-      { x: -1, y: 1, evolution: 0 },
-      { x: 1, y: 1, evolution: 2 }
+      { x: 0, y: 1, evolution: 0 },
+      { x: 0, y: 2, evolution: 2 },
     ]
   },
-
-  // 0007 - LV1对称网（挑战关）
-  // 5x5网格，6只普通鼠 + 4个LV1静态炸弹
-  // CSV: normal,staticBombsLV1,normal,staticBombsLV1,normal,,normal,,normal,,,,,,,,normal,,normal,,normal,staticBombsLV1,normal,staticBombsLV1,normal
+  // 第7关
   7: {
     gridSize: 5,
     hint: '第7关：对称布局，中心引爆！',
@@ -174,15 +136,1064 @@ const LEVELS = {
       { x: -1, y: -2, evolution: 0 },
       { x: 1, y: -2, evolution: 0 },
       { x: -1, y: 2, evolution: 0 },
-      { x: 1, y: 2, evolution: 0 }
+      { x: 1, y: 2, evolution: 0 },
+    ]
+  },
+  // 第8关
+  8: {
+    gridSize: 5,
+    hint: '第8关：加固墙需要两次爆炸！',
+    walls: [
+      { x: 0, y: -1, type: 'strong' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: 0, y: 1, type: 'strong' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 0, evolution: 0 },
+      { x: -2, y: 0, evolution: 0 },
+      { x: 2, y: 0, evolution: 0 },
+    ]
+  },
+  // 第9关
+  9: {
+    gridSize: 5,
+    hint: '第9关：连锁反应对付加固墙！',
+    walls: [
+      { x: -2, y: -2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 1, y: -2, type: 'strong' },
+      { x: 2, y: -2, type: 'strong' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 0, evolution: 0 },
+      { x: 0, y: 1, evolution: 0 },
+      { x: 1, y: 2, evolution: 0 },
+    ]
+  },
+  // 第10关
+  10: {
+    gridSize: 5,
+    hint: '第10关：★精打细算★',
+    walls: [
+      { x: 0, y: -2, type: 'strong' },
+      { x: -2, y: 0, type: 'strong' },
+      { x: 2, y: 0, type: 'strong' },
+      { x: 0, y: 2, type: 'strong' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: -1, evolution: 0 },
+      { x: -1, y: 0, evolution: 0 },
+      { x: 1, y: 0, evolution: 0 },
+      { x: 0, y: 1, evolution: 0 },
+    ]
+  },
+  // 第11关
+  11: {
+    gridSize: 6,
+    hint: '第11关：蓝色炸弹上下范围更大！',
+    walls: [
+      { x: -1, y: 1, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -1, y: 0, evolution: 2 },
+      { x: 2, y: 1, evolution: 2 },
+      { x: 0, y: 0, evolution: 0 },
+      { x: 1, y: 1, evolution: 0 },
+    ]
+  },
+  // 第12关
+  12: {
+    gridSize: 6,
+    hint: '第12关：利用蓝色炸弹的竖直连锁！',
+    walls: [
+      { x: -1, y: -1, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -1, y: 0, evolution: 2 },
+      { x: 2, y: 1, evolution: 2 },
+      { x: 0, y: 2, evolution: 0 },
+      { x: 1, y: -1, evolution: 0 },
+    ]
+  },
+  // 第13关
+  13: {
+    gridSize: 6,
+    hint: '第13关：不同等级，不同策略！',
+    walls: [
+      { x: -1, y: 1, type: 'strong' },
+      { x: 2, y: 0, type: 'strong' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 1, evolution: 2 },
+      { x: 1, y: 0, evolution: 2 },
+      { x: -2, y: 1, evolution: 0 },
+      { x: 3, y: 0, evolution: 0 },
+    ]
+  },
+  // 第14关
+  14: {
+    gridSize: 6,
+    hint: '第14关：蓝色炸弹对加固墙有奇效！',
+    walls: [
+      { x: -1, y: 1, type: 'strong' },
+      { x: 2, y: 0, type: 'strong' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 1, evolution: 2 },
+      { x: 1, y: 0, evolution: 2 },
+      { x: -2, y: 1, evolution: 0 },
+      { x: 3, y: 0, evolution: 0 },
+    ]
+  },
+  // 第15关
+  15: {
+    gridSize: 6,
+    hint: '第15关：★选择最优解★',
+    walls: [
+      { x: 0, y: 1, type: 'strong' },
+      { x: 1, y: 0, type: 'strong' },
+      { x: 2, y: 1, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 0, evolution: 0 },
+      { x: 1, y: 1, evolution: 0 },
+      { x: -1, y: 1, evolution: 0 },
+      { x: 2, y: 0, evolution: 0 },
+    ]
+  },
+  // 第16关
+  16: {
+    gridSize: 6,
+    hint: '第16关：触发连锁反应！',
+    walls: [
+      { x: -2, y: 2, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: -1, y: 3, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -2, y: 1, evolution: 0 },
+      { x: 3, y: 0, evolution: 0 },
+      { x: 0, y: 1, evolution: 0 },
+      { x: 1, y: 0, evolution: 0 },
+    ]
+  },
+  // 第17关
+  17: {
+    gridSize: 6,
+    hint: '第17关：最少炸弹，最大效果！',
+    walls: [
+      { x: 0, y: 2, type: 'strong' },
+      { x: 1, y: -1, type: 'strong' },
+      { x: 2, y: 0, type: 'strong' },
+      { x: -1, y: 1, type: 'strong' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 1, evolution: 2 },
+      { x: 1, y: 0, evolution: 2 },
+      { x: -2, y: 1, evolution: 2 },
+      { x: 3, y: 0, evolution: 2 },
+    ]
+  },
+  // 第18关
+  18: {
+    gridSize: 6,
+    hint: '第18关：综合运用技巧！',
+    walls: [
+      { x: 1, y: 1, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: 2, y: 0, type: 'strong' },
+      { x: -1, y: 1, type: 'strong' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 1, evolution: 2 },
+      { x: 1, y: 0, evolution: 2 },
+      { x: -2, y: 1, evolution: 0 },
+      { x: 3, y: 0, evolution: 0 },
+    ]
+  },
+  // 第19关
+  19: {
+    gridSize: 6,
+    hint: '第19关：精确规划爆炸范围！',
+    walls: [
+      { x: -1, y: 1, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: 3, y: -1, type: 'strong' },
+      { x: -2, y: 2, type: 'strong' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 1, evolution: 2 },
+      { x: 1, y: 0, evolution: 2 },
+      { x: -2, y: 1, evolution: 0 },
+      { x: 3, y: 0, evolution: 0 },
+    ]
+  },
+  // 第20关
+  20: {
+    gridSize: 6,
+    hint: '第20关：★综合考验★',
+    walls: [
+      { x: -1, y: 1, type: 'strong' },
+      { x: 2, y: 0, type: 'strong' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -2, y: 1, evolution: 2 },
+      { x: 3, y: 0, evolution: 2 },
+      { x: 0, y: 1, evolution: 0 },
+      { x: 1, y: 0, evolution: 0 },
+    ]
+  },
+  // 第21关
+  21: {
+    gridSize: 7,
+    hint: '第21关：消灭所有老鼠！',
+    walls: [
+      { x: 1, y: 3, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: -3, y: 3, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: 1, y: -3, type: 'normal' },
+      { x: -3, y: 1, type: 'strong' },
+      { x: -2, y: 0, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 0, y: 3, evolution: 3 },
+      { x: -1, y: -1, evolution: 1 },
+      { x: -2, y: 3, evolution: 3 },
+    ]
+  },
+  // 第22关
+  22: {
+    gridSize: 7,
+    hint: '第22关：消灭所有老鼠！',
+    walls: [
+      { x: 1, y: 3, type: 'normal' },
+      { x: -3, y: 0, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: -3, y: -3, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: -3, y: 3, type: 'normal' },
+      { x: -1, y: -3, type: 'strong' },
+      { x: 3, y: -3, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -2, y: -2, evolution: 1 },
+      { x: -3, y: -1, evolution: 2 },
+      { x: -1, y: 1, evolution: 1 },
+    ]
+  },
+  // 第23关
+  23: {
+    gridSize: 7,
+    hint: '第23关：消灭所有老鼠！',
+    walls: [
+      { x: 1, y: 2, type: 'normal' },
+      { x: 3, y: -3, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: 2, y: -3, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: -3, y: 2, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: 2, y: 3, type: 'normal' },
+      { x: 1, y: -3, type: 'normal' },
+      { x: -2, y: 0, type: 'strong' },
+      { x: 0, y: 3, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 0, y: 2, evolution: 3 },
+      { x: -2, y: 2, evolution: 3 },
+      { x: 1, y: 1, evolution: 2 },
+    ]
+  },
+  // 第24关
+  24: {
+    gridSize: 7,
+    hint: '第24关：消灭所有老鼠！',
+    walls: [
+      { x: 3, y: 3, type: 'normal' },
+      { x: -3, y: 1, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: -3, y: 2, type: 'normal' },
+      { x: 2, y: -3, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: -2, y: 3, type: 'strong' },
+      { x: -2, y: 0, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 2, y: -1, evolution: 3 },
+      { x: 3, y: -1, evolution: 3 },
+      { x: 0, y: -1, evolution: 3 },
+    ]
+  },
+  // 第25关
+  25: {
+    gridSize: 7,
+    hint: '第25关：★消耗关★精打细算！',
+    walls: [
+      { x: 0, y: -3, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: -3, y: -3, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: 2, y: 2, type: 'strong' },
+      { x: 3, y: -3, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -2, y: 0, evolution: 2 },
+      { x: -2, y: 1, evolution: 1 },
+      { x: 0, y: 0, evolution: 3 },
+      { x: 0, y: -2, evolution: 2 },
+    ]
+  },
+  // 第26关
+  26: {
+    gridSize: 7,
+    hint: '第26关：消灭所有老鼠！',
+    walls: [
+      { x: -1, y: -2, type: 'normal' },
+      { x: 2, y: -3, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: -3, y: 2, type: 'normal' },
+      { x: -3, y: 0, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: 0, y: -3, type: 'strong' },
+      { x: 2, y: 2, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 2, y: 3, evolution: 3 },
+      { x: 0, y: 3, evolution: 3 },
+      { x: -1, y: 3, evolution: 3 },
+    ]
+  },
+  // 第27关
+  27: {
+    gridSize: 7,
+    hint: '第27关：消灭所有老鼠！',
+    walls: [
+      { x: 2, y: 2, type: 'normal' },
+      { x: -3, y: 2, type: 'normal' },
+      { x: -3, y: -3, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: -2, y: -3, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: -3, y: -2, type: 'strong' },
+      { x: 0, y: 2, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -2, y: 3, evolution: 1 },
+      { x: 0, y: 1, evolution: 1 },
+      { x: 2, y: 0, evolution: 1 },
+    ]
+  },
+  // 第28关
+  28: {
+    gridSize: 7,
+    hint: '第28关：消灭所有老鼠！',
+    walls: [
+      { x: -1, y: 2, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: 0, y: -3, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: 3, y: 0, type: 'strong' },
+      { x: -1, y: 1, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -2, y: -2, evolution: 2 },
+      { x: 0, y: -1, evolution: 1 },
+      { x: -1, y: -2, evolution: 3 },
+    ]
+  },
+  // 第29关
+  29: {
+    gridSize: 7,
+    hint: '第29关：消灭所有老鼠！',
+    walls: [
+      { x: 2, y: -1, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: 1, y: -3, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+      { x: -3, y: 1, type: 'normal' },
+      { x: 0, y: -3, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: -3, y: -3, type: 'strong' },
+      { x: 1, y: 3, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 3, y: 0, evolution: 3 },
+      { x: 1, y: 1, evolution: 1 },
+      { x: 2, y: 0, evolution: 3 },
+    ]
+  },
+  // 第30关
+  30: {
+    gridSize: 7,
+    hint: '第30关：★Boss挑战★',
+    walls: [
+      { x: -2, y: -3, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 2, y: -3, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: -1, y: -3, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: -3, y: 2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: -2, y: -1, type: 'strong' },
+      { x: 3, y: -2, type: 'strong' },
+      { x: 1, y: 2, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -3, y: 1, evolution: 2 },
+      { x: -1, y: 1, evolution: 3 },
+      { x: -1, y: -1, evolution: 2 },
+      { x: 0, y: 1, evolution: 2 },
+      { x: 0, y: -1, evolution: 2 },
+    ]
+  },
+  // 第31关
+  31: {
+    gridSize: 8,
+    hint: '第31关：消灭所有老鼠！',
+    walls: [
+      { x: 4, y: -1, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: -3, y: -3, type: 'normal' },
+      { x: -3, y: 2, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: 3, y: -3, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: 4, y: 2, type: 'normal' },
+      { x: 4, y: -2, type: 'normal' },
+      { x: -2, y: -3, type: 'strong' },
+      { x: -1, y: 4, type: 'strong' },
+      { x: 3, y: 1, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 1, y: 4, evolution: 2 },
+      { x: 1, y: 2, evolution: 2 },
+      { x: -1, y: 2, evolution: 3 },
+    ]
+  },
+  // 第32关
+  32: {
+    gridSize: 8,
+    hint: '第32关：消灭所有老鼠！',
+    walls: [
+      { x: -3, y: -2, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 4, y: -3, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: -1, y: 4, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: 2, y: 3, type: 'normal' },
+      { x: 4, y: 4, type: 'normal' },
+      { x: -3, y: 1, type: 'strong' },
+      { x: 1, y: 4, type: 'strong' },
+      { x: -2, y: 0, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -2, y: 3, evolution: 3 },
+      { x: -2, y: 2, evolution: 2 },
+      { x: -1, y: 2, evolution: 3 },
+    ]
+  },
+  // 第33关
+  33: {
+    gridSize: 8,
+    hint: '第33关：消灭所有老鼠！',
+    walls: [
+      { x: -2, y: -2, type: 'normal' },
+      { x: 4, y: -1, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 0, y: -3, type: 'normal' },
+      { x: -1, y: -3, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 2, y: 3, type: 'normal' },
+      { x: 2, y: 4, type: 'normal' },
+      { x: 2, y: 0, type: 'strong' },
+      { x: -1, y: 0, type: 'strong' },
+      { x: 4, y: 0, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -2, y: -3, evolution: 3 },
+      { x: -2, y: -1, evolution: 2 },
+      { x: -3, y: -3, evolution: 3 },
+    ]
+  },
+  // 第34关
+  34: {
+    gridSize: 8,
+    hint: '第34关：消灭所有老鼠！',
+    walls: [
+      { x: 4, y: 2, type: 'normal' },
+      { x: -3, y: -2, type: 'normal' },
+      { x: -1, y: 3, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: -3, y: 4, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: 4, y: 1, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: -3, y: 3, type: 'strong' },
+      { x: -2, y: 0, type: 'strong' },
+      { x: -3, y: -1, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 0, y: 0, evolution: 3 },
+      { x: 1, y: 1, evolution: 3 },
+      { x: 0, y: -2, evolution: 2 },
+    ]
+  },
+  // 第35关
+  35: {
+    gridSize: 8,
+    hint: '第35关：★消耗关★精打细算！',
+    walls: [
+      { x: -3, y: 4, type: 'normal' },
+      { x: -3, y: 2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 3, y: 4, type: 'normal' },
+      { x: -1, y: 4, type: 'normal' },
+      { x: 0, y: -3, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: -3, y: -3, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: -1, y: -3, type: 'normal' },
+      { x: -1, y: 0, type: 'strong' },
+      { x: -3, y: 1, type: 'strong' },
+      { x: -3, y: -1, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -1, y: 1, evolution: 3 },
+      { x: -2, y: 1, evolution: 3 },
+      { x: -3, y: 0, evolution: 3 },
+      { x: 0, y: 1, evolution: 3 },
+    ]
+  },
+  // 第36关
+  36: {
+    gridSize: 8,
+    hint: '第36关：消灭所有老鼠！',
+    walls: [
+      { x: 3, y: 3, type: 'normal' },
+      { x: 4, y: 0, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: 4, y: -2, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: -3, y: 3, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: 4, y: 2, type: 'normal' },
+      { x: -3, y: 2, type: 'strong' },
+      { x: -1, y: -3, type: 'strong' },
+      { x: -2, y: -3, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -2, y: -1, evolution: 3 },
+      { x: -1, y: -2, evolution: 1 },
+      { x: 0, y: -1, evolution: 3 },
+    ]
+  },
+  // 第37关
+  37: {
+    gridSize: 8,
+    hint: '第37关：消灭所有老鼠！',
+    walls: [
+      { x: 3, y: 1, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: 3, y: -3, type: 'normal' },
+      { x: -3, y: 4, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: 4, y: -2, type: 'normal' },
+      { x: 4, y: 2, type: 'normal' },
+      { x: 4, y: 3, type: 'normal' },
+      { x: -2, y: 4, type: 'normal' },
+      { x: 0, y: 4, type: 'strong' },
+      { x: 1, y: 2, type: 'strong' },
+      { x: 0, y: 1, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -1, y: 2, evolution: 3 },
+      { x: 0, y: 2, evolution: 3 },
+      { x: 2, y: 2, evolution: 3 },
+    ]
+  },
+  // 第38关
+  38: {
+    gridSize: 8,
+    hint: '第38关：消灭所有老鼠！',
+    walls: [
+      { x: 3, y: -3, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: 4, y: 4, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: -3, y: 1, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: -1, y: -3, type: 'normal' },
+      { x: -3, y: -2, type: 'normal' },
+      { x: 4, y: 1, type: 'strong' },
+      { x: 1, y: -3, type: 'strong' },
+      { x: 3, y: 4, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 2, y: 0, evolution: 3 },
+      { x: 2, y: -2, evolution: 2 },
+      { x: 2, y: -3, evolution: 2 },
+    ]
+  },
+  // 第39关
+  39: {
+    gridSize: 8,
+    hint: '第39关：消灭所有老鼠！',
+    walls: [
+      { x: -1, y: 3, type: 'normal' },
+      { x: -3, y: 0, type: 'normal' },
+      { x: -2, y: 4, type: 'normal' },
+      { x: 1, y: 4, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 4, y: 2, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 1, y: 0, type: 'strong' },
+      { x: 2, y: -3, type: 'strong' },
+      { x: -2, y: -2, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 1, y: -1, evolution: 2 },
+      { x: 1, y: -2, evolution: 2 },
+      { x: 1, y: -3, evolution: 3 },
+    ]
+  },
+  // 第40关
+  40: {
+    gridSize: 8,
+    hint: '第40关：★Boss挑战★',
+    walls: [
+      { x: -2, y: -2, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: 3, y: 4, type: 'normal' },
+      { x: 3, y: -3, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 4, y: 0, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: -1, y: -3, type: 'normal' },
+      { x: -2, y: 1, type: 'strong' },
+      { x: 4, y: -2, type: 'strong' },
+      { x: 0, y: 3, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 2, y: 2, evolution: 3 },
+      { x: 2, y: 0, evolution: 2 },
+      { x: 1, y: -1, evolution: 3 },
+      { x: 2, y: -1, evolution: 2 },
+      { x: 2, y: 3, evolution: 2 },
+    ]
+  },
+  // 第41关
+  41: {
+    gridSize: 8,
+    hint: '第41关：消灭所有老鼠！',
+    walls: [
+      { x: 1, y: 4, type: 'normal' },
+      { x: 2, y: 3, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: -3, y: -3, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 2, y: -3, type: 'normal' },
+      { x: 4, y: 2, type: 'strong' },
+      { x: -1, y: -1, type: 'strong' },
+      { x: 2, y: 0, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 3, y: 2, evolution: 3 },
+      { x: 2, y: 2, evolution: 3 },
+      { x: 2, y: 1, evolution: 1 },
+    ]
+  },
+  // 第42关
+  42: {
+    gridSize: 8,
+    hint: '第42关：消灭所有老鼠！',
+    walls: [
+      { x: 4, y: -1, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 4, y: -2, type: 'normal' },
+      { x: 4, y: 3, type: 'normal' },
+      { x: -3, y: 2, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 4, y: -3, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: 2, y: 1, type: 'strong' },
+      { x: 0, y: -3, type: 'strong' },
+      { x: -1, y: -3, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 3, y: 0, evolution: 3 },
+      { x: 2, y: -1, evolution: 3 },
+      { x: 1, y: -2, evolution: 3 },
+    ]
+  },
+  // 第43关
+  43: {
+    gridSize: 8,
+    hint: '第43关：消灭所有老鼠！',
+    walls: [
+      { x: 3, y: 0, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: 3, y: -3, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 1, y: 4, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 4, y: -2, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: 4, y: 0, type: 'normal' },
+      { x: -1, y: -3, type: 'normal' },
+      { x: 0, y: 2, type: 'strong' },
+      { x: 2, y: -2, type: 'strong' },
+      { x: 4, y: -1, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -2, y: -2, evolution: 3 },
+      { x: -1, y: -2, evolution: 2 },
+      { x: 1, y: -2, evolution: 3 },
+    ]
+  },
+  // 第44关
+  44: {
+    gridSize: 8,
+    hint: '第44关：消灭所有老鼠！',
+    walls: [
+      { x: -1, y: 1, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: -1, y: -3, type: 'normal' },
+      { x: 0, y: -3, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 4, y: -1, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+      { x: 0, y: 4, type: 'strong' },
+      { x: 3, y: 0, type: 'strong' },
+      { x: 1, y: -1, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 2, y: -2, evolution: 3 },
+      { x: 2, y: -1, evolution: 3 },
+      { x: -2, y: -3, evolution: 2 },
+    ]
+  },
+  // 第45关
+  45: {
+    gridSize: 8,
+    hint: '第45关：★消耗关★精打细算！',
+    walls: [
+      { x: -3, y: 3, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: -3, y: 0, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: -3, y: -3, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: -3, y: 1, type: 'normal' },
+      { x: 2, y: -2, type: 'strong' },
+      { x: -2, y: 4, type: 'strong' },
+      { x: -1, y: 4, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -2, y: 3, evolution: 2 },
+      { x: -3, y: 2, evolution: 3 },
+      { x: -1, y: 2, evolution: 3 },
+      { x: -1, y: 1, evolution: 3 },
+    ]
+  },
+  // 第46关
+  46: {
+    gridSize: 8,
+    hint: '第46关：消灭所有老鼠！',
+    walls: [
+      { x: 3, y: 0, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: -3, y: -1, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: 1, y: -3, type: 'normal' },
+      { x: 2, y: 4, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 0, y: 4, type: 'strong' },
+      { x: -2, y: 4, type: 'strong' },
+      { x: 3, y: -3, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -2, y: 0, evolution: 1 },
+      { x: -3, y: 1, evolution: 3 },
+      { x: -2, y: -2, evolution: 2 },
+    ]
+  },
+  // 第47关
+  47: {
+    gridSize: 8,
+    hint: '第47关：消灭所有老鼠！',
+    walls: [
+      { x: -1, y: 1, type: 'normal' },
+      { x: 4, y: -2, type: 'normal' },
+      { x: -2, y: 4, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: -3, y: 1, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: -1, y: 3, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: 4, y: 3, type: 'normal' },
+      { x: 1, y: 4, type: 'strong' },
+      { x: 3, y: -2, type: 'strong' },
+      { x: 0, y: 2, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 2, y: -2, evolution: 3 },
+      { x: -1, y: 0, evolution: 1 },
+      { x: 0, y: 1, evolution: 1 },
+    ]
+  },
+  // 第48关
+  48: {
+    gridSize: 8,
+    hint: '第48关：消灭所有老鼠！',
+    walls: [
+      { x: -1, y: -1, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: 3, y: 4, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: -3, y: -3, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: 0, y: 1, type: 'strong' },
+      { x: 4, y: -2, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -2, y: -1, evolution: 3 },
+      { x: 0, y: -1, evolution: 3 },
+      { x: -2, y: 0, evolution: 3 },
+    ]
+  },
+  // 第49关
+  49: {
+    gridSize: 8,
+    hint: '第49关：消灭所有老鼠！',
+    walls: [
+      { x: 0, y: -1, type: 'normal' },
+      { x: 4, y: 2, type: 'normal' },
+      { x: 0, y: -3, type: 'normal' },
+      { x: -3, y: 4, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: -1, y: -3, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: 4, y: 0, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: 4, y: 1, type: 'normal' },
+      { x: 2, y: 4, type: 'normal' },
+      { x: -2, y: 0, type: 'strong' },
+      { x: -1, y: 3, type: 'strong' },
+      { x: -3, y: -3, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 2, y: 2, evolution: 3 },
+      { x: 2, y: 0, evolution: 2 },
+      { x: 2, y: -1, evolution: 2 },
+    ]
+  },
+  // 第50关
+  50: {
+    gridSize: 8,
+    hint: '第50关：★Boss挑战★',
+    walls: [
+      { x: 4, y: 0, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: -3, y: 3, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: 4, y: -2, type: 'normal' },
+      { x: 4, y: 2, type: 'normal' },
+      { x: 2, y: -3, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: -3, y: -3, type: 'normal' },
+      { x: -3, y: 4, type: 'strong' },
+      { x: 4, y: 1, type: 'strong' },
+      { x: -3, y: 0, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -1, y: 4, evolution: 3 },
+      { x: -2, y: 4, evolution: 3 },
+      { x: -1, y: 3, evolution: 3 },
+      { x: -2, y: 2, evolution: 3 },
+      { x: -3, y: 2, evolution: 3 },
     ]
   },
 };
 
-// 导出到微信小游戏全局
-if (typeof GameGlobal !== 'undefined') {
-  GameGlobal.LEVELS = LEVELS;
-}
-
-// CommonJS 导出
 module.exports = LEVELS;
