@@ -10,7 +10,7 @@ const LEVELS = (typeof GameGlobal !== 'undefined' && GameGlobal.LEVELS) ? GameGl
 class LevelSystem {
   constructor(storage) {
     this.storage = storage;
-    this.maxLevels = 100; // [v0.9.0] 扩展到100关
+    this.maxLevels = 500; // [v1.0] 扩展到500关
     this.currentLevel = 1;
     this.unlockedLevels = new Set([1]);
     
@@ -118,32 +118,81 @@ class LevelSystem {
 
   /**
    * 获取关卡配置
+   * [v1.0] 支持200关手工配置 + 200关后肉鸽生成
    */
   getLevelConfig(level) {
-    if (level <= 18) {
-      return LEVELS[level]; // 从 LevelData.js 加载
+    // 1-200关：从 LevelData.js 加载手工配置
+    if (level <= 200 && LEVELS[level]) {
+      return LEVELS[level];
     }
-    // [v0.9.0] 动态生成19-100关
-    return this.generateLevel(level);
+    
+    // 201-300关：半配置（关键节点手工设计，中间模板生成）
+    if (level <= 300) {
+      if (LEVELS[level]) {
+        return LEVELS[level]; // 关键节点有关工配置
+      }
+      return this.generateFromTemplate(level);
+    }
+    
+    // 301+关：纯肉鸽生成
+    return this.roguelikeGenerate(level);
   }
 
   /**
-   * [v0.9.0] 动态生成关卡（19-100关）
+   * [v1.0] 从模板生成关卡（201-300关）
    */
-  generateLevel(level) {
-    const theory = this.calculateTheoryParams(level);
-    const gridSize = Math.min(5 + Math.floor(level / 10), 9);
-    const half = Math.floor(gridSize / 2);
+  generateFromTemplate(level) {
+    const gridSize = getGridSize(level);
+    const wallRatios = getWallRatios(level);
+    const staticConfig = getStaticBombConfig(level);
+    
+    // 根据关卡类型选择模板
+    const isConsume = isConsumeLevel(level);
+    const template = this.selectTemplate(level, isConsume);
+    
+    return this.fillTemplate(template, {
+      level,
+      gridSize,
+      wallRatios,
+      staticConfig,
+      isConsume
+    });
+  }
 
-    // 根据难度计算敌人数量
-    const enemyCount = Math.floor(theory.targetReward / 2);
+  /**
+   * [v1.0] 选择关卡模板
+   */
+  selectTemplate(level, isConsume) {
+    const templates = ['cross_chain', 'domino', 'symmetric', 'maze', 'efficiency', 'precision'];
+    
+    // 消耗关优先使用效率模板
+    if (isConsume) {
+      return 'efficiency';
+    }
+    
+    // 根据关卡进度选择模板
+    const index = (level - 1) % templates.length;
+    return templates[index];
+  }
+
+  /**
+   * [v1.0] 填充模板
+   */
+  fillTemplate(template, params) {
+    const { gridSize, wallRatios, staticConfig, isConsume } = params;
+    const half = Math.floor(gridSize / 2);
+    
+    // 基础墙壁数量
+    const baseWallCount = isConsume ? 12 : 8;
+    const wallCount = Math.min(baseWallCount + Math.floor(params.level / 10), gridSize * gridSize - 1);
+    
     const walls = [];
     const staticBombs = [];
     const used = new Set();
 
     // 生成墙壁鼠
     let placed = 0;
-    while (placed < enemyCount) {
+    while (placed < wallCount) {
       const x = Math.floor(Math.random() * gridSize) - half;
       const y = Math.floor(Math.random() * gridSize) - half;
       
@@ -154,18 +203,20 @@ class LevelSystem {
       
       used.add(key);
       
-      // 根据关卡进度决定敌人类型
-      let type = 'wall';
-      if (level >= 11 && Math.random() < 0.3) type = 'strong';
-      if (level >= 21 && Math.random() < 0.2) type = 'ghost';
+      // 根据比例选择墙壁类型
+      const rand = Math.random();
+      let type = 'normal';
+      if (rand < wallRatios.strong) type = 'strong';
+      else if (rand < wallRatios.strong + wallRatios.ghost) type = 'ghost';
+      else if (rand < wallRatios.strong + wallRatios.ghost + wallRatios.bomb) type = 'bomb';
       
       walls.push({ x, y, type });
       placed++;
     }
 
-    // 生成静态炸弹（20%概率）
-    if (level >= 5 && Math.random() < 0.3) {
-      const bombCount = Math.floor(level / 10) + 1;
+    // 生成静态炸弹
+    if (Math.random() < staticConfig.chance) {
+      const bombCount = Math.min(staticConfig.maxCount, Math.floor(params.level / 10) + 1);
       let bombPlaced = 0;
       while (bombPlaced < bombCount) {
         const x = Math.floor(Math.random() * gridSize) - half;
@@ -177,16 +228,66 @@ class LevelSystem {
         if (used.has(key)) continue;
         
         used.add(key);
-        staticBombs.push({ x, y, evolution: 0 });
+        
+        // 随机选择静态炸弹类型
+        const evolution = staticConfig.types[Math.floor(Math.random() * staticConfig.types.length)];
+        staticBombs.push({ x, y, evolution });
         bombPlaced++;
       }
     }
 
     return {
       gridSize,
-      hint: `第${level}关：${theory.type === 'tutorial' ? '教学' : theory.type === 'score' ? '积分' : theory.type === 'challenge' ? '挑战' : theory.type === 'easter_egg' ? '彩蛋' : '进阶'}关`,
+      type: isConsume ? 'consume' : 'normal',
+      isConsume,
+      hint: `第${params.level}关：${isConsume ? '精打细算每一颗炸弹！' : '消灭所有老鼠！'}`,
       walls,
       staticBombs
+    };
+  }
+
+  /**
+   * [v1.0] 肉鸽生成关卡（301+关）
+   */
+  roguelikeGenerate(level) {
+    // 基于玩家技能的动态难度调整
+    const playerSkill = this.getPlayerSkill();
+    const difficulty = this.calculateDifficulty(level, playerSkill);
+    
+    return this.generateFromTemplate(level, difficulty);
+  }
+
+  /**
+   * [v1.0] 获取玩家技能评级（0-1）
+   */
+  getPlayerSkill() {
+    // 基于历史通关数据计算
+    const history = [];
+    for (let i = 1; i <= Math.min(this.currentLevel, 50); i++) {
+      const best = this.storage.get(`level_${i}_best`) || 0;
+      if (best > 0) {
+        history.push(best);
+      }
+    }
+    
+    if (history.length === 0) return 0.5;
+    
+    const avgScore = history.reduce((a, b) => a + b, 0) / history.length;
+    // 平均分数越高，技能评级越高
+    return Math.min(1, avgScore / 15);
+  }
+
+  /**
+   * [v1.0] 计算动态难度
+   */
+  calculateDifficulty(level, playerSkill) {
+    const baseDifficulty = level / 10;
+    const ddaMultiplier = 0.7 + playerSkill * 0.6; // 0.7-1.3
+    
+    return {
+      wallCountMultiplier: ddaMultiplier,
+      staticBombMultiplier: 0.8 + playerSkill * 0.4,
+      isConsumeLevel: isConsumeLevel(level)
     };
   }
 
@@ -223,17 +324,17 @@ class LevelSystem {
   }
 
   /**
-   * [v0.9.0] 完成关卡（支持随机跳转）
-   * 第1关固定，之后从2-5关随机选择
+   * [v1.0] 完成关卡（支持跳关逻辑）
+   * 根据剩余积分决定跳关数量
    */
   completeLevel(level, score) {
     let nextLevel;
     
     if (level === 1) {
       // 第1关结束后，从2-5关随机选择
-      nextLevel = Math.floor(Math.random() * 4) + 2; // 2,3,4,5
+      nextLevel = Math.floor(Math.random() * 4) + 2;
     } else {
-      // 其他关卡按原逻辑（或也可以随机）
+      // 根据剩余积分决定跳关
       nextLevel = this.calculateNextLevel(level, score);
     }
     

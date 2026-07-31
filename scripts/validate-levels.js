@@ -9,6 +9,7 @@
  * 4. staticBombs 内部重复检查 - staticBombs 数组内不能有重复坐标
  * 5. evolution 值范围检查 - 必须在 0-3 范围内（对应 LV1-LV4）
  * 6. 可解性检查 - 每个 staticBomb 的爆炸范围内至少有一个 wall
+ * 7. 方向正确性检查 - evolution=1(竖直)对应竖直walls，evolution=2(横向)对应横向walls
  */
 
 const LEVELS = require('../src/data/LevelData.js');
@@ -190,7 +191,6 @@ function validateLevel(levelNum, level) {
       warnings.push(`⚠️ walls[${index}] 坐标(${wall.x}, ${wall.y}) 无法被任何 staticBomb 直接炸到`);
     }
   });
-  
   
   // 8. 检查 staticBomb 方向是否与 walls 分布匹配
   staticBombs.forEach((bomb, index) => {

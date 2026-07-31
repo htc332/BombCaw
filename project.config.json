@@ -22,7 +22,7 @@
     "packNpmRelationList": [],
     "minifyWXSS": true,
     "minifyWXML": true,
-    "localPlugins": false,
+    "localPlugins": true,
     "disableUseStrict": false,
     "useCompilerPlugins": false,
     "condition": false,
