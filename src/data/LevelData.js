@@ -1194,6 +1194,231 @@ const LEVELS = {
       { x: -3, y: 2, evolution: 3 },
     ]
   },
+
+  // 第51关
+  51: {
+    gridSize: 6,
+    hint: '第51关：运用技巧，巧妙通关！',
+    walls: [
+      { x: 3, y: 3, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 0, evolution: 0 },
+      { x: -1, y: -1, evolution: 2 },
+    ]
+  },
+
+  // 第52关
+  52: {
+    gridSize: 6,
+    hint: '第52关：运用技巧，巧妙通关！',
+    walls: [
+      { x: 0, y: 3, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -1, y: 0, evolution: 0 },
+      { x: 1, y: -1, evolution: 2 },
+    ]
+  },
+
+  // 第53关
+  53: {
+    gridSize: 6,
+    hint: '第53关：运用技巧，巧妙通关！',
+    walls: [
+      { x: -1, y: 0, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: -1, y: 3, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 0, evolution: 0 },
+      { x: 2, y: 0, evolution: 2 },
+    ]
+  },
+
+  // 第54关
+  54: {
+    gridSize: 6,
+    hint: '第54关：运用技巧，巧妙通关！',
+    walls: [
+      { x: -2, y: -2, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -1, y: 1, evolution: 0 },
+      { x: 1, y: 2, evolution: 2 },
+    ]
+  },
+
+  // 第55关：★消耗关★
+  55: {
+    gridSize: 6,
+    hint: '第55关：★消耗关★精打细算！',
+    walls: [
+      { x: 0, y: -2, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -2, y: 0, evolution: 0 },
+      { x: 2, y: 0, evolution: 0 },
+      { x: 0, y: 2, evolution: 2 },
+    ]
+  },
+
+  // 第56关
+  56: {
+    gridSize: 6,
+    hint: '第56关：运用技巧，巧妙通关！',
+    walls: [
+      { x: -1, y: 0, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 0, evolution: 0 },
+      { x: 2, y: 2, evolution: 2 },
+    ]
+  },
+
+  // 第57关
+  57: {
+    gridSize: 6,
+    hint: '第57关：运用技巧，巧妙通关！',
+    walls: [
+      { x: 3, y: 3, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -1, y: 1, evolution: 0 },
+      { x: 1, y: -1, evolution: 2 },
+    ]
+  },
+
+  // 第58关
+  58: {
+    gridSize: 6,
+    hint: '第58关：运用技巧，巧妙通关！',
+    walls: [
+      { x: 0, y: 3, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 1, y: 0, evolution: 0 },
+      { x: -1, y: -2, evolution: 2 },
+    ]
+  },
+
+  // 第59关
+  59: {
+    gridSize: 6,
+    hint: '第59关：运用技巧，巧妙通关！',
+    walls: [
+      { x: -1, y: 0, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 0, evolution: 0 },
+      { x: 2, y: -2, evolution: 2 },
+    ]
+  },
+
+  // 第60关：★Boss挑战★
+  60: {
+    gridSize: 6,
+    hint: '第60关：★Boss挑战★',
+    walls: [
+      { x: 0, y: -2, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: -2, y: -2, type: 'strong' },
+      { x: 2, y: 2, type: 'strong' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -2, y: 0, evolution: 2 },
+      { x: 2, y: 0, evolution: 2 },
+      { x: 0, y: 2, evolution: 0 },
+      { x: 1, y: 0, evolution: 0 },
+    ]
+  },
 };
 
 module.exports = LEVELS;
