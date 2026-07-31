@@ -44,23 +44,39 @@ class LevelSystem {
    * @returns {number} 下一关编号
    */
   calculateNextLevel(currentLevel, remainingScore) {
-    // 根据剩余积分决定跳关
-    if (remainingScore >= 10) {
-      // 完美：跳3关
-      return Math.min(this.maxLevels, currentLevel + 3);
-    } else if (remainingScore >= 7) {
-      // 良好：跳2关
-      return Math.min(this.maxLevels, currentLevel + 2);
-    } else if (remainingScore >= 4) {
-      // 一般：跳1关
-      return Math.min(this.maxLevels, currentLevel + 1);
-    } else if (remainingScore >= 2) {
-      // 危险：正常下一关
-      return Math.min(this.maxLevels, currentLevel + 1);
-    } else {
-      // 濒死：回退到保底关（当前阶段的积分关）
-      return this.getFallbackLevel(currentLevel);
+    // 前10关：固定规则
+    if (currentLevel <= 10) {
+      if (remainingScore >= 10) {
+        return Math.min(this.maxLevels, currentLevel + 3);
+      } else if (remainingScore >= 7) {
+        return Math.min(this.maxLevels, currentLevel + 2);
+      } else if (remainingScore >= 4) {
+        return Math.min(this.maxLevels, currentLevel + 1);
+      } else {
+        return Math.min(this.maxLevels, currentLevel + 1);
+      }
     }
+    
+    // 10关以后：根据积分跳关
+    if (remainingScore <= 10) {
+      // 低于10分：和之前一样，+1关
+      return Math.min(this.maxLevels, currentLevel + 1);
+    }
+    
+    // 高于10分：计算额外跳关数
+    // 10分:+2, 20分:+4, 30分:+8, 40分:+16, 以此类推（指数增长）
+    let extraSkip = 0;
+    let threshold = 10;
+    let bonus = 2;
+    
+    while (remainingScore > threshold) {
+      extraSkip += bonus;
+      threshold += 10;
+      bonus *= 2;
+    }
+    
+    const totalSkip = 1 + extraSkip; // 基础1关 + 额外跳关
+    return Math.min(this.maxLevels, currentLevel + totalSkip);
   }
 
   /**
