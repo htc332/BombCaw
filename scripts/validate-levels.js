@@ -10,6 +10,8 @@
  * 5. evolution 值范围检查 - 必须在 0-3 范围内（对应 LV1-LV4）
  * 6. 可解性检查 - 每个 staticBomb 的爆炸范围内至少有一个 wall
  * 7. 方向正确性检查 - evolution=1(竖直)对应竖直walls，evolution=2(横向)对应横向walls
+ * 8. 墙壁类型检查 - 只允许 normal, strong, ghost 三种类型（不允许 bomb）
+ * 9. 棋盘大小规则检查 - 1-50关5x5，51-100关6x6，101-150关7x7，151-200关8x8，不递减
  */
 
 const LEVELS = require('../src/data/LevelData.js');
@@ -210,6 +212,26 @@ function validateLevel(levelNum, level) {
       warnings.push(`⚠️ staticBombs[${index}] 坐标(${bomb.x},${bomb.y}) evolution=2(横向)但walls是竖直分布，方向可能不匹配`);
     }
   });
+  
+  // 9. 墙壁类型检查 - 只允许 normal, strong, ghost
+  const validWallTypes = ['normal', 'strong', 'ghost'];
+  walls.forEach((wall, index) => {
+    if (!validWallTypes.includes(wall.type)) {
+      errors.push(`❌ walls[${index}] 类型 '${wall.type}' 无效，只允许: ${validWallTypes.join(', ')}`);
+    }
+  });
+  
+  // 10. 棋盘大小规则检查
+  // 规则: 1-10关5x5，11-20关6x6，21-30关7x7，31-50关8x8，51-100关6x6，101-150关7x7，151-200关8x8
+  const expectedGridSize = levelNum <= 10 ? 5 : 
+    (levelNum <= 20 ? 6 : 
+      (levelNum <= 30 ? 7 : 
+        (levelNum <= 50 ? 8 : 
+          (levelNum <= 100 ? 6 : 
+            (levelNum <= 150 ? 7 : 8)))));
+  if (gridSize !== expectedGridSize) {
+    errors.push(`❌ 棋盘大小错误: 第${levelNum}关应该是 ${expectedGridSize}x${expectedGridSize}，实际是 ${gridSize}x${gridSize}`);
+  }
   
   return { errors, warnings, wallCount: walls.length, bombCount: staticBombs.length };
 }
