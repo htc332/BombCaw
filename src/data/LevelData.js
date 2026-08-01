@@ -1419,6 +1419,997 @@ const LEVELS = {
       { x: 1, y: 0, evolution: 0 },
     ]
   },
+
+  // 第61关
+  61: {
+    gridSize: 6,
+    hint: '第61关：消灭所有老鼠！',
+    walls: [
+      { x: -2, y: -2, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 2, y: 0, evolution: 0 },
+      { x: 3, y: 0, evolution: 2 },
+    ]
+  },
+
+  // 第62关
+  62: {
+    gridSize: 6,
+    hint: '第62关：消灭所有老鼠！',
+    walls: [
+      { x: 0, y: -1, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: 2, y: 3, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: -1, y: 3, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -1, y: 2, evolution: 0 },
+      { x: 1, y: 3, evolution: 2 },
+      { x: 3, y: -1, evolution: 2 },
+    ]
+  },
+
+  // 第63关
+  63: {
+    gridSize: 6,
+    hint: '第63关：挑战你的策略极限！',
+    walls: [
+      { x: 0, y: 1, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: -1, y: 3, type: 'normal' },
+      { x: 2, y: 3, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: -2, evolution: 2 },
+      { x: 3, y: 3, evolution: 0 },
+      { x: 1, y: 2, evolution: 2 },
+    ]
+  },
+
+  // 第64关
+  64: {
+    gridSize: 6,
+    hint: '第64关：消灭所有老鼠！',
+    walls: [
+      { x: 0, y: 0, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 2, y: 0, evolution: 2 },
+      { x: -1, y: 1, evolution: 0 },
+    ]
+  },
+
+  // 第65关：★消耗关★
+  65: {
+    gridSize: 6,
+    hint: '第65关：★消耗关★精打细算！',
+    walls: [
+      { x: 3, y: 1, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 1, y: 2, evolution: 2 },
+      { x: -1, y: 0, evolution: 0 },
+      { x: 1, y: -1, evolution: 0 },
+      { x: -2, y: -1, evolution: 2 },
+    ]
+  },
+
+  // 第66关
+  66: {
+    gridSize: 6,
+    hint: '第66关：消灭所有老鼠！',
+    walls: [
+      { x: 3, y: 1, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 2, y: -2, type: 'ghost' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 1, y: -2, evolution: 0 },
+      { x: 3, y: -1, evolution: 0 },
+      { x: -2, y: 2, evolution: 2 },
+    ]
+  },
+
+  // 第67关
+  67: {
+    gridSize: 6,
+    hint: '第67关：消灭所有老鼠！',
+    walls: [
+      { x: 3, y: 3, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: 0, y: -1, type: 'ghost' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 2, y: 2, evolution: 0 },
+      { x: -1, y: -1, evolution: 0 },
+      { x: -2, y: -1, evolution: 2 },
+    ]
+  },
+
+  // 第68关
+  68: {
+    gridSize: 6,
+    hint: '第68关：消灭所有老鼠！',
+    walls: [
+      { x: -2, y: 2, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 2, y: 3, type: 'normal' },
+      { x: 3, y: 2, type: 'ghost' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 2, evolution: 2 },
+      { x: 2, y: -2, evolution: 0 },
+    ]
+  },
+
+  // 第69关
+  69: {
+    gridSize: 6,
+    hint: '第69关：消灭所有老鼠！',
+    walls: [
+      { x: 1, y: 3, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: 2, y: 3, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: -1, y: 3, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -2, y: 2, evolution: 2 },
+      { x: 0, y: 0, evolution: 2 },
+      { x: -1, y: 2, evolution: 0 },
+    ]
+  },
+
+  // 第70关：★Boss挑战★
+  70: {
+    gridSize: 6,
+    hint: '第70关：★Boss挑战★',
+    walls: [
+      { x: -1, y: 3, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+      { x: 2, y: 1, type: 'ghost' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: 1, y: -1, type: 'ghost' },
+      { x: 0, y: 3, type: 'ghost' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -1, y: -2, evolution: 0 },
+      { x: 3, y: 0, evolution: 0 },
+      { x: -2, y: 2, evolution: 2 },
+      { x: 3, y: 1, evolution: 2 },
+      { x: 1, y: 1, evolution: 2 },
+    ]
+  },
+
+  // 第71关
+  71: {
+    gridSize: 6,
+    hint: '第71关：消灭所有老鼠！',
+    walls: [
+      { x: -2, y: 1, type: 'strong' },
+      { x: -1, y: 3, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: -2, y: 0, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -2, y: -2, evolution: 3 },
+      { x: 1, y: -2, evolution: 2 },
+      { x: 0, y: 0, evolution: 3 },
+    ]
+  },
+
+  // 第72关
+  72: {
+    gridSize: 6,
+    hint: '第72关：消灭所有老鼠！',
+    walls: [
+      { x: 0, y: -2, type: 'ghost' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -1, y: 3, evolution: 2 },
+      { x: 1, y: 1, evolution: 2 },
+    ]
+  },
+
+  // 第73关
+  73: {
+    gridSize: 6,
+    hint: '第73关：消灭所有老鼠！',
+    walls: [
+      { x: -2, y: 1, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: 2, y: 3, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: 0, y: 3, type: 'ghost' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 2, y: 2, evolution: 0 },
+      { x: -1, y: 3, evolution: 3 },
+    ]
+  },
+
+  // 第74关
+  74: {
+    gridSize: 6,
+    hint: '第74关：消灭所有老鼠！',
+    walls: [
+      { x: 1, y: -2, type: 'strong' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: 2, y: 3, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: -1, y: 3, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: -2, y: 1, type: 'ghost' },
+      { x: 2, y: -1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 1, evolution: 3 },
+      { x: 0, y: 3, evolution: 2 },
+    ]
+  },
+
+  // 第75关：★消耗关★
+  75: {
+    gridSize: 6,
+    hint: '第75关：★消耗关★精打细算！',
+    walls: [
+      { x: 2, y: 2, type: 'ghost' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: -2, y: 1, type: 'ghost' },
+      { x: -1, y: 3, type: 'ghost' },
+      { x: 3, y: 1, type: 'strong' },
+      { x: -1, y: -1, type: 'ghost' },
+      { x: 3, y: -1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -2, y: -1, evolution: 2 },
+      { x: 2, y: 1, evolution: 2 },
+      { x: 0, y: -1, evolution: 0 },
+      { x: 0, y: 2, evolution: 3 },
+    ]
+  },
+
+  // 第76关
+  76: {
+    gridSize: 6,
+    hint: '第76关：消灭所有老鼠！',
+    walls: [
+      { x: 3, y: -2, type: 'normal' },
+      { x: 2, y: -2, type: 'strong' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 0, y: -2, type: 'strong' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 3, y: 2, type: 'ghost' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: -1, y: 1, type: 'ghost' },
+      { x: -1, y: 3, type: 'strong' },
+      { x: 1, y: 0, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 2, evolution: 0 },
+      { x: 0, y: -1, evolution: 2 },
+      { x: 2, y: 0, evolution: 0 },
+    ]
+  },
+
+  // 第77关
+  77: {
+    gridSize: 6,
+    hint: '第77关：挑战你的策略极限！',
+    walls: [
+      { x: -1, y: 1, type: 'normal' },
+      { x: 0, y: 1, type: 'strong' },
+      { x: 3, y: 3, type: 'strong' },
+      { x: -2, y: -1, type: 'strong' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: -1, y: 3, type: 'ghost' },
+      { x: -2, y: 1, type: 'ghost' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: 1, y: 2, type: 'ghost' },
+      { x: 1, y: 0, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -2, y: 0, evolution: 3 },
+      { x: -2, y: 3, evolution: 3 },
+      { x: 1, y: 3, evolution: 2 },
+    ]
+  },
+
+  // 第78关
+  78: {
+    gridSize: 6,
+    hint: '第78关：消灭所有老鼠！',
+    walls: [
+      { x: 0, y: -2, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: -1, y: 3, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 2, y: 3, type: 'strong' },
+      { x: -2, y: 2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -2, y: 1, evolution: 2 },
+      { x: -2, y: -2, evolution: 0 },
+    ]
+  },
+
+  // 第79关
+  79: {
+    gridSize: 6,
+    hint: '第79关：消灭所有老鼠！',
+    walls: [
+      { x: -1, y: 1, type: 'ghost' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+      { x: 0, y: 3, type: 'ghost' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 2, y: 0, type: 'ghost' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: -2, y: 3, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 1, y: -1, evolution: 3 },
+      { x: 2, y: -1, evolution: 0 },
+      { x: 1, y: 0, evolution: 0 },
+    ]
+  },
+
+  // 第80关：★Boss挑战★
+  80: {
+    gridSize: 6,
+    hint: '第80关：★Boss挑战★',
+    walls: [
+      { x: -2, y: -2, type: 'normal' },
+      { x: -1, y: -2, type: 'ghost' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -2, y: 0, evolution: 1 },
+      { x: 2, y: 3, evolution: 3 },
+      { x: -1, y: -1, evolution: 2 },
+      { x: 2, y: 1, evolution: 0 },
+      { x: -2, y: -1, evolution: 1 },
+    ]
+  },
+
+  // 第81关
+  81: {
+    gridSize: 6,
+    hint: '第81关：消灭所有老鼠！',
+    walls: [
+      { x: 1, y: -1, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: 0, y: 0, type: 'ghost' },
+      { x: -1, y: 3, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -1, y: 2, evolution: 0 },
+      { x: -2, y: 2, evolution: 3 },
+      { x: 0, y: -1, evolution: 2 },
+    ]
+  },
+
+  // 第82关
+  82: {
+    gridSize: 6,
+    hint: '第82关：消灭所有老鼠！',
+    walls: [
+      { x: 0, y: -2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: -1, y: 1, type: 'ghost' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 3, y: -2, evolution: 2 },
+      { x: -2, y: 0, evolution: 1 },
+      { x: 1, y: 3, evolution: 3 },
+    ]
+  },
+
+  // 第83关
+  83: {
+    gridSize: 6,
+    hint: '第83关：消灭所有老鼠！',
+    walls: [
+      { x: -1, y: 3, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: 0, y: -1, type: 'ghost' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: -1, y: -1, type: 'strong' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 1, y: -2, type: 'ghost' },
+      { x: 1, y: 0, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 3, evolution: 3 },
+      { x: -1, y: 0, evolution: 3 },
+      { x: -1, y: 2, evolution: 1 },
+    ]
+  },
+
+  // 第84关
+  84: {
+    gridSize: 6,
+    hint: '第84关：挑战你的策略极限！',
+    walls: [
+      { x: 1, y: -1, type: 'ghost' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: 2, y: 3, type: 'ghost' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: 3, y: 3, type: 'ghost' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: -1, y: 1, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: -1, y: 0, evolution: 1 },
+      { x: -2, y: 3, evolution: 3 },
+      { x: -2, y: 1, evolution: 3 },
+    ]
+  },
+
+  // 第85关：★消耗关★
+  85: {
+    gridSize: 6,
+    hint: '第85关：★消耗关★精打细算！',
+    walls: [
+      { x: 2, y: -1, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 2, y: 3, type: 'strong' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+      { x: 3, y: 1, type: 'ghost' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 1, y: 1, evolution: 2 },
+      { x: 1, y: -1, evolution: 2 },
+      { x: -2, y: 0, evolution: 1 },
+      { x: 3, y: -1, evolution: 3 },
+    ]
+  },
+
+  // 第86关
+  86: {
+    gridSize: 6,
+    hint: '第86关：消灭所有老鼠！',
+    walls: [
+      { x: 0, y: 1, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 0, y: 2, evolution: 2 },
+      { x: -2, y: 0, evolution: 2 },
+      { x: 1, y: -2, evolution: 3 },
+    ]
+  },
+
+  // 第87关
+  87: {
+    gridSize: 6,
+    hint: '第87关：消灭所有老鼠！',
+    walls: [
+      { x: 2, y: -2, type: 'normal' },
+      { x: 2, y: -1, type: 'ghost' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: -1, y: 3, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: -1, y: 2, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 2, y: 2, evolution: 0 },
+      { x: 0, y: 1, evolution: 1 },
+      { x: 0, y: 2, evolution: 0 },
+    ]
+  },
+
+  // 第88关
+  88: {
+    gridSize: 6,
+    hint: '第88关：消灭所有老鼠！',
+    walls: [
+      { x: 0, y: 3, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: -1, y: 3, type: 'normal' },
+      { x: -2, y: 0, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 1, y: -1, type: 'ghost' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: 2, y: 0, type: 'strong' },
+    ],
+    staticBombs: [
+      { x: 3, y: -1, evolution: 0 },
+      { x: 1, y: 0, evolution: 0 },
+      { x: 2, y: -1, evolution: 1 },
+    ]
+  },
+
+  // 第89关
+  89: {
+    gridSize: 6,
+    hint: '第89关：消灭所有老鼠！',
+    walls: [
+      { x: 0, y: 3, type: 'normal' },
+      { x: 1, y: 3, type: 'strong' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 3, y: 3, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: -1, y: -2, type: 'ghost' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: 3, y: 2, type: 'strong' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 2, y: 1, evolution: 1 },
+      { x: 2, y: -2, evolution: 1 },
+      { x: 0, y: -1, evolution: 3 },
+    ]
+  },
+
+  // 第90关：★Boss挑战★
+  90: {
+    gridSize: 6,
+    hint: '第90关：★Boss挑战★',
+    walls: [
+      { x: 2, y: 3, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: 0, y: 2, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 2, y: 1, evolution: 1 },
+      { x: -1, y: 3, evolution: 1 },
+      { x: 1, y: 0, evolution: 1 },
+      { x: 2, y: 0, evolution: 0 },
+      { x: 3, y: 2, evolution: 3 },
+    ]
+  },
+
+  // 第91关
+  91: {
+    gridSize: 6,
+    hint: '第91关：挑战你的策略极限！',
+    walls: [
+      { x: 2, y: -2, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: 1, y: 3, type: 'normal' },
+      { x: -2, y: 0, type: 'ghost' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+      { x: -2, y: 3, type: 'ghost' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 1, y: 0, type: 'strong' },
+      { x: 2, y: 0, type: 'strong' },
+      { x: 2, y: -1, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 2, y: 3, evolution: 3 },
+      { x: 3, y: 3, evolution: 0 },
+    ]
+  },
+
+  // 第92关
+  92: {
+    gridSize: 6,
+    hint: '第92关：消灭所有老鼠！',
+    walls: [
+      { x: -1, y: 3, type: 'ghost' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: 1, y: 0, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 2, y: 3, type: 'strong' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 3, y: 3, evolution: 1 },
+      { x: 1, y: 3, evolution: 2 },
+    ]
+  },
+
+  // 第93关
+  93: {
+    gridSize: 6,
+    hint: '第93关：消灭所有老鼠！',
+    walls: [
+      { x: 1, y: 0, type: 'normal' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: 0, y: 3, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: 0, y: -1, type: 'normal' },
+      { x: 2, y: 1, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 2, y: -1, evolution: 3 },
+      { x: 1, y: 2, evolution: 2 },
+    ]
+  },
+
+  // 第94关
+  94: {
+    gridSize: 6,
+    hint: '第94关：消灭所有老鼠！',
+    walls: [
+      { x: 1, y: 3, type: 'strong' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: -2, y: -2, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+      { x: 2, y: 0, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: 3, y: -2, type: 'normal' },
+      { x: 2, y: 3, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 1, y: -1, evolution: 3 },
+      { x: 0, y: 3, evolution: 0 },
+      { x: 0, y: 0, evolution: 0 },
+    ]
+  },
+
+  // 第95关：★消耗关★
+  95: {
+    gridSize: 6,
+    hint: '第95关：★消耗关★精打细算！',
+    walls: [
+      { x: 2, y: 0, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: 3, y: -2, type: 'ghost' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: 2, y: 3, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 2, y: -2, evolution: 1 },
+      { x: -2, y: 0, evolution: 1 },
+      { x: 0, y: -1, evolution: 0 },
+      { x: 0, y: -2, evolution: 3 },
+    ]
+  },
+
+  // 第96关
+  96: {
+    gridSize: 6,
+    hint: '第96关：消灭所有老鼠！',
+    walls: [
+      { x: 1, y: -2, type: 'strong' },
+      { x: 0, y: 1, type: 'ghost' },
+      { x: 0, y: -1, type: 'ghost' },
+      { x: 3, y: 1, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: -1, y: 3, type: 'normal' },
+      { x: 0, y: 0, type: 'strong' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: 2, y: 3, type: 'normal' },
+      { x: 1, y: -1, type: 'ghost' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: 2, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -1, y: 2, evolution: 0 },
+      { x: 3, y: 3, evolution: 1 },
+    ]
+  },
+
+  // 第97关
+  97: {
+    gridSize: 6,
+    hint: '第97关：消灭所有老鼠！',
+    walls: [
+      { x: 2, y: -1, type: 'normal' },
+      { x: -1, y: 2, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: 1, y: 1, type: 'ghost' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 2, y: 3, type: 'normal' },
+      { x: -1, y: 1, type: 'ghost' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: 3, y: 3, evolution: 3 },
+      { x: 3, y: -1, evolution: 2 },
+    ]
+  },
+
+  // 第98关
+  98: {
+    gridSize: 6,
+    hint: '第98关：挑战你的策略极限！',
+    walls: [
+      { x: 1, y: -2, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: -2, y: -2, type: 'ghost' },
+      { x: 1, y: 3, type: 'strong' },
+      { x: -1, y: -2, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: -2, y: 3, type: 'normal' },
+      { x: 2, y: 2, type: 'normal' },
+      { x: 0, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -2, y: 0, evolution: 0 },
+      { x: 0, y: 2, evolution: 0 },
+    ]
+  },
+
+  // 第99关
+  99: {
+    gridSize: 6,
+    hint: '第99关：消灭所有老鼠！',
+    walls: [
+      { x: 2, y: 3, type: 'strong' },
+      { x: 2, y: 0, type: 'ghost' },
+      { x: 0, y: 1, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 1, y: 1, type: 'normal' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: -1, y: -1, type: 'normal' },
+      { x: 1, y: -1, type: 'normal' },
+      { x: -2, y: 2, type: 'normal' },
+      { x: -1, y: 0, type: 'normal' },
+      { x: 3, y: 0, type: 'normal' },
+      { x: 0, y: -2, type: 'strong' },
+      { x: 1, y: -2, type: 'normal' },
+    ],
+    staticBombs: [
+      { x: -2, y: -2, evolution: 2 },
+      { x: 2, y: -1, evolution: 3 },
+      { x: 1, y: 3, evolution: 0 },
+    ]
+  },
+
+  // 第100关：★Boss挑战★
+  100: {
+    gridSize: 6,
+    hint: '第100关：★Boss挑战★',
+    walls: [
+      { x: 2, y: 1, type: 'normal' },
+      { x: 0, y: -1, type: 'ghost' },
+      { x: -2, y: 1, type: 'normal' },
+      { x: 1, y: 2, type: 'normal' },
+      { x: 3, y: -1, type: 'normal' },
+      { x: -2, y: -1, type: 'normal' },
+      { x: 1, y: -2, type: 'normal' },
+      { x: -1, y: 1, type: 'normal' },
+      { x: 1, y: 3, type: 'strong' },
+      { x: 0, y: 0, type: 'normal' },
+      { x: 0, y: -2, type: 'strong' },
+      { x: -1, y: 3, type: 'normal' },
+      { x: 3, y: 2, type: 'normal' },
+      { x: 3, y: -2, type: 'ghost' },
+    ],
+    staticBombs: [
+      { x: 1, y: 0, evolution: 2 },
+      { x: 0, y: 1, evolution: 0 },
+      { x: 3, y: 3, evolution: 3 },
+      { x: -1, y: -2, evolution: 0 },
+      { x: 0, y: 2, evolution: 0 },
+    ]
+  },
 };
 
 module.exports = LEVELS;
