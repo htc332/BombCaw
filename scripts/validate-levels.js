@@ -222,13 +222,9 @@ function validateLevel(levelNum, level) {
   });
   
   // 10. 棋盘大小规则检查
-  // 规则: 1-10关5x5，11-20关6x6，21-30关7x7，31-50关8x8，51-100关6x6，101-150关7x7，151-200关8x8
-  const expectedGridSize = levelNum <= 10 ? 5 : 
-    (levelNum <= 20 ? 6 : 
-      (levelNum <= 30 ? 7 : 
-        (levelNum <= 50 ? 8 : 
-          (levelNum <= 100 ? 6 : 
-            (levelNum <= 150 ? 7 : 8)))));
+  // 规则: 1-50关5x5，51-100关6x6，101-150关7x7，151-200关8x8
+  // 棋盘一旦扩张就不再回退
+  const expectedGridSize = levelNum <= 50 ? 5 : (levelNum <= 100 ? 6 : (levelNum <= 150 ? 7 : 8));
   if (gridSize !== expectedGridSize) {
     errors.push(`❌ 棋盘大小错误: 第${levelNum}关应该是 ${expectedGridSize}x${expectedGridSize}，实际是 ${gridSize}x${gridSize}`);
   }
