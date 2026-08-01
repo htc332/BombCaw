@@ -304,7 +304,7 @@ class GameLogic {
     range.forEach(pos => {
       // 生产环境关闭详细命中日志
       // console.log('[Explosion] Hit pos:', pos.x, pos.y, 'type:', pos.distance === 0 ? 'center' : (Math.abs(pos.x - bomb.x) === Math.abs(pos.y - bomb.y) ? 'diag' : 'cross'));
-      this.processExplosionHit(pos.x, pos.y, bomb.evolution, false);
+      this.processExplosionHit(pos.x, pos.y, bomb.evolution);
     });
 
     // [v0.7.10] 任何炸弹爆炸时，所有幽灵鼠都显示（无论是否被炸到）
@@ -457,7 +457,7 @@ class GameLogic {
     });
   }
 
-  processExplosionHit(x, y, bombEvo, isStaticBomb = false) {
+  processExplosionHit(x, y, bombEvo) {
     const key = `${x},${y}`;
     const wall = this.walls.get(key);
     
@@ -466,7 +466,7 @@ class GameLogic {
     wall.hp--;
 
     if (wall.hp <= 0) {
-      this.handleEnemyDeath(wall, key, isStaticBomb);
+      this.handleEnemyDeath(wall, key);
     } else {
       this.handleEnemyDamaged(wall, key);
     }
@@ -479,8 +479,8 @@ class GameLogic {
 
   // ========== 敌人状态处理（配置驱动） ==========
 
-  // [v0.8.0] 所有老鼠墙破坏后都+1分（但静态炸弹爆炸不增加积分）
-  handleEnemyDeath(wall, key, isStaticBomb = false) {
+  // [v0.8.0] 所有老鼠墙破坏后都+1分
+  handleEnemyDeath(wall, key) {
     const config = ENEMY_TYPES[wall.type];
     if (!config) {
       this.walls.delete(key);
@@ -489,17 +489,15 @@ class GameLogic {
 
     wall.dying = true;
     
-    // [v0.8.0] 只有玩家放置的炸弹炸到老鼠才+1分，静态炸弹爆炸不增加积分
-    if (!isStaticBomb) {
-      this.addScore(1, '消灭老鼠');
-    }
+    // [v0.8.0] 统一+1分，不再区分类型
+    this.addScore(1, '消灭老鼠');
     this.wallsDestroyed++; // 统计
 
     this.emitEvent('enemy_death', {
       x: wall.x, y: wall.y,
       wallType: wall.type,
       score: this.score,
-      gained: isStaticBomb ? 0 : 1
+      gained: 1
     });
 
     // 根据配置处理特殊死亡逻辑
@@ -642,7 +640,7 @@ class GameLogic {
 
     // 处理爆炸范围内的所有格子
     range.forEach(pos => {
-      this.processExplosionHit(pos.x, pos.y, staticBomb.evolution, true);
+      this.processExplosionHit(pos.x, pos.y, staticBomb.evolution);
     });
 
     // 静态炸弹爆炸也能触发其他静态炸弹
